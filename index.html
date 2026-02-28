@@ -283,29 +283,17 @@
     </div>
 
     <div id="view-debt" class="view-section">
-        <div class="header"><h1>🤝 บริหารหนี้สิน</h1></div>
+        <div class="header"><h1>🤝 บริหารหนี้สิน (เงินยืม)</h1></div>
         
-        <div class="card" style="background: #fef2f2; border: 1px solid #fecaca; padding: 15px;">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div>
-                    <p style="margin:0; font-size:13px; color:#b91c1c;">ยอดหนี้รวมทั้งหมด</p>
-                    <h2 style="margin:0; font-size:28px; color:#991b1b;" id="allDebtDisplay">฿0</h2>
-                </div>
-                <div style="text-align:right;">
-                    <p style="margin:0; font-size:11px; color:#b91c1c;">สัดส่วนหนี้ต่อรายได้ (DTI)</p>
-                    <h3 style="margin:0; font-size:20px; color:#b91c1c;" id="dtiRatioDisplay">0%</h3>
-                </div>
-            </div>
-            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #fca5a5; font-size:12px; color:#b91c1c; display:flex; justify-content:space-between;">
-                <span>ยืมคนอื่น: <b id="totalLiabilityDisplay">฿0</b></span>
-                <span>บัตร/ผ่อน: <b id="totalCreditDebtDisplay">฿0</b></span>
-            </div>
+        <div class="card" style="background: #fef2f2; border: 1px solid #fecaca; padding: 20px; text-align: center; margin-bottom: 15px;">
+            <p style="margin:0; font-size:14px; color:#b91c1c; font-weight:bold;">ยอดหนี้สินค้างชำระ (ยืมคนอื่น)</p>
+            <h2 style="margin:10px 0 0 0; font-size:36px; color:#991b1b;" id="totalLiabilityDisplay">฿0</h2>
         </div>
 
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn-main" style="flex:1; background: var(--danger); font-size:14px; padding:12px; margin-top:0;" onclick="openModal('addDebtModal')">📥 ยืมเงินมา</button>
-            <button class="btn-main" style="flex:1; background: var(--success); font-size:14px; padding:12px; margin-top:0;" onclick="openModal('payDebtModal')">📤 จ่ายคืนหนี้</button>
-            <button class="btn-main" style="width:100%; background: #0284c7; font-size:14px; padding:12px; margin-top:0;" onclick="openLegacyDebtModal()">💳 + เพิ่มหนี้บัตร/ผ่อนค้างเก่า</button>
+            <button class="btn-main" style="flex:1; background: var(--danger); font-size:14px; padding:12px; margin-top:0;" onclick="openModal('addDebtModal')">📥 ยืมใหม่</button>
+            <button class="btn-main" style="flex:1; background: var(--success); font-size:14px; padding:12px; margin-top:0;" onclick="openModal('payDebtModal')">📤 คืนหนี้</button>
+            <button class="btn-main" style="width:100%; background: #ea580c; font-size:14px; padding:12px; margin-top:0;" onclick="openLegacyBorrowedModal()">📜 + หนี้ยืมเก่า (ยืมก่อนใช้แอป)</button>
         </div>
         
         <div class="card" style="margin-top:20px;">
@@ -1004,48 +992,11 @@
         saveStorage();
     }
 
-    // ฟังก์ชันใหม่: คำนวณสรุปหนี้สินทั้งหมด
+    // ฟังก์ชันสรุปยอดหนี้ (คิดเฉพาะเงินที่ยืมคนอื่นมา)
     function renderDebtSummary() {
-        // 1. หนี้ที่ไปยืมคนอื่นมา (totalLiability)
         let liabilityDisplay = document.getElementById('totalLiabilityDisplay');
         if(liabilityDisplay) liabilityDisplay.innerText = '฿' + totalLiability.toLocaleString();
-
-        // 2. หนี้บัตรเครดิต/ผ่อน (หาจาก installments ที่ยังไม่จ่าย)
-        let creditDebtSum = 0;
-        transactions.forEach(t => {
-            if((t.type === 'expense' || t.type === 'legacy_debt') && t.installments) {
-                t.installments.forEach(i => {
-                    if(!i.paid) creditDebtSum += i.amount;
-                });
-            }
-        });
-        
-        let creditDisplay = document.getElementById('totalCreditDebtDisplay');
-        if(creditDisplay) creditDisplay.innerText = '฿' + creditDebtSum.toLocaleString();
-
-        // 3. หนี้รวมทั้งหมด
-        let allDebt = totalLiability + creditDebtSum;
-        let allDisplay = document.getElementById('allDebtDisplay');
-        if(allDisplay) allDisplay.innerText = '฿' + allDebt.toLocaleString();
-
-        // 4. สัดส่วนหนี้ต่อรายได้ (DTI - Debt to Income Ratio)
-        let dtiDisplay = document.getElementById('dtiRatioDisplay');
-        if(dtiDisplay) {
-            if(totalIncomeThisMonth > 0) {
-                let dti = (allDebt / totalIncomeThisMonth) * 100;
-                dtiDisplay.innerText = dti.toFixed(1) + '%';
-                
-                // แจ้งเตือนสีตามระดับความอันตรายของหนี้
-                if(dti > 40) dtiDisplay.style.color = 'var(--danger)'; // หนี้เกิน 40% (อันตรายมาก)
-                else if(dti > 20) dtiDisplay.style.color = '#d97706';  // หนี้เกิน 20% (เริ่มตึงมือ)
-                else dtiDisplay.style.color = '#15803d';               // หนี้ต่ำกว่า 20% (สุขภาพดี)
-            } else {
-                dtiDisplay.innerText = '0%';
-                dtiDisplay.style.color = '#15803d';
-            }
-        }
     }
-
     function renderCreditBills() {
         let list = document.getElementById('creditBillList');
         let pendingInstallments = [];
