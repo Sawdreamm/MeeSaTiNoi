@@ -186,7 +186,7 @@
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center; flex-shrink:0;">
-                <button class="settings-btn" onclick="openModal('configModal')">⚙️ ตั้งค่า</button>
+                <button class="settings-btn" onclick="openConfigModal()">⚙️ ตั้งค่า</button>
                 <div class="profile-pic" id="profilePicDisplay" onclick="document.getElementById('profilePicInput').click()">D</div>
                 <input type="file" id="profilePicInput" style="display:none;" accept="image/*" onchange="uploadProfilePic(event)">
             </div>
@@ -283,19 +283,29 @@
     </div>
 
     <div id="view-debt" class="view-section">
-        <div class="header"><h1>🤝 บริหารเงินยืม</h1></div>
+        <div class="header"><h1>🤝 บริหารหนี้สิน</h1></div>
         
-        <div class="card" style="background: #fef2f2; border: 1px solid #fecaca; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-                <p style="margin:0; font-size:13px; color:#b91c1c;">ยอดหนี้รวมที่ต้องคืน</p>
-                <h2 style="margin:0; font-size:28px; color:#991b1b;" id="totalLiabilityDisplay">฿0</h2>
-                <p style="margin:5px 0 0 0; font-size:11px; color:#b91c1c;">*ยืมเงิน = เงินเข้า Essential<br>*จ่ายหนี้ = เงินหักจาก Security</p>
+        <div class="card" style="background: #fef2f2; border: 1px solid #fecaca; padding: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <p style="margin:0; font-size:13px; color:#b91c1c;">ยอดหนี้รวมทั้งหมด</p>
+                    <h2 style="margin:0; font-size:28px; color:#991b1b;" id="allDebtDisplay">฿0</h2>
+                </div>
+                <div style="text-align:right;">
+                    <p style="margin:0; font-size:11px; color:#b91c1c;">สัดส่วนหนี้ต่อรายได้ (DTI)</p>
+                    <h3 style="margin:0; font-size:20px; color:#b91c1c;" id="dtiRatioDisplay">0%</h3>
+                </div>
+            </div>
+            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #fca5a5; font-size:12px; color:#b91c1c; display:flex; justify-content:space-between;">
+                <span>ยืมคนอื่น: <b id="totalLiabilityDisplay">฿0</b></span>
+                <span>บัตร/ผ่อน: <b id="totalCreditDebtDisplay">฿0</b></span>
             </div>
         </div>
 
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-main" style="background: var(--danger);" onclick="openModal('addDebtModal')">📥 ยืมเงินมา</button>
-            <button class="btn-main" style="background: var(--success);" onclick="openModal('payDebtModal')">📤 จ่ายคืนหนี้</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn-main" style="flex:1; background: var(--danger); font-size:14px; padding:12px; margin-top:0;" onclick="openModal('addDebtModal')">📥 ยืมเงินมา</button>
+            <button class="btn-main" style="flex:1; background: var(--success); font-size:14px; padding:12px; margin-top:0;" onclick="openModal('payDebtModal')">📤 จ่ายคืนหนี้</button>
+            <button class="btn-main" style="width:100%; background: #0284c7; font-size:14px; padding:12px; margin-top:0;" onclick="openLegacyDebtModal()">💳 + เพิ่มหนี้บัตร/ผ่อนค้างเก่า</button>
         </div>
         
         <div class="card" style="margin-top:20px;">
@@ -491,7 +501,7 @@
         <div class="modal-header"><h2>⚙️ ตั้งค่าโปรไฟล์ & %</h2><button class="close-btn" onclick="closeModal('configModal')">✕</button></div>
         <div style="display:flex; gap:10px;">
             <div class="form-group" style="flex:1;"><label>ชื่อ</label><input type="text" id="userNameInput"></div>
-            <div class="form-group" style="flex:1;"><label>อายุ (เก็บเป็นข้อมูลลับ)</label><input type="number" id="userAgeInput" placeholder="ซ่อนจากหน้าแรก"></div>
+            <div class="form-group" style="flex:1;"><label>อายุ</label><input type="number" id="userAgeInput" placeholder="ซ่อนจากหน้าแรก"></div>
         </div>
         <p style="font-size:12px; color:var(--gray-text); margin-top:5px;">เลือก Preset ให้ AI ช่วยคิดสัดส่วนกระเป๋า</p>
         <div class="preset-grid">
@@ -505,8 +515,20 @@
         <div style="display:flex; gap:10px;">
             <div class="form-group"><label>Essential</label><input type="number" id="cfgE"></div><div class="form-group"><label>Joy</label><input type="number" id="cfgJ"></div>
         </div>
-        <button class="btn-main" onclick="saveConfig()">บันทึกการตั้งค่า</button>
-        <button class="btn-outline" style="width:100%; border-color:var(--danger); color:var(--danger); margin-top:10px;" onclick="clearData()">🗑️ ล้างข้อมูลทั้งหมด</button>
+        <button class="btn-main" onclick="saveConfig()">บันทึกการตั้งค่าสัดส่วน</button>
+
+        <p style="font-size:13px; color:var(--espresso); margin-top:20px; font-weight:bold; border-top:1px dashed #ccc; padding-top:15px;">💰 ปรับยอดเงินตั้งต้น (ยึดตามบัญชีจริง)</p>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <div class="form-group" style="flex:1; margin-bottom:0;"><label style="color:var(--bleu-porcelaine);">Growth</label><input type="number" id="initG"></div>
+            <div class="form-group" style="flex:1; margin-bottom:0;"><label style="color:var(--miel-dore);">Security</label><input type="number" id="initS"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1; margin-bottom:0;"><label style="color:var(--terre-cuite);">Essential</label><input type="number" id="initE"></div>
+            <div class="form-group" style="flex:1; margin-bottom:0;"><label style="color:var(--eau-trouble);">Joy</label><input type="number" id="initJ"></div>
+        </div>
+        <button class="btn-outline" style="width:100%; margin-top:10px; border-color:#0284c7; color:#0284c7; background:#f0f9ff;" onclick="applyInitialBalances()">อัปเดตยอดเงินให้ตรงกัน</button>
+
+        <button class="btn-outline" style="width:100%; border-color:var(--danger); color:var(--danger); margin-top:20px;" onclick="clearData()">🗑️ ล้างข้อมูลทั้งหมด</button>
     </div>
 </div>
 
@@ -973,15 +995,55 @@
             let pct = baseAmounts[tank] > 0 ? (currentBalances[tank] / baseAmounts[tank]) * 100 : 0;
             let bar = document.getElementById(`bar-${tank}`); bar.style.height = `${Math.min(100, Math.max(0, pct))}%`; bar.innerText = Math.round(pct) + '%'; 
         });
-        
-        document.getElementById('totalLiabilityDisplay').innerText = '฿' + totalLiability.toLocaleString();
 
         renderCategories(); renderFixedCosts(); renderYearlyFunds(); renderQuests(); renderWishlist(); renderInventory(); renderDebtLog(); renderCreditBills(); 
         
-        // --- อัปเดตยอดรอเคลียร์ในหนี้สิน ---
-        renderReceivables(); 
+        if(typeof renderReceivables === 'function') renderReceivables(); 
+        if(typeof renderDebtSummary === 'function') renderDebtSummary();
 
         saveStorage();
+    }
+
+    // ฟังก์ชันใหม่: คำนวณสรุปหนี้สินทั้งหมด
+    function renderDebtSummary() {
+        // 1. หนี้ที่ไปยืมคนอื่นมา (totalLiability)
+        let liabilityDisplay = document.getElementById('totalLiabilityDisplay');
+        if(liabilityDisplay) liabilityDisplay.innerText = '฿' + totalLiability.toLocaleString();
+
+        // 2. หนี้บัตรเครดิต/ผ่อน (หาจาก installments ที่ยังไม่จ่าย)
+        let creditDebtSum = 0;
+        transactions.forEach(t => {
+            if((t.type === 'expense' || t.type === 'legacy_debt') && t.installments) {
+                t.installments.forEach(i => {
+                    if(!i.paid) creditDebtSum += i.amount;
+                });
+            }
+        });
+        
+        let creditDisplay = document.getElementById('totalCreditDebtDisplay');
+        if(creditDisplay) creditDisplay.innerText = '฿' + creditDebtSum.toLocaleString();
+
+        // 3. หนี้รวมทั้งหมด
+        let allDebt = totalLiability + creditDebtSum;
+        let allDisplay = document.getElementById('allDebtDisplay');
+        if(allDisplay) allDisplay.innerText = '฿' + allDebt.toLocaleString();
+
+        // 4. สัดส่วนหนี้ต่อรายได้ (DTI - Debt to Income Ratio)
+        let dtiDisplay = document.getElementById('dtiRatioDisplay');
+        if(dtiDisplay) {
+            if(totalIncomeThisMonth > 0) {
+                let dti = (allDebt / totalIncomeThisMonth) * 100;
+                dtiDisplay.innerText = dti.toFixed(1) + '%';
+                
+                // แจ้งเตือนสีตามระดับความอันตรายของหนี้
+                if(dti > 40) dtiDisplay.style.color = 'var(--danger)'; // หนี้เกิน 40% (อันตรายมาก)
+                else if(dti > 20) dtiDisplay.style.color = '#d97706';  // หนี้เกิน 20% (เริ่มตึงมือ)
+                else dtiDisplay.style.color = '#15803d';               // หนี้ต่ำกว่า 20% (สุขภาพดี)
+            } else {
+                dtiDisplay.innerText = '0%';
+                dtiDisplay.style.color = '#15803d';
+            }
+        }
     }
 
     function renderCreditBills() {
@@ -2442,6 +2504,53 @@
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
     function showToast(msg) { let t = document.getElementById('toastMsg'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
     function clearData() { if(confirm('รีเซ็ตข้อมูลทั้งหมดจริงดิบอส? (หายเกลี้ยงเลยนะ!)')) { localStorage.clear(); location.reload(); } }
+
+// ฟังก์ชันเปิดหน้าตั้งค่า พร้อมดึงยอดเงินปัจจุบันมาโชว์ให้แก้
+    function openConfigModal() {
+        document.getElementById('userNameInput').value = userName; 
+        document.getElementById('userAgeInput').value = userAge > 0 ? userAge : '';
+        document.getElementById('cfgG').value = cfg.g;
+        document.getElementById('cfgS').value = cfg.s;
+        document.getElementById('cfgE').value = cfg.e;
+        document.getElementById('cfgJ').value = cfg.j;
+        
+        // ดึงยอดเงินใน 4 กระเป๋ามาแสดงให้บอสแก้
+        document.getElementById('initG').value = currentBalances.growth;
+        document.getElementById('initS').value = currentBalances.security;
+        document.getElementById('initE').value = currentBalances.essential;
+        document.getElementById('initJ').value = currentBalances.joy;
+        
+        openModal('configModal');
+    }
+
+    // ฟังก์ชันเซฟยอดเงินตั้งต้นใหม่
+    function applyInitialBalances() {
+        let g = parseFloat(document.getElementById('initG').value) || 0;
+        let s = parseFloat(document.getElementById('initS').value) || 0;
+        let e = parseFloat(document.getElementById('initE').value) || 0;
+        let j = parseFloat(document.getElementById('initJ').value) || 0;
+
+        // อัปเดตเงินในกระเป๋า
+        currentBalances.growth = g;
+        currentBalances.security = s;
+        currentBalances.essential = e;
+        currentBalances.joy = j;
+
+        // รีเซ็ตหลอดความจุให้เต็ม 100% (อิงตามเงินตั้งต้นก้อนใหม่)
+        baseAmounts.growth = g;
+        baseAmounts.security = s;
+        baseAmounts.essential = e;
+        baseAmounts.joy = j;
+
+        saveStorage();
+        updateUI();
+        
+        // รีเฟรชหน้าสรุป Dashboard ให้คำนวณส่วนต่างใหม่
+        if(typeof renderAnalyticsChart === 'function') renderAnalyticsChart('week'); 
+        
+        closeModal('configModal');
+        showToast('✅ ปรับปรุงยอดเงินตั้งต้นให้ตรงกับธนาคารเรียบร้อย!');
+    }
 
     window.onload = () => { 
         loadStorage(); 
