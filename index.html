@@ -316,6 +316,12 @@
     <div id="view-analytics" class="view-section">
         <div class="header"><h1>📊 สุขภาพ & สรุปภาพรวม</h1></div>
 
+        <div class="card" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #86efac; text-align: center; margin-bottom: 20px;">
+            <h3 style="margin:0 0 5px 0; font-size:14px; color:#166534;">💼 ทรัพย์สินรวมตอนนี้ (ทุกกระเป๋า)</h3>
+            <h2 style="margin:0; font-size:28px; color:#15803d;" id="totalWealthText">฿0</h2>
+            <p style="margin:5px 0 0 0; font-size:12px; color:#166534;" id="wealthCompareText">กำลังคำนวณ...</p>
+        </div>
+
         <div class="summary-dashboard">
             <div class="sum-box">
                 <p class="sum-title">📥 รายรับรวม (In)</p>
@@ -753,6 +759,39 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="editFixedModal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>✏️ แก้ไขบิล/ผ่อนชำระ</h2><button class="close-btn" onclick="closeModal('editFixedModal')">✕</button></div>
+        <input type="hidden" id="efcId">
+        <div class="form-group"><label>ชื่อแอป/รายการ</label><input type="text" id="efcName"></div>
+        <div class="form-group"><label>ยอดเงิน (฿)</label><input type="number" id="efcAmount"></div>
+        <div class="form-group"><label>อิโมจิ</label><input type="text" id="efcIcon" maxlength="2"></div>
+        <div class="form-group"><label>ให้หักจากกระเป๋าไหน?</label><select id="efcTank"><option value="essential">Essential</option><option value="joy">Joy</option><option value="security">Security</option></select></div>
+        
+        <div class="form-group" style="margin-top:10px;">
+            <label style="color:#0369a1; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                <input type="checkbox" id="efcIsInst" onchange="document.getElementById('efcInstDiv').style.display = this.checked ? 'flex' : 'none';" style="width:auto; accent-color:#0369a1;"> เป็นรายการผ่อนชำระ (มีวันจบ)
+            </label>
+        </div>
+        <div class="form-group" id="efcInstDiv" style="display:none; gap:10px; background:#e0f2fe; padding:15px; border-radius:10px; border:1px dashed #7dd3fc;">
+            <div style="flex:1;"><label style="color:#0284c7;">จำนวนงวดทั้งหมด</label><input type="number" id="efcTotalM"></div>
+            <div style="flex:1;"><label style="color:#0284c7;">จ่ายไปแล้ว (งวด)</label><input type="number" id="efcPaidM"></div>
+        </div>
+        <button class="btn-main" onclick="saveEditFixedCost()">บันทึกการแก้ไข</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="editLegacyDebtModal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>✏️ แก้ไขยอดค้างเก่า</h2><button class="close-btn" onclick="closeModal('editLegacyDebtModal')">✕</button></div>
+        <input type="hidden" id="eldId">
+        <div class="form-group"><label>ชื่อรายการ / บัตร</label><input type="text" id="eldName"></div>
+        <div class="form-group"><label>ยอดที่ต้องจ่าย "ต่องวด" (฿)</label><input type="number" id="eldAmt"></div>
+        <div class="form-group"><label>จำนวนงวดที่เหลืออยู่</label><input type="number" id="eldMonths"></div>
+        <button class="btn-main" style="background:#0284c7;" onclick="saveEditLegacyDebt()">บันทึกการแก้ไข</button>
+    </div>
+</div>
+
 <script>
     Chart.register(ChartDataLabels);
     Chart.defaults.set('plugins.datalabels', {
@@ -947,15 +986,11 @@
 
     function renderCreditBills() {
         let list = document.getElementById('creditBillList');
-        
         let pendingInstallments = [];
         transactions.forEach(t => {
-            // อนุญาตให้ดึงหนี้เก่า (legacy_debt) มาแสดงได้ด้วย
             if((t.type === 'expense' || t.type === 'legacy_debt') && t.installments) {
                 let nextUnpaid = t.installments.find(i => !i.paid);
-                if(nextUnpaid) {
-                    pendingInstallments.push({ tx: t, inst: nextUnpaid, totalInst: t.installments.length });
-                }
+                if(nextUnpaid) pendingInstallments.push({ tx: t, inst: nextUnpaid, totalInst: t.installments.length });
             }
         });
 
@@ -963,16 +998,14 @@
         let warnEl = document.getElementById('incomeCreditWarning');
         
         if (totalUnpaidThisMonth > 0) {
-            warnEl.style.display = 'block';
-            document.getElementById('warnCreditAmt').innerText = totalUnpaidThisMonth.toLocaleString();
+            warnEl.style.display = 'block'; document.getElementById('warnCreditAmt').innerText = totalUnpaidThisMonth.toLocaleString();
         } else {
             warnEl.style.display = 'none';
         }
 
         list.innerHTML = '';
         if (pendingInstallments.length === 0) {
-            list.innerHTML = '<p style="text-align:center; font-size:12px; color:#0ea5e9; margin-top:15px;">ไม่มีบิลบัตร/ผ่อนค้างจ่ายครับ! 🎉</p>';
-            return;
+            list.innerHTML = '<p style="text-align:center; font-size:12px; color:#0ea5e9; margin-top:15px;">ไม่มีบิลบัตร/ผ่อนค้างจ่ายครับ! 🎉</p>'; return;
         }
         
         pendingInstallments.forEach(item => {
@@ -980,6 +1013,9 @@
             let d = new Date(t.dateObj).toLocaleDateString('th-TH');
             let noteHtml = t.note ? ` <span style="color:#8b5cf6; font-weight:normal;">(${t.note})</span>` : '';
             let titleText = item.totalInst > 1 ? `${t.cat}${noteHtml} (งวด ${inst.monthNo}/${item.totalInst})` : `${t.cat}${noteHtml}`;
+
+            // ปุ่ม [แก้] สำหรับยอดค้างเก่า
+            let editBtn = t.type === 'legacy_debt' ? `<button style="background:transparent; border:none; color:var(--bleu-porcelaine); font-size:12px; cursor:pointer; padding:0; font-weight:bold; margin-right:5px;" onclick="openEditLegacyDebt(${t.id})">[แก้]</button>` : '';
 
             list.innerHTML += `
             <div class="list-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0;">
@@ -990,9 +1026,12 @@
                         <p style="margin:0; font-size:11px; color:var(--gray-text);">${d} | ฿${inst.amount.toLocaleString()}</p>
                     </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
+                <div style="display:flex; align-items:center; gap:10px;">
                     <button class="btn-main" style="width:auto; padding:5px 10px; margin:0; background:#0284c7; font-size:11px;" onclick="payCreditBill(${t.id}, ${inst.monthNo})">จ่าย</button>
-                    <button style="background:transparent; border:none; color:var(--danger); font-size:16px; cursor:pointer; padding:0;" onclick="undoTransaction(${t.id})">✕</button>
+                    <div style="display:flex; align-items:center; border-left:1px solid #bae6fd; padding-left:10px;">
+                        ${editBtn}
+                        <button style="background:transparent; border:none; color:var(--danger); font-size:16px; cursor:pointer; padding:0; font-weight:bold;" onclick="undoTransaction(${t.id})">✕</button>
+                    </div>
                 </div>
             </div>`;
         });
@@ -1534,6 +1573,80 @@
         saveStorage(); updateUI(); closeModal('addLegacyDebtModal');
         showToast('✅ นำเข้าบิลเก่าสำเร็จ! กราฟเดือนนี้ไม่พังแน่นอน');
     }
+// --- ฟังก์ชันแก้ไขบิลประจำ ---
+    function openEditFixedModal(id) {
+        let f = fixedCosts.find(x => x.id === id);
+        if(!f) return;
+        document.getElementById('efcId').value = f.id;
+        document.getElementById('efcName').value = f.name;
+        document.getElementById('efcAmount').value = f.amount;
+        document.getElementById('efcIcon').value = f.icon;
+        document.getElementById('efcTank').value = f.tank;
+        document.getElementById('efcIsInst').checked = f.isInst || false;
+        document.getElementById('efcInstDiv').style.display = f.isInst ? 'flex' : 'none';
+        document.getElementById('efcTotalM').value = f.totalM || '';
+        document.getElementById('efcPaidM').value = f.paidM || '';
+        openModal('editFixedModal');
+    }
+
+    function saveEditFixedCost() {
+        let id = parseInt(document.getElementById('efcId').value);
+        let f = fixedCosts.find(x => x.id === id);
+        if(!f) return;
+
+        f.name = document.getElementById('efcName').value;
+        f.amount = parseFloat(document.getElementById('efcAmount').value) || 0;
+        f.icon = document.getElementById('efcIcon').value || '🧾';
+        f.tank = document.getElementById('efcTank').value;
+        f.isInst = document.getElementById('efcIsInst').checked;
+        f.totalM = parseInt(document.getElementById('efcTotalM').value) || 0;
+        f.paidM = parseInt(document.getElementById('efcPaidM').value) || 0;
+
+        saveStorage(); updateUI(); closeModal('editFixedModal'); showToast('✅ แก้ไขบิลสำเร็จ!');
+    }
+
+    // --- ฟังก์ชันแก้ไขยอดค้างเก่า ---
+    function openEditLegacyDebt(id) {
+        let t = transactions.find(x => x.id === id);
+        if(!t || t.type !== 'legacy_debt') return;
+        
+        document.getElementById('eldId').value = t.id;
+        document.getElementById('eldName').value = t.cat.replace('ยอดค้างเก่า: ', '');
+        
+        let unpaid = t.installments.filter(i => !i.paid);
+        let amt = unpaid.length > 0 ? unpaid[0].amount : 0;
+        
+        document.getElementById('eldAmt').value = amt;
+        document.getElementById('eldMonths').value = unpaid.length;
+        openModal('editLegacyDebtModal');
+    }
+
+    function saveEditLegacyDebt() {
+        let id = parseFloat(document.getElementById('eldId').value);
+        let t = transactions.find(x => x.id === id);
+        if(!t) return;
+
+        let name = document.getElementById('eldName').value;
+        let amt = parseFloat(document.getElementById('eldAmt').value);
+        let remainMonths = parseInt(document.getElementById('eldMonths').value) || 1;
+
+        if(!name || !amt || amt <= 0) return alert('กรอกข้อมูลให้ถูกต้องด้วยครับ!');
+
+        t.cat = 'ยอดค้างเก่า: ' + name;
+        
+        let paidInsts = t.installments.filter(i => i.paid);
+        let newInsts = [...paidInsts];
+        let startMonthNo = paidInsts.length > 0 ? paidInsts[paidInsts.length - 1].monthNo + 1 : 1;
+        
+        for(let i=0; i<remainMonths; i++) {
+            newInsts.push({ monthNo: startMonthNo + i, amount: amt, paid: false });
+        }
+        
+        t.installments = newInsts;
+        t.amount = newInsts.reduce((sum, i) => sum + i.amount, 0); 
+
+        saveStorage(); updateUI(); closeModal('editLegacyDebtModal'); showToast('✅ แก้ไขยอดค้างเก่าสำเร็จ!');
+    }
 
     // --- อัปเดต undoTransaction ให้ลบหนี้เก่าได้แบบไม่มีปัญหา ---
     function undoTransaction(id) {
@@ -1620,17 +1733,13 @@
         fixedCosts.forEach(f => {
             totalFixed += f.amount;
             
-            // จัดการข้อความชื่อบิลและป้ายกำกับ
             let titleText = f.name;
             let subText = `<span class="tank-badge bg-${f.tank}" style="margin-left:0;">${f.tank}</span>`;
             let progressHTML = '';
             let btn = f.paidThisMonth ? `<span style="color:var(--success); font-size:12px; font-weight:bold;">จ่ายแล้ว ✔️</span>` : `<button class="btn-outline" onclick="payFixedBtn(${f.id})">จ่ายบิล</button>`;
             
-            // ถ้าเป็นรายการผ่อน ให้สร้างหลอดแยกไว้ด้านล่าง
             if (f.isInst && f.totalM > 0) {
                 let pct = (f.paidM / f.totalM) * 100;
-                
-                // เลื่อนข้อความ (งวด x/y) มาอยู่ข้างหลอดความคืบหน้า
                 progressHTML = `
                 <div style="margin-top: 12px; display: flex; align-items: center; gap: 8px;">
                     <div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);">
@@ -1638,16 +1747,13 @@
                     </div>
                     <span style="font-size: 11px; color: #0284c7; font-weight: 600; white-space: nowrap;">งวด ${f.paidM}/${f.totalM}</span>
                 </div>`;
-                
-                if (f.paidM >= f.totalM) {
-                    btn = `<span style="color:var(--success); font-size:12px; font-weight:bold;">🎉 จบแล้ว!</span>`;
-                }
+                if (f.paidM >= f.totalM) btn = `<span style="color:var(--success); font-size:12px; font-weight:bold;">🎉 จบแล้ว!</span>`;
             }
 
-            let delBtn = `<span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size:16px; margin-left:5px;" onclick="deleteFixedCost(${f.id})">✕</span>`;
-            let inputHTML = `<input type="number" class="inline-edit-input" value="${f.amount}" style="width:65px; padding:4px 6px; font-size:13px;" onchange="updateFixedCostAmt(${f.id}, this.value)">`;
+            // ปุ่มแก้ไขแบบใหม่
+            let editBtn = `<span style="color:var(--bleu-porcelaine); cursor:pointer; font-weight:bold; font-size:12px; margin-right:8px;" onclick="openEditFixedModal(${f.id})">[แก้]</span>`;
+            let delBtn = `<span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size:16px;" onclick="deleteFixedCost(${f.id})">✕</span>`;
            
-            // จัด Layout ใหม่ แยกกล่องซ้าย-ขวา และเอาหลอดไว้ล่างสุด
             list.innerHTML += `
             <div class="list-item" style="display:flex; flex-direction:column; align-items:stretch; padding: 15px 0;">
                 <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
@@ -1658,8 +1764,12 @@
                             <div style="margin-top:4px;">${subText}</div>
                         </div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-                        ${inputHTML} ${btn} ${delBtn}
+                    <div style="display:flex; align-items:center; flex-shrink:0;">
+                        <span style="font-weight:bold; color:var(--terre-cuite); font-size:14px; margin-right:10px;">฿${f.amount.toLocaleString()}</span>
+                        ${btn}
+                        <div style="display:flex; align-items:center; margin-left:10px; border-left:1px solid #ddd; padding-left:10px;">
+                            ${editBtn} ${delBtn}
+                        </div>
                     </div>
                 </div>
                 ${progressHTML}
@@ -2029,6 +2139,35 @@
     }
 
     function renderAnalyticsChart(period) {
+        // --- ส่วนเสริม: คำนวณทรัพย์สินรวมและเปรียบเทียบต้นเดือน ---
+        let totalWealth = currentBalances.growth + currentBalances.security + currentBalances.essential + currentBalances.joy;
+        if(document.getElementById('totalWealthText')) {
+            document.getElementById('totalWealthText').innerText = `฿${totalWealth.toLocaleString()}`;
+            
+            let nowTime = new Date();
+            let cMonth = nowTime.getMonth(); 
+            let cYear = nowTime.getFullYear();
+
+            // คำนวณรายรับ-รายจ่าย เฉพาะของเดือนปัจจุบัน
+            let monthInc = transactions.filter(t => {
+                let d = new Date(t.dateObj); return (t.type === 'main_income' || t.type === 'income') && d.getMonth() === cMonth && d.getFullYear() === cYear;
+            }).reduce((s,t) => s + t.amount, 0);
+
+            let monthExp = transactions.filter(t => {
+                let d = new Date(t.dateObj); return t.type === 'expense' && d.getMonth() === cMonth && d.getFullYear() === cYear;
+            }).reduce((s,t) => s + t.amount, 0);
+
+            let monthNet = monthInc - monthExp;
+            let startOfMonthWealth = totalWealth - monthNet;
+
+            let compareText = "";
+            if (monthNet > 0) { compareText = `เทียบกับต้นเดือน (฿${startOfMonthWealth.toLocaleString()}): <span style="color:var(--success); font-weight:bold;">+฿${monthNet.toLocaleString()} 📈</span>`; } 
+            else if (monthNet < 0) { compareText = `เทียบกับต้นเดือน (฿${startOfMonthWealth.toLocaleString()}): <span style="color:var(--danger); font-weight:bold;">-฿${Math.abs(monthNet).toLocaleString()} 📉</span>`; } 
+            else { compareText = `เทียบกับต้นเดือน (฿${startOfMonthWealth.toLocaleString()}): เท่าเดิม ⚖️`; }
+            
+            document.getElementById('wealthCompareText').innerHTML = compareText;
+        }
+        // -----------------------------------------------------
         document.getElementById('btnAnalyticWeek').classList.remove('active');
         document.getElementById('btnAnalyticMonth').classList.remove('active');
         document.getElementById('btnAnalyticQuarter').classList.remove('active'); document.getElementById('btnAnalyticYear').classList.remove('active');
