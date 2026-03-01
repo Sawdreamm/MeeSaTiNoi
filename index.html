@@ -36,7 +36,7 @@
         .profile-pic { width: 40px; height: 40px; background-color: var(--miel-dore); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--espresso); font-weight: bold; cursor:pointer; background-size: cover; background-position: center; border: 2px solid var(--white); box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0;}
         .settings-btn { background: var(--gray-light); border: none; font-size: 11px; border-radius: 10px; padding: 4px 8px; cursor: pointer; color: var(--espresso); font-weight: bold; }
 
-        /* Cards & Buttons (ปรับให้ปุ่มเล็กลง) */
+        /* Cards & Buttons */
         .card { background: var(--white); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(84, 41, 22, 0.03); border:1px solid #e5e7eb;}
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .card-title { color: var(--espresso); font-size: 15px; font-weight: 700; margin: 0; display:flex; align-items:center; justify-content:space-between;}
@@ -44,7 +44,7 @@
         .btn-main:active { transform: scale(0.96); }
         .btn-outline { background: transparent; border: 1px solid var(--espresso); color: var(--espresso); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
 
-        /* Tanks (ขยายตัวเลขเงิน) */
+        /* Tanks */
         .tanks-container { display: flex; justify-content: space-between; height: 160px; align-items: flex-end; }
         .tank-wrapper { display: flex; flex-direction: column; align-items: center; width: 22%; cursor: pointer; transition: 0.2s;}
         .tank-bg { background-color: var(--gray-light); width: 45px; height: 110px; border-radius: 25px; position: relative; overflow: hidden; display: flex; align-items: flex-end; margin-bottom: 5px; }
@@ -79,7 +79,7 @@
         .sum-val { font-size: 20px; font-weight: bold; margin: 0;}
         .val-in { color: #86efac; } .val-out { color: #fca5a5; }
 
-        /* Original Insights Restored CSS */
+        /* Insights Restored CSS */
         .health-badge { display: inline-block; padding: 6px 15px; border-radius: 12px; font-weight: bold; font-size: 14px; color: white; margin-bottom: 10px;}
         .data-insight-box { background: var(--white); border-left: 4px solid var(--bleu-porcelaine); padding: 10px 15px; border-radius: 8px; margin-top:10px; border-top:1px solid #eee; border-right:1px solid #eee; border-bottom:1px solid #eee; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .ideal-salary-box { background: linear-gradient(135deg, #dcfce7, #bbf7d0); border: 1px solid #86efac; border-radius: 16px; padding: 15px; margin-top: 15px; display:none;}
@@ -166,26 +166,6 @@
             </div>
         </div>
 
-        <div class="card" style="padding: 15px; margin-bottom: 20px;">
-            <p style="margin:0 0 5px 0; font-size:11px; color:var(--gray-text); font-weight:bold;">📥 บันทึกรายรับ (Auto กระจายเงิน)</p>
-            <div style="display: flex; gap: 8px; margin-bottom: 10px; width: 100%;">
-                <input type="number" id="mainIncomeInput" placeholder="ยอดเงิน" style="width: 100px; flex-shrink: 0; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; font-size:13px; box-sizing: border-box;">
-                <select id="incomeCatSelect" style="flex-grow: 1; min-width: 0; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; background: white; font-size:12px; box-sizing: border-box;" onchange="if(this.value==='add_new') openModal('addIncomeCatModal')"></select>
-            </div>
-            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-                <select id="incomeTargetTank" style="flex: 1; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; background: var(--nuage-de-lait); color: var(--espresso); font-size:12px; box-sizing: border-box; font-weight:bold;">
-                    <option value="auto">🪄 กระจายออโต้ตาม %</option>
-                    <option value="essential">🛒 เข้า Essential 100%</option>
-                    <option value="joy">🎉 เข้า Joy 100%</option>
-                    <option value="security">🛡️ เข้า Security 100%</option>
-                    <option value="growth">🌱 เข้า Growth 100%</option>
-                </select>
-                <input type="date" id="incomeDateInput" style="flex: 1; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; color:var(--espresso); font-size:12px; box-sizing: border-box;">
-            </div>
-            <button class="btn-main" style="margin-top: 0; background:var(--bleu-porcelaine);" onclick="confirmIncome()">บันทึกรายรับ</button>
-            <p id="incomeCreditWarning" style="margin:8px 0 0 0; font-size:10px; color:var(--danger); display:none; font-weight:bold;">🚨 มีบิลบัตร/ผ่อน รอจ่าย ฿<span id="warnCreditAmt">0</span></p>
-        </div>
-
         <div class="card" style="padding: 25px 20px;">
             <div class="card-header" style="margin-bottom:20px;">
                 <h2 class="card-title">ภาพรวมกระเป๋าเงิน (Tanks)</h2>
@@ -230,10 +210,32 @@
 
         <div class="card" style="background: var(--nuage-de-lait); border: 1px solid var(--eau-trouble);">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h4 style="margin:0; color:var(--espresso); font-size:14px;">📜 ภารกิจดัดนิสัย</h4>
-                <button class="btn-outline" style="border-color:var(--eau-trouble); color:var(--eau-trouble);" onclick="openModal('customQuestModal')">+ สร้างเอง</button>
+                <h4 style="margin:0; color:var(--espresso); font-size:15px;">📜 ภารกิจดัดนิสัย</h4>
+                <button class="btn-outline" style="border-color:var(--eau-trouble); color:var(--eau-trouble); padding:4px 8px; font-size:11px;" onclick="openModal('customQuestModal')">+ สร้างเอง</button>
             </div>
             <div id="questList" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="card" style="padding: 15px; margin-bottom: 20px; background: var(--white); border:1px solid #e5e7eb;">
+            <p style="margin:0 0 5px 0; font-size:12px; color:var(--espresso); font-weight:bold;">📥 บันทึกรายรับ (Auto กระจายเงิน)</p>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px; width: 100%;">
+                <input type="number" id="mainIncomeInput" placeholder="ยอดเงิน" style="width: 100px; flex-shrink: 0; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; font-size:14px; box-sizing: border-box;">
+                <select id="incomeCatSelect" style="flex-grow: 1; min-width: 0; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; background: white; font-size:13px; box-sizing: border-box;" onchange="if(this.value==='add_new') openModal('addIncomeCatModal')"></select>
+            </div>
+            
+            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <select id="incomeTargetTank" style="flex: 1; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; background: var(--nuage-de-lait); color: var(--espresso); font-size:13px; box-sizing: border-box; font-weight:bold;">
+                    <option value="auto">🪄 กระจายออโต้ตาม %</option>
+                    <option value="essential">🛒 เข้า Essential 100%</option>
+                    <option value="joy">🎉 เข้า Joy 100%</option>
+                    <option value="security">🛡️ เข้า Security 100%</option>
+                    <option value="growth">🌱 เข้า Growth 100%</option>
+                </select>
+                <input type="date" id="incomeDateInput" style="flex: 1; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; color:var(--espresso); font-size:13px; box-sizing: border-box;">
+            </div>
+            
+            <button class="btn-main" style="margin-top: 0; background:var(--bleu-porcelaine);" onclick="confirmIncome()">บันทึกรายรับ</button>
+            <p id="incomeCreditWarning" style="margin:8px 0 0 0; font-size:11px; color:var(--danger); display:none; font-weight:bold;">🚨 อย่าลืมนะบอส! มีบิลบัตร/ผ่อน รอจ่ายอยู่ ฿<span id="warnCreditAmt">0</span></p>
         </div>
     </div>
 
@@ -249,7 +251,7 @@
             <div class="card" style="background: var(--nuage-de-lait); border: 1px solid var(--bleu-porcelaine);">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <h2 class="card-title" style="color:var(--bleu-porcelaine); margin:0;">💳 บิลรอตัดบัญชี</h2>
-                    <button class="btn-outline" style="border-color:var(--bleu-porcelaine); color:var(--bleu-porcelaine);" onclick="openModal('addLegacyDebtModal')">+ บิลเก่า</button>
+                    <button class="btn-outline" style="padding:4px 8px; border-color:var(--bleu-porcelaine); color:var(--bleu-porcelaine);" onclick="openModal('addLegacyDebtModal')">+ บิลเก่า</button>
                 </div>
                 <p style="font-size:10px; color:var(--bleu-porcelaine); margin:5px 0 10px 0;">*เงินถูกกันไว้ที่ Security แล้ว กด "จ่ายแล้ว" เพื่อหักเงินออกสมบูรณ์</p>
                 <div id="creditBillList"></div>
@@ -287,7 +289,7 @@
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
             <button class="btn-main" style="flex:1; background: var(--danger); margin-top:0;" onclick="openModal('addDebtModal')">📥 ยืมใหม่</button>
             <button class="btn-main" style="flex:1; background: var(--success); margin-top:0;" onclick="openModal('payDebtModal')">📤 คืนหนี้</button>
-            <button class="btn-main" style="width:100%; background: var(--terre-cuite); margin-top:0;" onclick="openLegacyBorrowedModal()">📜 + หนี้ยืมเก่า (ก่อนใช้แอป)</button>
+            <button class="btn-main" style="width:100%; background: var(--terre-cuite); margin-top:0;" onclick="openModal('addLegacyBorrowedModal')">📜 + หนี้ยืมเก่า (ก่อนใช้แอป)</button>
         </div>
         
         <div class="card" style="margin-top:20px;">
@@ -347,7 +349,6 @@
 
             <div class="card" style="background: rgba(139, 171, 202, 0.1);">
                 <h3 style="margin:0 0 10px 0; font-size: 14px; color:var(--bleu-porcelaine);">🔍 พฤติกรรมเชิงลึก (Insights)</h3>
-                
                 <div class="data-insight-box">
                     <p style="margin:0; font-size:11px; color:var(--gray-text);">🛒 สัดส่วน Joy (รางวัลชีวิต)</p>
                     <div style="display:flex; justify-content:space-between; margin-top:5px;">
@@ -355,23 +356,19 @@
                         <span style="font-weight:bold; color:var(--bleu-porcelaine); font-size:12px;">🎯 <span id="insightBigWin">เหลือ 100%</span></span>
                     </div>
                 </div>
-
                 <div class="data-insight-box" style="border-left-color: var(--eau-trouble);">
                     <p style="margin:0; font-size:11px; color:var(--gray-text);">📅 วันที่จ่ายเงินเยอะที่สุด</p>
                     <h4 style="margin:5px 0 0 0; font-size:14px; color:var(--espresso);">วัน<span id="insightDay">-</span></h4>
                 </div>
-
                 <div class="data-insight-box" style="border-left-color: var(--danger);">
                     <p style="margin:0; font-size:11px; color:var(--gray-text);">⚠️ แหกกฎดึงเงินข้ามถัง</p>
                     <h4 style="margin:5px 0 0 0; font-size:14px; color:var(--danger);"><span id="insightCrossCount">0</span> ครั้ง <span style="font-size:11px; font-weight:normal; color:var(--espresso);">(เหตุผล: <span id="insightCrossReason">-</span>)</span></h4>
                 </div>
-
                 <div class="data-insight-box" style="border-left-color: var(--success);">
                     <p style="margin:0; font-size:11px; color:var(--gray-text);">🛡️ ตะกร้าดึงสติ (7-Day Rule)</p>
                     <h4 style="margin:5px 0 0 0; font-size:14px; color:var(--success);">รอดไป ฿<span id="insightSavedTemptation">0</span></h4>
                     <p style="margin:2px 0 0 0; font-size:10px; color:var(--espresso);">ชนะใจตัวเอง: <span id="insightWinTemptCount" style="color:var(--success); font-weight:bold;">0</span> ครั้ง | แพ้กิเลส: <span id="insightLoseTemptCount" style="color:var(--danger); font-weight:bold;">0</span> ครั้ง</p>
                 </div>
-
                 <div class="data-insight-box" style="border-left-color: #8b5cf6;">
                     <p style="margin:0; font-size:11px; color:var(--gray-text);">🔮 สวัสดีฉันมาจากอนาคต (หนี้บัตร/ผ่อน)</p>
                     <h4 style="margin:5px 0 0 0; font-size:14px; color:#8b5cf6;">ยังมีบิลรอจ่าย ฿<span id="insightFutureMoney">0</span></h4>
@@ -527,7 +524,7 @@
 
         <div style="margin-top:20px; padding-top:15px; border-top:1px dashed #ccc; display:flex; gap:10px;">
             <button class="btn-outline" style="flex:1; border-color:var(--espresso); color:var(--espresso);" onclick="exportData()">💾 ส่งออกข้อมูล</button>
-            <label class="btn-outline" style="flex:1; border-color:var(--terre-cuite); color:var(--terre-cuite); text-align:center; cursor:pointer; padding-top:5px;">📂 กู้คืนข้อมูล<input type="file" style="display:none;" accept=".json" onchange="importData(event)"></label>
+            <label class="btn-outline" style="flex:1; border-color:var(--terre-cuite); color:var(--terre-cuite); text-align:center; cursor:pointer; padding-top:6px;">📂 กู้คืนข้อมูล<input type="file" style="display:none;" accept=".json" onchange="importData(event)"></label>
         </div>
         
         <button class="btn-outline" style="width:100%; border-color:var(--danger); color:var(--danger); margin-top:15px;" onclick="clearData()">🗑️ ล้างข้อมูลทั้งหมด</button>
@@ -550,8 +547,6 @@
             <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">🚗 กลับบ้านฟรี 1 วัน</h4><p style="margin:0; color:var(--gray-text);">บังคับคนไปส่ง หรือให้จ่ายค่ารถให้</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('🚗 กลับบ้านฟรี 1 วัน (มีคนเปย์)', 1200)">1200 แต้ม</button></div>
             <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">🛋️ ละเว้นงานบ้าน 1 วัน</h4><p style="margin:0; color:var(--gray-text);">วันนี้ไม่ล้างจาน! โยนให้คนอื่นทำ</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('🛋️ ละเว้นงานบ้าน 1 วัน', 1000)">1000 แต้ม</button></div>
             <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">🍲 สิทธิ์ขาดเลือกร้านข้าว</h4><p style="margin:0; color:var(--gray-text);">ห้ามมีคำว่า "อะไรก็ได้" ฉันเลือกเอง</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('🍲 สิทธิ์ขาดเลือกร้านข้าว (ห้ามเถียง)', 600)">600 แต้ม</button></div>
-            <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">💆‍♂️ บังคับนวดไหล่ 15 นาที</h4><p style="margin:0; color:var(--gray-text);">ยื่นปุ๊บ ต้องนวดปั๊บ ทันที!</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('💆‍♂️ บังคับนวดไหล่ 15 นาที', 500)">500 แต้ม</button></div>
-            <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">💬 บัตรบ่นได้ห้ามขัด</h4><p style="margin:0; color:var(--gray-text);">นั่งฟังฉันบ่น 10 นาที ห้ามให้คำปรึกษา</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('💬 บัตรบ่นได้ห้ามขัด (แค่รับฟังพอ)', 400)">400 แต้ม</button></div>
         </div>
         <h4 style="margin:15px 0 10px 0; font-size:13px;">🎒 คลังคูปองของฉัน</h4><div id="inventoryList" style="font-size:12px; color:var(--gray-text);"></div>
     </div>
@@ -958,6 +953,8 @@
         } catch (error) { console.error(error); closeModal('configModal'); }
     }
 
+    function applyPreset(g,s,e,j) { document.getElementById('cfgG').value=g; document.getElementById('cfgS').value=s; document.getElementById('cfgE').value=e; document.getElementById('cfgJ').value=j; }
+
     function updateProfilePicUI() {
         let picDiv = document.getElementById('profilePicDisplay');
         if (profileImgBase64) { picDiv.style.backgroundImage = `url(${profileImgBase64})`; picDiv.innerText = ''; } else { picDiv.style.backgroundImage = 'none'; picDiv.innerText = userName ? userName.charAt(0).toUpperCase() : 'D'; }
@@ -1132,11 +1129,11 @@
             let d = new Date(t.dateObj).toLocaleDateString('th-TH'); let n = t.note ? ` | ${t.note}` : ''; let isExp = false; let displayAmt = t.amount;
             if (t.type === 'expense') isExp = true; if (t.type === 'transfer' && t.tank === tankId) isExp = true; if (t.type === 'main_income' && t.splitType === 'auto') { displayAmt = t.amount * (cfg[tankId.charAt(0)] / 100); }
             let amtColor = isExp ? 'var(--danger)' : 'var(--success)'; let sign = isExp ? '-' : '+';
-            list.innerHTML += `<li class="list-item" id="tx-row-${t.id}"><div class="list-info" id="tx-display-${t.id}"><h4 style="color:var(--espresso);">${t.cat}</h4><p style="font-size:10px; color:var(--gray-text); margin:0;">${d}${n}</p></div><div style="display:flex; align-items:center; gap:5px;" id="tx-action-${t.id}"><span class="list-amount" style="color:${amtColor}; font-weight:bold;">${sign}฿${displayAmt.toLocaleString()}</span>${t.type === 'expense' || (t.type === 'main_income' && t.splitType !== 'auto') ? `<button onclick="openEditTx(${t.id})" style="border:none; background:transparent; color:var(--bleu-porcelaine); font-size:12px; font-weight:bold; cursor:pointer;">[แก้]</button>` : ''}<button onclick="undoTransaction(${t.id})" style="border:none; background:transparent; color:var(--gray-text); font-size:12px; cursor:pointer;">[ลบ]</button></div></li>`;
+            list.innerHTML += `<li class="list-item" id="tx-row-${t.id}"><div class="list-info" id="tx-display-${t.id}"><h4 style="color:var(--espresso); margin:0;">${t.cat}</h4><p style="font-size:10px; color:var(--gray-text); margin:0;">${d}${n}</p></div><div style="display:flex; align-items:center; gap:5px;" id="tx-action-${t.id}"><span class="list-amount" style="color:${amtColor}; font-weight:bold;">${sign}฿${displayAmt.toLocaleString()}</span>${t.type === 'expense' || (t.type === 'main_income' && t.splitType !== 'auto') ? `<button onclick="openEditTx(${t.id})" style="border:none; background:transparent; color:var(--bleu-porcelaine); font-size:12px; font-weight:bold; cursor:pointer;">[แก้]</button>` : ''}<button onclick="undoTransaction(${t.id})" style="border:none; background:transparent; color:var(--gray-text); font-size:12px; cursor:pointer;">[ลบ]</button></div></li>`;
             if(isExp && t.type === 'expense') totals[t.cat] = (totals[t.cat] || 0) + displayAmt;
         });
         let ctx = document.getElementById('tankChart').getContext('2d'); if(tankChartInstance) tankChartInstance.destroy();
-        if(Object.keys(totals).length > 0) { tankChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(totals), datasets: [{ data: Object.values(totals), backgroundColor: ['#a13a1e','#a79058','#8babca','#f1c166', '#4b2613'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit'}}} } } }); }
+        if(Object.keys(totals).length > 0) { tankChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(totals), datasets: [{ data: Object.values(totals), backgroundColor: ['#a13a1e','#a79058','#8babca','#f1c166', '#4b2613'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit', size:10}}} } } }); }
         openModal('historyModal');
     }
 
@@ -1187,8 +1184,8 @@
                 transactions.push({ id: Date.now()+1, type: 'expense', tank: 'essential', amount: 500, cat: '🎟️ จ่ายแต้มโยกเงิน', note: 'โอนไป Joy', payMethod: 'เงินสด', dateObj: new Date().toISOString(), creditPaid: false });
             }
             else if(name === '🧼 น้ำยาล้างบาปลบประวัติ') { if(stats.crossTankCount <= 0) return alert('ประวัติบอสขาวสะอาดอยู่แล้วครับ! เก็บน้ำยาไว้ใช้ตอนพลาดเถอะนะ'); stats.crossTankCount -= 1; alert('✨ ล้างบาปสำเร็จ! AI ลืมไปแล้วว่าบอสเคยดึงเงินข้ามถัง 1 ครั้ง สบายใจได้!'); }
-            else if(name === '🤝 บังคับคนรอบข้างเปย์' || name === '🚗 กลับบ้านฟรี 1 วัน' || name === '🎬 บัตรสิทธิ์ขาดเลือกหนัง/ซีรีส์' || name === '💬 บัตรบ่น (ห้ามขัด) 10 นาที') { alert(`🎉 ยินดีด้วยบอส!! รีบเปิดหน้าจอนี้ค้างไว้ แล้วเอาไปยื่นใส่หน้าเป้าหมาย เพื่อทวงสิทธิ์คูปอง:\n\n👉 "${name}"\n\n(ไม่ต้องจดลงแอป เพราะมีคนรับจบให้แล้ว 🤣)`); }
-            else if(name === '🍰 อนุมัติของไร้สาระ 1 ชิ้น' || name === '🧋 บัตรผ่านชานม (นอกรอบ)') {
+            else if(name === '🤝 บังคับเพื่อนเปย์มื้อนี้' || name === '🚗 กลับบ้านฟรี 1 วัน (มีคนเปย์)' || name === '🍲 สิทธิ์ขาดเลือกร้านข้าว (ห้ามเถียง)' || name === '🛋️ ละเว้นงานบ้าน 1 วัน') { alert(`🎉 ยินดีด้วยบอส!! รีบเปิดหน้าจอนี้ค้างไว้ แล้วเอาไปยื่นใส่หน้าเป้าหมาย เพื่อทวงสิทธิ์คูปอง:\n\n👉 "${name}"\n\n(ไม่ต้องจดลงแอป เพราะมีคนรับจบให้แล้ว 🤣)`); }
+            else if(name === '🍰 อนุมัติของไร้สาระ 1 ชิ้น') {
                 let cost = prompt(`ใช้สิทธิ์ VIP! บอสซื้อรายการนี้ไปกี่บาท? (เดี๋ยวระบบแอบหักเงินให้ยอดตรงกับธนาคารแบบเงียบๆ AI จะไม่ว่าครับ)`); let amt = parseFloat(cost); if(isNaN(amt) || amt <= 0) return alert('ใส่ตัวเลขไม่ถูกต้อง คูปองยังไม่ถูกใช้นะบอส!'); if(currentBalances.essential < amt) return alert('บอส! เงินใน Essential ไม่พอหักนะ!'); currentBalances.essential -= amt;
                 transactions.push({ id: Date.now(), type:'expense', dateObj: new Date().toISOString(), tank: 'essential', amount: amt, cat: `🎁 VIP: ใช้คูปองแต้มแลกมา`, note: name, payMethod: 'สแกนจ่าย/โอน', emotion: '🤩 อยากให้รางวัลตัวเอง', needRating: 5, creditPaid: false, isCross: false }); alert(`หักเงิน ฿${amt} ออกจากกระเป๋าเรียบร้อย ยอดตรงเป๊ะ บอสกินให้อร่อยไม่ต้องรู้สึกผิด!`);
             }
@@ -1197,7 +1194,7 @@
     }
 
     // --- 7. Quests & Wishlist ---
-    function renderWishlist() { let c = document.getElementById('wishlistContainer'); c.innerHTML = ''; if(wishlist.length===0) c.innerHTML = '<p style="text-align:center; color:#888;">ไม่มีของดอง เก่งมากบอส!</p>'; let now = new Date().getTime(); wishlist.forEach(w => { let remain = Math.max(0, Math.ceil((w.unlockAt - now)/(1000*60*60*24))); let btn = remain <= 0 ? `<button class="btn-main" style="padding:5px; background:var(--success);" onclick="buyWishlist(${w.id})">ซื้อเลย!</button>` : `<button class="btn-main" style="padding:5px; background:#ddd; color:#888;" disabled>รอ ${remain} วัน</button>`; c.innerHTML += `<div class="list-item" style="border-left: 4px solid var(--eau-trouble); padding: 10px; border-radius: 8px; margin-top: 10px; background:var(--nuage-de-lait); border-top:1px solid #cbd5e1; border-right:1px solid #cbd5e1; border-bottom:1px solid #cbd5e1;"><h4 style="color:var(--espresso); margin:0;">${w.cat} (฿${w.amount})</h4><div style="display:flex; gap:10px; margin-top:5px;"><button class="btn-outline" style="padding:5px; color:var(--danger); border-color:var(--danger);" onclick="deleteWishlist(${w.id}, ${w.amount})">ลบทิ้ง (+50 แต้ม)</button>${btn}</div></div>`; }); }
+    function renderWishlist() { let c = document.getElementById('wishlistContainer'); c.innerHTML = ''; if(wishlist.length===0) c.innerHTML = '<p style="text-align:center; color:#888; font-size:12px;">ไม่มีของดอง เก่งมากบอส!</p>'; let now = new Date().getTime(); wishlist.forEach(w => { let remain = Math.max(0, Math.ceil((w.unlockAt - now)/(1000*60*60*24))); let btn = remain <= 0 ? `<button class="btn-main" style="padding:5px; background:var(--success); font-size:11px;" onclick="buyWishlist(${w.id})">ซื้อเลย!</button>` : `<button class="btn-main" style="padding:5px; background:#ddd; color:#888; font-size:11px;" disabled>รอ ${remain} วัน</button>`; c.innerHTML += `<div class="list-item" style="border-left: 4px solid var(--eau-trouble); padding: 10px; border-radius: 8px; margin-top: 10px; background:var(--nuage-de-lait); border-top:1px solid #cbd5e1; border-right:1px solid #cbd5e1; border-bottom:1px solid #cbd5e1;"><h4 style="color:var(--espresso); margin:0;">${w.cat} (฿${w.amount})</h4><div style="display:flex; gap:10px; margin-top:5px;"><button class="btn-outline" style="padding:5px; color:var(--danger); border-color:var(--danger);" onclick="deleteWishlist(${w.id}, ${w.amount})">ลบทิ้ง (+50 แต้ม)</button>${btn}</div></div>`; }); }
     function buyWishlist(id) { let w = wishlist.find(x=>x.id===id); if(!w) return; wishlist = wishlist.filter(x=>x.id!==id); stats.temptationYieldedCount++; executePayment(w.amount, w.tank, w.note, w.cat, w.payMethod, w.emotion, w.needRating); renderWishlist(); closeModal('wishlistModal'); }
     function deleteWishlist(id, amt) { wishlist = wishlist.filter(x=>x.id!==id); stats.savedFromTemptation += amt; stats.temptationAbandonedCount++; userPoints += 50; updateUI(); showToast('🎉 ชนะกิเลสตัวเองได้แล้ว! รับโบนัส 50 แต้ม'); saveStorage(); showGifOverlay('wishlist_delete'); }
 
@@ -1214,10 +1211,10 @@
     function renderFixedCosts() {
         let list = document.getElementById('fixedCostList'); list.innerHTML = ''; let totalFixed = 0;
         fixedCosts.forEach(f => {
-            totalFixed += f.amount; let titleText = f.name; let subText = `<span class="tank-badge bg-${f.tank}" style="margin-left:0;">${f.tank}</span>`; let progressHTML = ''; let btn = f.paidThisMonth ? `<span style="color:var(--success); font-size:12px; font-weight:bold;">จ่ายแล้ว ✔️</span>` : `<button class="btn-outline" style="border-color:var(--espresso); color:var(--espresso);" onclick="payFixedBtn(${f.id})">จ่ายบิล</button>`;
-            if (f.isInst && f.totalM > 0) { let pct = (f.paidM / f.totalM) * 100; progressHTML = `<div style="margin-top: 12px; display: flex; align-items: center; gap: 8px;"><div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);"><div style="height: 100%; width: ${pct}%; background: linear-gradient(90deg, var(--bleu-porcelaine), var(--espresso)); border-radius: 3px;"></div></div><span style="font-size: 11px; color: var(--espresso); font-weight: 600; white-space: nowrap;">งวด ${f.paidM}/${f.totalM}</span></div>`; if (f.paidM >= f.totalM) btn = `<span style="color:var(--success); font-size:12px; font-weight:bold;">🎉 จบแล้ว!</span>`; }
-            let editBtn = `<span style="color:var(--bleu-porcelaine); cursor:pointer; font-weight:bold; font-size:12px; margin-right:8px;" onclick="openEditFixedModal(${f.id})">[แก้]</span>`; let delBtn = `<span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size:14px;" onclick="deleteFixedCost(${f.id})">✕</span>`;
-            list.innerHTML += `<div class="list-item" style="display:flex; flex-direction:column; align-items:stretch; padding: 15px 0;"><div style="display:flex; justify-content:space-between; align-items:center; width:100%;"><div class="list-info" style="display:flex; align-items:center; gap:10px; flex:1; min-width:0; padding-right:10px;"><span style="font-size:24px; flex-shrink:0;">${f.icon}</span><div style="min-width:0;"><h4 style="margin:0; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--espresso);">${titleText}</h4><div style="margin-top:4px;">${subText}</div></div></div><div style="display:flex; align-items:center; flex-shrink:0;"><span style="font-weight:bold; color:var(--danger); font-size:14px; margin-right:10px;">฿${f.amount.toLocaleString()}</span>${btn}<div style="display:flex; align-items:center; margin-left:10px; border-left:1px solid #cbd5e1; padding-left:10px;">${editBtn} ${delBtn}</div></div></div>${progressHTML}</div>`;
+            totalFixed += f.amount; let titleText = f.name; let subText = `<span class="tank-badge bg-${f.tank}" style="margin-left:0;">${f.tank}</span>`; let progressHTML = ''; let btn = f.paidThisMonth ? `<span style="color:var(--success); font-size:11px; font-weight:bold;">จ่ายแล้ว ✔️</span>` : `<button class="btn-outline" style="border-color:var(--espresso); color:var(--espresso);" onclick="payFixedBtn(${f.id})">จ่ายบิล</button>`;
+            if (f.isInst && f.totalM > 0) { let pct = (f.paidM / f.totalM) * 100; progressHTML = `<div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;"><div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);"><div style="height: 100%; width: ${pct}%; background: linear-gradient(90deg, var(--bleu-porcelaine), var(--espresso)); border-radius: 3px;"></div></div><span style="font-size: 10px; color: var(--espresso); font-weight: 600; white-space: nowrap;">งวด ${f.paidM}/${f.totalM}</span></div>`; if (f.paidM >= f.totalM) btn = `<span style="color:var(--success); font-size:11px; font-weight:bold;">🎉 จบแล้ว!</span>`; }
+            let editBtn = `<span style="color:var(--bleu-porcelaine); cursor:pointer; font-weight:bold; font-size:11px; margin-right:8px;" onclick="openEditFixedModal(${f.id})">[แก้]</span>`; let delBtn = `<span style="color:var(--danger); cursor:pointer; font-weight:bold; font-size:14px;" onclick="deleteFixedCost(${f.id})">✕</span>`;
+            list.innerHTML += `<div class="list-item" style="display:flex; flex-direction:column; align-items:stretch; padding: 12px 0;"><div style="display:flex; justify-content:space-between; align-items:center; width:100%;"><div class="list-info" style="display:flex; align-items:center; gap:10px; flex:1; min-width:0; padding-right:10px;"><span style="font-size:24px; flex-shrink:0;">${f.icon}</span><div style="min-width:0;"><h4 style="margin:0; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--espresso);">${titleText}</h4><div style="margin-top:4px;">${subText}</div></div></div><div style="display:flex; align-items:center; flex-shrink:0;"><span style="font-weight:bold; color:var(--danger); font-size:13px; margin-right:10px;">฿${f.amount.toLocaleString()}</span>${btn}<div style="display:flex; align-items:center; margin-left:10px; border-left:1px solid #cbd5e1; padding-left:10px;">${editBtn} ${delBtn}</div></div></div>${progressHTML}</div>`;
         });
         let pct = totalIncomeThisMonth > 0 ? (totalFixed / totalIncomeThisMonth) * 100 : 0;
         document.getElementById('fixedPctTxt').innerText = pct.toFixed(1) + '%'; document.getElementById('fixedPctBar').style.width = Math.min(100, pct) + '%'; document.getElementById('fixedPctBar').style.background = pct > 15 ? 'var(--danger)' : 'var(--terre-cuite)';
@@ -1233,9 +1230,9 @@
         let list = document.getElementById('yearlyFundList'); list.innerHTML = '';
         yearlyFunds.forEach(y => {
             if(y.paidMonths === undefined) y.paidMonths = 0; if(y.monthlyVal === undefined) y.monthlyVal = Math.round(y.amount / 12);
-            let dots = ''; for(let i=0; i<12; i++) { dots += `<div style="width: 14px; height: 14px; border-radius: 50%; background: ${i < y.paidMonths ? 'var(--eau-trouble)' : '#e2e8f0'}; border: 1px solid ${i < y.paidMonths ? 'var(--eau-trouble)' : '#cbd5e1'}; transition: 0.3s;"></div>`; }
-            let doneBtn = y.paidMonths >= 12 ? `<span style="color:var(--success); font-size:11px; font-weight:bold;">ครบแล้ว!</span>` : `<div style="display:flex; align-items:center; gap:5px;"><select id="ySource-${y.id}" style="font-size:11px; padding:2px; border-radius:5px; border:1px solid #cbd5e1; outline:none; background:white; font-family:'Kanit';"><option value="essential">จาก Essential</option><option value="joy">จาก Joy</option></select><button class="btn-outline" style="padding:4px 8px; border-color:var(--eau-trouble); color:var(--eau-trouble);" onclick="addToYearly(${y.id})">+ หยอด 1 งวด</button></div>`;
-            list.innerHTML += `<div style="background:white; padding:15px; border-radius:12px; margin-top:10px; border:1px solid #cbd5e1;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><b style="color:var(--espresso);">${y.name}</b> <span style="font-size:12px; color:var(--eau-trouble); font-weight:bold;">งวดที่ ${y.paidMonths}/12</span></div><div style="display: flex; gap: 4px; margin-top: 8px; justify-content: space-between;">${dots}</div><div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px; color:var(--gray-text);">หักงวดละ: <input type="number" style="width:60px; padding:2px 4px; font-size:12px; border-radius: 8px; border: 1px solid #ccc; font-weight:bold; color:var(--terre-cuite); text-align:right; font-family:'Kanit';" value="${y.monthlyVal}" onchange="updateYMonthVal(${y.id}, this.value)"></div>${doneBtn}</div></div>`;
+            let dots = ''; for(let i=0; i<12; i++) { dots += `<div style="width: 12px; height: 12px; border-radius: 50%; background: ${i < y.paidMonths ? 'var(--eau-trouble)' : '#e2e8f0'}; border: 1px solid ${i < y.paidMonths ? 'var(--eau-trouble)' : '#cbd5e1'}; transition: 0.3s;"></div>`; }
+            let doneBtn = y.paidMonths >= 12 ? `<span style="color:var(--success); font-size:11px; font-weight:bold;">ครบแล้ว!</span>` : `<div style="display:flex; align-items:center; gap:5px;"><select id="ySource-${y.id}" style="font-size:10px; padding:2px; border-radius:5px; border:1px solid #cbd5e1; outline:none; background:white; font-family:'Kanit';"><option value="essential">จาก Essential</option><option value="joy">จาก Joy</option></select><button class="btn-outline" style="padding:4px 8px; border-color:var(--eau-trouble); color:var(--eau-trouble); font-size:10px;" onclick="addToYearly(${y.id})">+ หยอด 1 งวด</button></div>`;
+            list.innerHTML += `<div style="background:white; padding:12px; border-radius:10px; margin-top:10px; border:1px solid #cbd5e1;"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><b style="color:var(--espresso); font-size:13px;">${y.name}</b> <span style="font-size:11px; color:var(--eau-trouble); font-weight:bold;">งวดที่ ${y.paidMonths}/12</span></div><div style="display: flex; gap: 4px; margin-top: 8px; justify-content: space-between;">${dots}</div><div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px; color:var(--gray-text);">หักงวดละ: <input type="number" style="width:50px; padding:2px 4px; font-size:11px; border-radius: 8px; border: 1px solid #ccc; font-weight:bold; color:var(--terre-cuite); text-align:right; font-family:'Kanit';" value="${y.monthlyVal}" onchange="updateYMonthVal(${y.id}, this.value)"></div>${doneBtn}</div></div>`;
         });
     }
     function updateYMonthVal(id, val) { let y = yearlyFunds.find(x=>x.id===id); if(y && val>=0) { y.monthlyVal = parseFloat(val); saveStorage(); } }
@@ -1248,11 +1245,11 @@
         let totalUnpaidThisMonth = pendingInstallments.reduce((s, item) => s + item.inst.amount, 0);
         let warnEl = document.getElementById('incomeCreditWarning'); if (totalUnpaidThisMonth > 0) { warnEl.style.display = 'block'; document.getElementById('warnCreditAmt').innerText = totalUnpaidThisMonth.toLocaleString(); } else { warnEl.style.display = 'none'; }
         list.innerHTML = '';
-        if (pendingInstallments.length === 0) { list.innerHTML = '<p style="text-align:center; font-size:12px; color:var(--bleu-porcelaine); margin-top:15px;">ไม่มีบิลบัตร/ผ่อนค้างจ่ายครับ! 🎉</p>'; return; }
+        if (pendingInstallments.length === 0) { list.innerHTML = '<p style="text-align:center; font-size:11px; color:var(--bleu-porcelaine); margin-top:15px;">ไม่มีบิลบัตร/ผ่อนค้างจ่ายครับ! 🎉</p>'; return; }
         pendingInstallments.forEach(item => {
             let t = item.tx; let inst = item.inst; let d = new Date(t.dateObj).toLocaleDateString('th-TH'); let noteHtml = t.note ? ` <span style="color:var(--espresso); font-weight:normal;">(${t.note})</span>` : ''; let titleText = item.totalInst > 1 ? `${t.cat}${noteHtml} (งวด ${inst.monthNo}/${item.totalInst})` : `${t.cat}${noteHtml}`;
-            let editBtn = t.type === 'legacy_debt' ? `<button style="background:transparent; border:none; color:var(--bleu-porcelaine); font-size:12px; cursor:pointer; padding:0; font-weight:bold; margin-right:5px;" onclick="openEditLegacyDebt(${t.id})">[แก้]</button>` : '';
-            list.innerHTML += `<div class="list-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0;"><div class="list-info" style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;"><span style="font-size:20px;">💳</span><div style="min-width:0;"><h4 style="margin:0; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--espresso);">${titleText} <span style="font-size:10px; color:var(--danger);">[รอจ่าย]</span></h4><p style="margin:0; font-size:11px; color:var(--gray-text);">${d} | ฿${inst.amount.toLocaleString()}</p></div></div><div style="display:flex; align-items:center; gap:10px;"><button class="btn-main" style="width:auto; padding:5px 10px; margin:0; background:var(--bleu-porcelaine); font-size:11px;" onclick="payCreditBill(${t.id}, ${inst.monthNo})">จ่าย</button><div style="display:flex; align-items:center; border-left:1px solid #cbd5e1; padding-left:10px;">${editBtn}<button style="background:transparent; border:none; color:var(--danger); font-size:14px; cursor:pointer; padding:0; font-weight:bold;" onclick="undoTransaction(${t.id})">✕</button></div></div></div>`;
+            let editBtn = t.type === 'legacy_debt' ? `<button style="background:transparent; border:none; color:var(--bleu-porcelaine); font-size:11px; cursor:pointer; padding:0; font-weight:bold; margin-right:5px;" onclick="openEditLegacyDebt(${t.id})">[แก้]</button>` : '';
+            list.innerHTML += `<div class="list-item" style="display:flex; justify-content:space-between; align-items:center; padding:10px 0;"><div class="list-info" style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;"><span style="font-size:18px;">💳</span><div style="min-width:0;"><h4 style="margin:0; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--espresso);">${titleText} <span style="font-size:9px; color:var(--danger);">[รอจ่าย]</span></h4><p style="margin:0; font-size:10px; color:var(--gray-text);">${d} | ฿${inst.amount.toLocaleString()}</p></div></div><div style="display:flex; align-items:center; gap:8px;"><button class="btn-main" style="width:auto; padding:4px 8px; margin:0; background:var(--bleu-porcelaine); font-size:10px;" onclick="payCreditBill(${t.id}, ${inst.monthNo})">จ่าย</button><div style="display:flex; align-items:center; border-left:1px solid #cbd5e1; padding-left:8px;">${editBtn}<button style="background:transparent; border:none; color:var(--danger); font-size:12px; cursor:pointer; padding:0; font-weight:bold;" onclick="undoTransaction(${t.id})">✕</button></div></div></div>`;
         });
     }
     function payCreditBill(txId, monthNo) { if(confirm('จ่ายบิลนี้เรียบร้อยแล้วใช่ไหมบอส?\n(ระบบจะลบการเตือนและนำเงินออกจากกระเป๋า Security อย่างสมบูรณ์)')) { let t = transactions.find(x => x.id === txId); if(t && t.installments) { let inst = t.installments.find(i => i.monthNo === monthNo); if(inst) { inst.paid = true; currentBalances.security -= inst.amount; saveStorage(); updateUI(); showToast('✅ จ่ายบิลและหักเงินจาก Security เรียบร้อย!'); } } } }
@@ -1265,7 +1262,7 @@
     function processPayback() { let a = parseFloat(document.getElementById('paybackAmt').value); let l = document.getElementById('paybackLender').value; if(!a) return; if(a > currentBalances.security) { alert(`เงินใน Security ไม่พอคืนหนี้นะบอส!`); return; } currentBalances.security -= a; totalLiability = Math.max(0, totalLiability - a); transactions.push({ id: Date.now(), type: 'debt_out', tank: 'security', amount: a, cat: 'จ่ายคืนหนี้', note: l, dateObj: new Date().toISOString() }); updateUI(); renderDebtChart(); closeModal('payDebtModal'); showToast(`📤 จ่ายคืนหนี้สำเร็จ หักจาก Security แล้ว!`); }
     function renderDebtLog() {
         let list = document.getElementById('debtLogList'); list.innerHTML = ''; let debtTx = transactions.filter(t => t.type === 'debt_in' || t.type === 'legacy_debt_in' || t.type === 'debt_out'); let lenders = new Set();
-        [...debtTx].reverse().forEach(t => { let color = (t.type === 'debt_in' || t.type === 'legacy_debt_in') ? 'color:var(--danger)' : 'color:var(--success)'; let sign = (t.type === 'debt_in' || t.type === 'legacy_debt_in') ? '+' : '-'; let d = new Date(t.dateObj).toLocaleDateString('th-TH'); list.innerHTML += `<li class="list-item"><div class="list-info"><h4 style="color:var(--espresso);">${t.cat}</h4><p style="font-size:11px; color:var(--gray-text);">${d} | ${t.note}</p></div><div style="display:flex; align-items:center; gap:5px;"><span class="list-amount" style="${color}; font-weight:bold;">${sign}฿${t.amount.toLocaleString()}</span> <button onclick="undoTransaction(${t.id})" style="border:none; background:transparent; color:var(--gray-text); font-size:12px; cursor:pointer;">[ลบ]</button></div></li>`; if(t.type === 'debt_in' || t.type === 'legacy_debt_in') lenders.add(t.note); });
+        [...debtTx].reverse().forEach(t => { let color = (t.type === 'debt_in' || t.type === 'legacy_debt_in') ? 'color:var(--danger)' : 'color:var(--success)'; let sign = (t.type === 'debt_in' || t.type === 'legacy_debt_in') ? '+' : '-'; let d = new Date(t.dateObj).toLocaleDateString('th-TH'); list.innerHTML += `<li class="list-item"><div class="list-info"><h4 style="color:var(--espresso); margin:0; font-size:13px;">${t.cat}</h4><p style="font-size:10px; color:var(--gray-text); margin:0;">${d} | ${t.note}</p></div><div style="display:flex; align-items:center; gap:5px;"><span class="list-amount" style="${color}; font-weight:bold; font-size:13px;">${sign}฿${t.amount.toLocaleString()}</span> <button onclick="undoTransaction(${t.id})" style="border:none; background:transparent; color:var(--gray-text); font-size:11px; cursor:pointer;">[ลบ]</button></div></li>`; if(t.type === 'debt_in' || t.type === 'legacy_debt_in') lenders.add(t.note); });
         let pbSelect = document.getElementById('paybackLender'); if(pbSelect) { pbSelect.innerHTML = ''; if(lenders.size === 0) pbSelect.innerHTML = '<option value="ทั่วไป">ทั่วไป</option>'; else lenders.forEach(l => pbSelect.innerHTML += `<option value="${l}">${l}</option>`); }
     }
     function renderDebtChart() {
@@ -1273,16 +1270,16 @@
         debtInTx.forEach(t => lenderBalances[t.note] = (lenderBalances[t.note] || 0) + t.amount); debtOutTx.forEach(t => lenderBalances[t.note] = (lenderBalances[t.note] || 0) - t.amount);
         for(let key in lenderBalances) { if(lenderBalances[key] <= 0) delete lenderBalances[key]; }
         let ctx = document.getElementById('debtChart').getContext('2d'); if(debtChartInstance) debtChartInstance.destroy();
-        if(Object.keys(lenderBalances).length === 0) { document.getElementById('debtChart').parentElement.style.display = 'none'; } else { document.getElementById('debtChart').parentElement.style.display = 'flex'; debtChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(lenderBalances), datasets: [{ data: Object.values(lenderBalances), backgroundColor: ['#a13a1e','#a79058','#f1c166','#8babca'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '50%', plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit'}}} } } }); }
+        if(Object.keys(lenderBalances).length === 0) { document.getElementById('debtChart').parentElement.style.display = 'none'; } else { document.getElementById('debtChart').parentElement.style.display = 'flex'; debtChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(lenderBalances), datasets: [{ data: Object.values(lenderBalances), backgroundColor: ['#a13a1e','#a79058','#f1c166','#8babca'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '50%', plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit', size:11}}} } } }); }
     }
     function openLegacyBorrowedModal() { document.getElementById('lbAmt').value = ''; document.getElementById('lbNote').value = ''; openModal('addLegacyBorrowedModal'); }
     function saveLegacyBorrowed() { let amt = parseFloat(document.getElementById('lbAmt').value); let note = document.getElementById('lbNote').value || 'ยืมเก่าทั่วไป'; if(!amt || amt <= 0) return alert('กรอกจำนวนเงินให้ถูกต้องครับ'); totalLiability += amt; transactions.push({ id: Date.now(), type: 'legacy_debt_in', tank: 'none', amount: amt, cat: 'หนี้ยืมค้างเก่า', note: note, dateObj: new Date().toISOString() }); saveStorage(); updateUI(); if(typeof renderDebtChart === 'function') renderDebtChart(); closeModal('addLegacyBorrowedModal'); showToast(`📜 บันทึกหนี้ค้างเก่าเรียบร้อย!`); }
 
     function renderReceivables() {
         let list = document.getElementById('receivableList'); if(!list) return; list.innerHTML = ''; let pendingRx = transactions.filter(t => t.type === 'receivable' && !t.paid);
-        if(pendingRx.length === 0) { list.innerHTML = '<li style="font-size:12px; color:var(--gray-text);">ไม่มีบิลค้างเคลียร์ (สบายใจได้บอส!)</li>'; return; }
+        if(pendingRx.length === 0) { list.innerHTML = '<li style="font-size:11px; color:var(--gray-text);">ไม่มีบิลค้างเคลียร์ (สบายใจได้บอส!)</li>'; return; }
         pendingRx.forEach(r => {
-            list.innerHTML += `<li class="list-item" style="border-bottom:1px dashed var(--eau-trouble);"><div class="list-info"><h4 style="margin:0; font-size:13px; color:var(--espresso);">${r.cat} <span class="tank-badge bg-${r.tank}">${r.tank}</span></h4><p style="margin:0; font-size:11px; color:var(--eau-trouble);">จาก: ${r.note}</p></div><div style="display:flex; align-items:center; gap:5px;"><span style="color:var(--eau-trouble); font-weight:bold; font-size:14px;">฿${r.amount.toLocaleString()}</span><button class="btn-main" style="width:auto; padding:4px 8px; font-size:10px; background:var(--eau-trouble); margin:0;" onclick="resolveReceivable(${r.id})">ได้รับคืนแล้ว</button></div></li>`;
+            list.innerHTML += `<li class="list-item" style="border-bottom:1px dashed var(--eau-trouble);"><div class="list-info"><h4 style="margin:0; font-size:12px; color:var(--espresso);">${r.cat} <span class="tank-badge bg-${r.tank}">${r.tank}</span></h4><p style="margin:0; font-size:10px; color:var(--eau-trouble);">จาก: ${r.note}</p></div><div style="display:flex; align-items:center; gap:5px;"><span style="color:var(--eau-trouble); font-weight:bold; font-size:13px;">฿${r.amount.toLocaleString()}</span><button class="btn-main" style="width:auto; padding:4px 8px; font-size:10px; background:var(--eau-trouble); margin:0;" onclick="resolveReceivable(${r.id})">ได้รับคืนแล้ว</button></div></li>`;
         });
     }
     function resolveReceivable(id) { let r = transactions.find(t => t.id === id); if(r && confirm(`ได้รับเงินโอนคืนจำนวน ฿${r.amount} จาก ${r.note} เรียบร้อยแล้วใช่ไหม?`)) { r.paid = true; currentBalances[r.tank] += r.amount; saveStorage(); updateUI(); showToast(`✅ ได้รับเงินโอนคืน ฿${r.amount} เข้า ${r.tank} แล้ว!`); } }
@@ -1332,7 +1329,7 @@
         }
         let idealSal = targetSpendPct > 0 ? avgMonthlyExp / targetSpendPct : 0; 
         document.getElementById('idealSalaryBox').style.display = 'block';
-        document.getElementById('idealSalaryTxt').innerHTML = idealSal > 0 ? `฿${Math.round(idealSal).toLocaleString()} <span style="font-size:12px;">/เดือน</span>` : `รอข้อมูล...`;
+        document.getElementById('idealSalaryTxt').innerHTML = idealSal > 0 ? `฿${Math.round(idealSal).toLocaleString()} <span style="font-size:11px;">/เดือน</span>` : `รอข้อมูล...`;
 
         let joyTxs = cycleTx.filter(t => t.tank === 'joy'); 
         let smallWinAmt = joyTxs.filter(t => t.joyType === 'small').reduce((s,t) => s+t.amount, 0); 
@@ -1341,7 +1338,7 @@
         let smallWinEatPct = totalJoyFund > 0 ? Math.round((smallWinAmt / totalJoyFund) * 100) : 0; 
         let bigWinRemainPct = 100 - smallWinEatPct;
         document.getElementById('insightSmallWin').innerText = `กินงบไป ${smallWinEatPct}%`; 
-        document.getElementById('insightBigWin').innerText = `เหลือ 100%`; // Force display as per request if needed, or dynamically: `เหลือ ${bigWinRemainPct}%`
+        document.getElementById('insightBigWin').innerText = `เหลือ 100%`;
 
         let dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสฯ', 'ศุกร์', 'เสาร์']; let dayCounts = [0,0,0,0,0,0,0];
         exTx.forEach(t => { let d = new Date(t.dateObj).getDay(); dayCounts[d] += t.amount; }); 
@@ -1391,7 +1388,7 @@
         if(Object.keys(totals).length === 0) { document.getElementById('analyticsChart').style.display='none'; document.getElementById('noDataText').style.display='block'; }
         else {
             document.getElementById('analyticsChart').style.display='block'; document.getElementById('noDataText').style.display='none';
-            analyticsChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(totals), datasets: [{ data: Object.values(totals), backgroundColor: ['#4b2613','#a79058','#a13a1e','#8babca','#f1c166'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout:'55%', plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit'}}} } } });
+            analyticsChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(totals), datasets: [{ data: Object.values(totals), backgroundColor: ['#4b2613','#a79058','#a13a1e','#8babca','#f1c166'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout:'55%', plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit', size:11}}} } } });
         }
     }
 
@@ -1406,7 +1403,7 @@
         let exp={essential:{}, joy:{}, security:{}, growth:{}}; mTx.filter(t=>t.type==='expense').forEach(t=>{if(!exp[t.tank])return; exp[t.tank][t.cat] = (exp[t.tank][t.cat]||0)+t.amount;});
         const nameMap = { 'essential': '🛒 Essential', 'joy': '🎉 Joy', 'security': '🛡️ Security', 'growth': '🌱 Growth' };
         ['essential','joy','security','growth'].forEach(tk=>{ let tN = nameMap[tk]; let ts=0; for(let c in exp[tk]){rows.push([tN, c, exp[tk][c]]); ts+=exp[tk][c];} let rem = (tk==='essential'?inE:tk==='joy'?inJ:tk==='security'?inS:inG) - ts; if(rem>0) rows.push([tN, `💰 เหลือ (${tk})`, rem]); });
-        if(rows.length===0){container.innerHTML='<p style="color:var(--gray-text);">ข้อมูลยังไม่พอครับบอส</p>';return;} data.addRows(rows);
+        if(rows.length===0){container.innerHTML='<p style="color:var(--gray-text); font-size:12px;">ข้อมูลยังไม่พอครับบอส</p>';return;} data.addRows(rows);
         new google.visualization.Sankey(container).draw(data, {width: 800, height: 450, sankey:{node:{label:{fontName:'Kanit',fontSize:12, color: '#4b2613', bold: true}, colors: ['#8babca', '#a13a1e', '#f1c166', '#a79058', '#22c55e']}}});
     }
 
