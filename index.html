@@ -198,17 +198,30 @@
                 <input type="number" id="mainIncomeInput" placeholder="ยอดเงิน" style="width: 100px; flex-shrink: 0; border: 1px solid #ddd; padding: 10px; border-radius: 12px; outline: none; font-size:14px; box-sizing: border-box;">
                 <select id="incomeCatSelect" style="flex-grow: 1; min-width: 0; border: 1px solid #ddd; padding: 10px; border-radius: 12px; outline: none; background: white; font-size:13px; box-sizing: border-box;" onchange="if(this.value==='add_new') openModal('addIncomeCatModal')"></select>
             </div>
-            <div style="display: flex; gap: 5px;">
+            
+            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <select id="incomeTargetTank" style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 12px; outline: none; background: #f0fdf4; color: #166534; font-size:13px; box-sizing: border-box; font-weight:bold;">
+                    <option value="auto">🪄 กระจายออโต้ตาม %</option>
+                    <option value="essential">🛒 เข้า Essential 100%</option>
+                    <option value="joy">🎉 เข้า Joy 100%</option>
+                    <option value="security">🛡️ เข้า Security 100%</option>
+                    <option value="growth">🌱 เข้า Growth 100%</option>
+                </select>
                 <input type="date" id="incomeDateInput" style="flex: 1; border: 1px solid #ddd; padding: 10px; border-radius: 12px; outline: none; color:var(--gray-text); font-size:13px; box-sizing: border-box;">
-                <button class="btn-main" style="flex: 1; margin-top: 0; padding: 10px; font-size:14px;" onclick="confirmIncome()">จัดสรรเงิน</button>
             </div>
+            
+            <button class="btn-main" style="margin-top: 0; padding: 10px; font-size:14px; width: 100%;" onclick="confirmIncome()">บันทึกรายรับ</button>
+            
             <p id="incomeCreditWarning" style="margin:8px 0 0 0; font-size:11px; color:var(--danger); display:none; font-weight:bold;">🚨 อย่าลืมนะบอส! มีบิลบัตร/ผ่อน รอจ่ายอยู่ ฿<span id="warnCreditAmt">0</span> (เงินถูกกันไว้แล้วตอนรูด อย่าเผลอเอาเงินสดไปใช้ล่ะ!)</p>
         </div>
 
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title" style="font-size: 16px;">ภาพรวมกระเป๋าเงิน (Tanks)</h2>
-                <button class="btn-outline" onclick="sweepChange()">🧹 ปัดเศษลงทุน</button>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn-outline" style="border-color:#0284c7; color:#0284c7;" onclick="openTransferModal()">↔️ โอนข้ามถัง</button>
+                    <button class="btn-outline" onclick="sweepChange()">🧹 ปัดเศษ</button>
+                </div>
             </div>
             <div class="tanks-container">
                 <div class="tank-wrapper" onclick="openTankHistory('growth', 'Growth (ลงทุน)')">
@@ -432,6 +445,33 @@
         <div class="form-group"><label>ชื่อหมวดรายรับ (สั้นๆ)</label><input type="text" id="newIncCatName" placeholder="เช่น เงินปันผล"></div>
         <div class="form-group"><label>อิโมจิ 1 ตัว</label><input type="text" id="newIncCatIcon" placeholder="📈" maxlength="2"></div>
         <button class="btn-main" onclick="saveIncomeCategory()">สร้างหมวดรายรับ</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="transferModal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>↔️ โอนเงินข้ามกระเป๋า</h2><button class="close-btn" onclick="closeModal('transferModal')">✕</button></div>
+        <p style="font-size:11px; color:var(--gray-text); margin-top:-10px;">ย้ายเงินไปมาได้อิสระ ไม่ถูกนับเป็นรายรับ-รายจ่าย (กราฟไม่พังแน่นอน!)</p>
+        <div class="form-group">
+            <label>ดึงเงินออกจาก:</label>
+            <select id="tfFrom">
+                <option value="essential">🛒 Essential (จำเป็น)</option>
+                <option value="joy">🎉 Joy (รางวัล)</option>
+                <option value="security">🛡️ Security (สำรอง)</option>
+                <option value="growth">🌱 Growth (ลงทุน)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>เอาไปใส่ใน:</label>
+            <select id="tfTo">
+                <option value="joy">🎉 Joy (รางวัล)</option>
+                <option value="essential">🛒 Essential (จำเป็น)</option>
+                <option value="security">🛡️ Security (สำรอง)</option>
+                <option value="growth">🌱 Growth (ลงทุน)</option>
+            </select>
+        </div>
+        <div class="form-group"><label>จำนวนเงิน (฿)</label><input type="number" id="tfAmt" placeholder="0"></div>
+        <button class="btn-main" style="background:#0284c7;" onclick="processTransfer()">ยืนยันการโอน</button>
     </div>
 </div>
 
@@ -802,6 +842,16 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="addLegacyBorrowedModal">
+    <div class="modal-content">
+        <div class="modal-header"><h2>📜 เพิ่มหนี้ยืมค้างเก่า</h2><button class="close-btn" onclick="closeModal('addLegacyBorrowedModal')">✕</button></div>
+        <p style="font-size:11px; color:#ea580c; margin-top:-10px;">*สำหรับหนี้ที่ยืมคนอื่นมาตั้งแต่ก่อนใช้แอป (เพิ่มแค่ยอดหนี้ แต่ไม่เอาเงินเข้ากระเป๋าปัจจุบัน)</p>
+        <div class="form-group"><label>จำนวนเงิน (฿)</label><input type="number" id="lbAmt"></div>
+        <div class="form-group"><label>ยืมใครมา?</label><input type="text" id="lbNote" placeholder="เช่น แม่, เพื่อน"></div>
+        <button class="btn-main" style="background:#ea580c;" onclick="saveLegacyBorrowed()">บันทึกหนี้เก่า</button>
+    </div>
+</div>
+
 <script>
     Chart.register(ChartDataLabels);
     Chart.defaults.set('plugins.datalabels', {
@@ -1120,36 +1170,59 @@
         if(cat === 'add_new') return alert('กรุณาเลือกหรือสร้างหมวดหมู่ก่อนครับ');
         let dateVal = document.getElementById('incomeDateInput').value;
         let dateObj = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
-        transactions.push({ id: Date.now(), type: 'main_income', amount: inc, cat: cat, dateObj: dateObj });
+        
+        // รับค่าว่าบอสจะกระจายเงิน หรือ ยัดเข้ากระเป๋าเดียว
+        let target = document.getElementById('incomeTargetTank').value;
 
-        totalIncomeThisMonth += inc;
-        baseAmounts.growth += inc*(cfg.g/100);
-        currentBalances.growth += inc*(cfg.g/100); baseAmounts.security += inc*(cfg.s/100); currentBalances.security += inc*(cfg.s/100);
-        baseAmounts.essential += inc*(cfg.e/100); currentBalances.essential += inc*(cfg.e/100); baseAmounts.joy += inc*(cfg.j/100);
-        currentBalances.joy += inc*(cfg.j/100);
+        if (target === 'auto') {
+            transactions.push({ id: Date.now(), type: 'main_income', splitType: 'auto', amount: inc, cat: cat, dateObj: dateObj });
+            totalIncomeThisMonth += inc;
+            baseAmounts.growth += inc*(cfg.g/100); currentBalances.growth += inc*(cfg.g/100); 
+            baseAmounts.security += inc*(cfg.s/100); currentBalances.security += inc*(cfg.s/100);
+            baseAmounts.essential += inc*(cfg.e/100); currentBalances.essential += inc*(cfg.e/100); 
+            baseAmounts.joy += inc*(cfg.j/100); currentBalances.joy += inc*(cfg.j/100);
+            showToast('🎉 จัดสรรเงินอัตโนมัติสำเร็จ!');
+        } else {
+            // ถ้ารับเข้ากระเป๋าเดียว (Direct Deposit)
+            transactions.push({ id: Date.now(), type: 'main_income', splitType: target, tank: target, amount: inc, cat: cat, note: 'รับเต็มจำนวน', dateObj: dateObj });
+            totalIncomeThisMonth += inc;
+            baseAmounts[target] += inc; // ขยายหลอดให้ด้วยจะได้ไม่บวม
+            currentBalances[target] += inc;
+            showToast(`🎉 รับเงินเข้า ${target} เต็มจำนวนสำเร็จ!`);
+        }
         
         document.getElementById('mainIncomeInput').value = ''; 
         updateUI(); 
-        showToast('🎉 จัดสรรเงินอัตโนมัติสำเร็จ!');
         showGifOverlay('income');
-        
         stats.monthlyGrowthTouched = false; saveStorage();
         
         let pendingSum = 0;
-        transactions.forEach(t => {
-            if(t.installments) {
-                t.installments.forEach(i => {
-                    if(!i.paid) pendingSum += i.amount;
-                });
-            }
+        transactions.forEach(t => { if(t.installments) { t.installments.forEach(i => { if(!i.paid) pendingSum += i.amount; }); } });
+        if(pendingSum > 0) { setTimeout(() => { document.getElementById('futureWarningAmt').innerText = pendingSum.toLocaleString(); openModal('futureWarningModal'); }, 4600); }
+    }
+
+    // --- ฟังก์ชันโอนข้ามกระเป๋า (สไตล์ Make) ---
+    function openTransferModal() { document.getElementById('tfAmt').value = ''; openModal('transferModal'); }
+
+    function processTransfer() {
+        let from = document.getElementById('tfFrom').value;
+        let to = document.getElementById('tfTo').value;
+        let amt = parseFloat(document.getElementById('tfAmt').value);
+
+        if(from === to) return alert('เลือกกระเป๋าให้ต่างกันสิบอส!');
+        if(!amt || amt <= 0) return alert('กรอกจำนวนเงินให้ถูกต้องครับ');
+        if(currentBalances[from] < amt) return alert(`เงินใน ${from} ไม่พอโอนนะบอส! (มีแค่ ฿${currentBalances[from].toLocaleString()})`);
+
+        currentBalances[from] -= amt;
+        currentBalances[to] += amt;
+
+        // แอบบันทึกเป็น 'transfer' เพื่อไม่ให้กวนกราฟรายจ่าย
+        transactions.push({
+            id: Date.now(), type: 'transfer', tank: from, toTank: to, amount: amt, cat: '↔️ โอนข้ามกระเป๋า', note: `จาก ${from} ไป ${to}`, dateObj: new Date().toISOString()
         });
-        
-        if(pendingSum > 0) {
-            setTimeout(() => {
-                document.getElementById('futureWarningAmt').innerText = pendingSum.toLocaleString();
-                openModal('futureWarningModal');
-            }, 4600);
-        }
+
+        saveStorage(); updateUI(); closeModal('transferModal');
+        showToast(`↔️ ย้ายเงิน ฿${amt} ไป ${to} สำเร็จ!`);
     }
     
     function sweepChange() {
@@ -1665,21 +1738,17 @@
     function undoTransaction(id) {
         let t = transactions.find(x => x.id === id);
         if(!t) return;
-        if(!confirm(`ต้องการลบประวัติ "${t.cat}" ใช่ไหม? ระบบจะคืนเงินเข้ากระเป๋าให้ทันที`)) return;
+        if(!confirm(`ต้องการลบประวัติ "${t.cat}" ใช่ไหม? ระบบจะคืนเงิน/หักเงินให้ทันที`)) return;
 
         try {
             if(t.type === 'expense') {
                 let refundMain = (t.pDeduct !== undefined ? t.pDeduct : t.amount);
-                
                 if(t.installments) {
                     let unpaidSum = t.installments.filter(i => !i.paid).reduce((s,i) => s + i.amount, 0);
                     if (currentBalances.security < unpaidSum) {
                         let shortfall = unpaidSum - currentBalances.security;
-                        currentBalances.security = 0; 
-                        refundMain -= shortfall; 
-                    } else {
-                        currentBalances.security -= unpaidSum;
-                    }
+                        currentBalances.security = 0; refundMain -= shortfall; 
+                    } else { currentBalances.security -= unpaidSum; }
                 }
                 currentBalances[t.tank] += Math.max(0, refundMain);
                 if(t.isCross && t.backupTank && t.bDeduct) {
@@ -1690,15 +1759,30 @@
             else if (t.type === 'income') {
                 currentBalances[t.tank] -= t.amount;
             }
-            else if (t.type === 'debt_in' || t.type === 'debt_out') {
-                if(t.type === 'debt_in') { currentBalances.essential -= t.amount; totalLiability -= t.amount; }
+            else if (t.type === 'main_income') {
+                if (t.splitType === 'auto' || !t.splitType) {
+                    currentBalances.growth -= t.amount*(cfg.g/100); 
+                    currentBalances.security -= t.amount*(cfg.s/100);
+                    currentBalances.essential -= t.amount*(cfg.e/100); 
+                    currentBalances.joy -= t.amount*(cfg.j/100);
+                } else {
+                    currentBalances[t.splitType] -= t.amount;
+                }
+                totalIncomeThisMonth -= t.amount;
+            }
+            else if (t.type === 'transfer') {
+                currentBalances[t.tank] += t.amount; // คืนเงินที่โอนออกไป
+                currentBalances[t.toTank] -= t.amount; // ดึงเงินคืนจากปลายทาง
+            }
+            else if (t.type === 'debt_in' || t.type === 'debt_out' || t.type === 'legacy_debt_in') {
+                if(t.type === 'debt_in') { currentBalances.essential -= t.amount; totalLiability -= t.amount; } 
+                else if (t.type === 'legacy_debt_in') { totalLiability -= t.amount; } 
                 else { currentBalances.security += t.amount; totalLiability += t.amount; }
             }
-            // ถ้าเป็น legacy_debt ปล่อยผ่านไปได้เลย แค่ลบประวัติก็พอ เพราะเงินมันไม่ได้ถูกหักตั้งแต่แรก
 
             transactions = transactions.filter(x => x.id !== id);
             updateUI(); closeModal('historyModal');
-            showToast('🗑️ ลบรายการสำเร็จ!');
+            showToast('🗑️ ลบรายการและปรับยอดเงินสำเร็จ!');
         } catch (err) {
             console.error("Undo Error:", err);
             alert("เกิดข้อผิดพลาดในการคืนเงิน กรุณารีเฟรชหน้าเว็บครับ");
@@ -1956,29 +2040,40 @@
         if(tankId === 'joy' || tankId === 'security') updateGoalUI(tankId);
         if(tankId === 'growth') {
             let age = userAge > 0 ? userAge : 30;
-            let highRisk = 110 - age;
-            let lowRisk = 100 - highRisk;
+            let highRisk = 110 - age; let lowRisk = 100 - highRisk;
             if(highRisk < 0) highRisk = 0; if(lowRisk < 0) lowRisk = 0;
             document.getElementById('portAgeDisplay').innerText = age;
-            document.getElementById('portHighPct').innerText = highRisk + '%'; 
+            document.getElementById('portHighPct').innerText = highRisk + '%';
             document.getElementById('portLowPct').innerText = lowRisk + '%';
             document.getElementById('portBar').style.width = highRisk + '%';
         }
 
-        let filteredTx = transactions.filter(t => t.tank === tankId && (t.type === 'expense' || t.type === 'income'));
-        let list = document.getElementById('historyList'); 
-        list.innerHTML = '';
+        // ดึงประวัติที่เกี่ยวข้อง (รายจ่าย, รายรับ, และโอน)
+        let filteredTx = transactions.filter(t => {
+            if (t.tank === tankId && (t.type === 'expense' || t.type === 'income')) return true;
+            if (t.type === 'main_income' && (t.splitType === 'auto' || t.splitType === tankId)) return true;
+            if (t.type === 'transfer' && (t.tank === tankId || t.toTank === tankId)) return true;
+            return false;
+        });
+
+        let list = document.getElementById('historyList'); list.innerHTML = '';
         if(filteredTx.length === 0) list.innerHTML = '<li style="text-align:center; padding:20px; color:#888;">ไม่มีประวัติ</li>';
         
         let totals = {};
         [...filteredTx].reverse().forEach(t => {
             let d = new Date(t.dateObj).toLocaleDateString('th-TH');
             let n = t.note ? ` | ${t.note}` : '';
-            let isExp = t.type === 'expense';
+            let isExp = false; let displayAmt = t.amount;
+            
+            if (t.type === 'expense') isExp = true;
+            if (t.type === 'transfer' && t.tank === tankId) isExp = true; // โอนออก
+            if (t.type === 'main_income' && t.splitType === 'auto') {
+                displayAmt = t.amount * (cfg[tankId.charAt(0)] / 100); // ดึงเฉพาะ % ที่ตกกระเป๋านี้
+            }
+
             let amtColor = isExp ? 'var(--danger)' : 'var(--success)';
             let sign = isExp ? '-' : '+';
 
-            // สร้าง ID เฉพาะสำหรับแต่ละแถวเพื่อใช้ในการสลับโหมดแก้ไข
             list.innerHTML += `
             <li class="list-item" id="tx-row-${t.id}">
                 <div class="list-info" id="tx-display-${t.id}">
@@ -1986,12 +2081,12 @@
                     <p>${d}${n}</p>
                 </div>
                 <div style="display:flex; align-items:center; gap:5px;" id="tx-action-${t.id}">
-                    <span class="list-amount" style="color:${amtColor}">${sign}฿${t.amount.toLocaleString()}</span>
-                    <button onclick="enableInlineEdit(${t.id})" style="border:none; background:transparent; color:var(--bleu-porcelaine); font-size:12px; cursor:pointer;">[แก้]</button>
+                    <span class="list-amount" style="color:${amtColor}">${sign}฿${displayAmt.toLocaleString()}</span>
+                    ${t.type === 'expense' || (t.type === 'main_income' && t.splitType !== 'auto') ? `<button onclick="enableInlineEdit(${t.id})" style="border:none; background:transparent; color:var(--bleu-porcelaine); font-size:12px; cursor:pointer;">[แก้]</button>` : ''}
                     <button onclick="undoTransaction(${t.id})" style="border:none; background:transparent; color:var(--gray-text); font-size:12px; cursor:pointer;">[ลบ]</button>
                 </div>
             </li>`;
-            if(isExp) totals[t.cat] = (totals[t.cat] || 0) + t.amount;
+            if(isExp && t.type === 'expense') totals[t.cat] = (totals[t.cat] || 0) + displayAmt;
         });
 
         let ctx = document.getElementById('tankChart').getContext('2d'); 
@@ -2102,21 +2197,48 @@
 
     function renderDebtLog() {
         let list = document.getElementById('debtLogList');
-        list.innerHTML = ''; let debtTx = transactions.filter(t => t.type === 'debt_in' || t.type === 'debt_out'); let lenders = new Set();
-        [...debtTx].reverse().forEach(t => { let color = t.type === 'debt_in' ? 'color:#b91c1c' : 'color:#22c55e'; let sign = t.type === 'debt_in' ? '+' : '-'; let d = new Date(t.dateObj).toLocaleDateString('th-TH'); list.innerHTML += `<li class="list-item"><div class="list-info"><h4>${t.cat}</h4><p>${d} | ${t.note}</p></div><div style="display:flex; align-items:center; gap:5px;"><span class="list-amount" style="${color}">${sign}฿${t.amount.toLocaleString()}</span> <button onclick="undoTransaction(${t.id})" style="border:none; background:transparent; color:var(--gray-text); font-size:12px; cursor:pointer;">[ลบ]</button></div></li>`; if(t.type === 'debt_in') lenders.add(t.note); });
-        let pbSelect = document.getElementById('paybackLender'); pbSelect.innerHTML = ''; if(lenders.size === 0) pbSelect.innerHTML = '<option value="ทั่วไป">ทั่วไป</option>';
-        else lenders.forEach(l => pbSelect.innerHTML += `<option value="${l}">${l}</option>`);
-    }
-    function renderDebtChart() {
-        let debtInTx = transactions.filter(t => t.type === 'debt_in');
-        let debtOutTx = transactions.filter(t => t.type === 'debt_out'); let lenderBalances = {};
-        debtInTx.forEach(t => lenderBalances[t.note] = (lenderBalances[t.note] || 0) + t.amount); debtOutTx.forEach(t => lenderBalances[t.note] = (lenderBalances[t.note] || 0) - t.amount);
-        for(let key in lenderBalances) { if(lenderBalances[key] <= 0) delete lenderBalances[key];
+        list.innerHTML = ''; 
+        // ทำให้ดึง legacy_debt_in มาแสดงในประวัติด้วย
+        let debtTx = transactions.filter(t => t.type === 'debt_in' || t.type === 'legacy_debt_in' || t.type === 'debt_out'); 
+        let lenders = new Set();
+        
+        [...debtTx].reverse().forEach(t => { 
+            let color = (t.type === 'debt_in' || t.type === 'legacy_debt_in') ? 'color:#b91c1c' : 'color:#22c55e'; 
+            let sign = (t.type === 'debt_in' || t.type === 'legacy_debt_in') ? '+' : '-'; 
+            let d = new Date(t.dateObj).toLocaleDateString('th-TH'); 
+            
+            list.innerHTML += `<li class="list-item"><div class="list-info"><h4>${t.cat}</h4><p>${d} | ${t.note}</p></div><div style="display:flex; align-items:center; gap:5px;"><span class="list-amount" style="${color}">${sign}฿${t.amount.toLocaleString()}</span> <button onclick="undoTransaction(${t.id})" style="border:none; background:transparent; color:var(--gray-text); font-size:12px; cursor:pointer;">[ลบ]</button></div></li>`; 
+            
+            if(t.type === 'debt_in' || t.type === 'legacy_debt_in') lenders.add(t.note); 
+        });
+        
+        let pbSelect = document.getElementById('paybackLender'); 
+        if(pbSelect) {
+            pbSelect.innerHTML = ''; 
+            if(lenders.size === 0) pbSelect.innerHTML = '<option value="ทั่วไป">ทั่วไป</option>';
+            else lenders.forEach(l => pbSelect.innerHTML += `<option value="${l}">${l}</option>`);
         }
-        let ctx = document.getElementById('debtChart').getContext('2d'); if(debtChartInstance) debtChartInstance.destroy();
-        if(Object.keys(lenderBalances).length === 0) { document.getElementById('debtChart').parentElement.style.display = 'none'; } 
-        else { document.getElementById('debtChart').parentElement.style.display = 'flex';
-        debtChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(lenderBalances), datasets: [{ data: Object.values(lenderBalances), backgroundColor: ['#ef4444','#f97316','#f59e0b','#10b981'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '50%', plugins:{ legend:{position:'right'} } } });
+    }
+
+    function renderDebtChart() {
+        // ให้กราฟนับยอด legacy_debt_in ด้วย
+        let debtInTx = transactions.filter(t => t.type === 'debt_in' || t.type === 'legacy_debt_in');
+        let debtOutTx = transactions.filter(t => t.type === 'debt_out'); 
+        let lenderBalances = {};
+        
+        debtInTx.forEach(t => lenderBalances[t.note] = (lenderBalances[t.note] || 0) + t.amount); 
+        debtOutTx.forEach(t => lenderBalances[t.note] = (lenderBalances[t.note] || 0) - t.amount);
+        
+        for(let key in lenderBalances) { if(lenderBalances[key] <= 0) delete lenderBalances[key]; }
+        
+        let ctx = document.getElementById('debtChart').getContext('2d'); 
+        if(debtChartInstance) debtChartInstance.destroy();
+        
+        if(Object.keys(lenderBalances).length === 0) { 
+            document.getElementById('debtChart').parentElement.style.display = 'none'; 
+        } else { 
+            document.getElementById('debtChart').parentElement.style.display = 'flex';
+            debtChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(lenderBalances), datasets: [{ data: Object.values(lenderBalances), backgroundColor: ['#ef4444','#f97316','#f59e0b','#10b981'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '50%', plugins:{ legend:{position:'right'} } } });
         }
     }
 
@@ -2152,35 +2274,7 @@
     }
 
     function renderAnalyticsChart(period) {
-        // --- ส่วนเสริม: คำนวณทรัพย์สินรวมและเปรียบเทียบต้นเดือน ---
-        let totalWealth = currentBalances.growth + currentBalances.security + currentBalances.essential + currentBalances.joy;
-        if(document.getElementById('totalWealthText')) {
-            document.getElementById('totalWealthText').innerText = `฿${totalWealth.toLocaleString()}`;
-            
-            let nowTime = new Date();
-            let cMonth = nowTime.getMonth(); 
-            let cYear = nowTime.getFullYear();
-
-            // คำนวณรายรับ-รายจ่าย เฉพาะของเดือนปัจจุบัน
-            let monthInc = transactions.filter(t => {
-                let d = new Date(t.dateObj); return (t.type === 'main_income' || t.type === 'income') && d.getMonth() === cMonth && d.getFullYear() === cYear;
-            }).reduce((s,t) => s + t.amount, 0);
-
-            let monthExp = transactions.filter(t => {
-                let d = new Date(t.dateObj); return t.type === 'expense' && d.getMonth() === cMonth && d.getFullYear() === cYear;
-            }).reduce((s,t) => s + t.amount, 0);
-
-            let monthNet = monthInc - monthExp;
-            let startOfMonthWealth = totalWealth - monthNet;
-
-            let compareText = "";
-            if (monthNet > 0) { compareText = `เทียบกับต้นเดือน (฿${startOfMonthWealth.toLocaleString()}): <span style="color:var(--success); font-weight:bold;">+฿${monthNet.toLocaleString()} 📈</span>`; } 
-            else if (monthNet < 0) { compareText = `เทียบกับต้นเดือน (฿${startOfMonthWealth.toLocaleString()}): <span style="color:var(--danger); font-weight:bold;">-฿${Math.abs(monthNet).toLocaleString()} 📉</span>`; } 
-            else { compareText = `เทียบกับต้นเดือน (฿${startOfMonthWealth.toLocaleString()}): เท่าเดิม ⚖️`; }
-            
-            document.getElementById('wealthCompareText').innerHTML = compareText;
-        }
-        // -----------------------------------------------------
+        // --- 1. จัดการปุ่มกด UI ให้เปลี่ยนสี ---
         document.getElementById('btnAnalyticWeek').classList.remove('active');
         document.getElementById('btnAnalyticMonth').classList.remove('active');
         document.getElementById('btnAnalyticQuarter').classList.remove('active'); document.getElementById('btnAnalyticYear').classList.remove('active');
@@ -2192,21 +2286,35 @@
         document.getElementById(`btnAnalytic${period.charAt(0).toUpperCase() + period.slice(1)}`).style.background = 'var(--espresso)';
         document.getElementById(`btnAnalytic${period.charAt(0).toUpperCase() + period.slice(1)}`).style.color = 'white';
 
+        // --- 2. 🌟 ล็อกรอบปฏิทิน (Calendar Rule) ให้แม่นยำ ---
         let now = new Date();
-        let periodDays = period === 'week' ? 7 : (period === 'month' ? 30 : (period === 'quarter' ? 90 : 365));
+        let cMonth = now.getMonth();
+        let cYear = now.getFullYear();
+        let cQuarter = Math.floor(cMonth / 3);
         
-        // กรองยอดจ่ายเงิน โดยดึงเฉพาะรายการรายจ่ายจริงของบอส และไม่รวมยอดลูกหนี้รอเคลียร์ (receivable)
-        let filteredTx = transactions.filter(t => { 
-            if(t.type !== 'expense') return false; 
-            let diffDays = (now - new Date(t.dateObj)) / (1000 * 3600 * 24); 
-            return diffDays <= periodDays; 
-        });
+        let startOfWeek = new Date(now);
+        startOfWeek.setHours(0,0,0,0);
+        startOfWeek.setDate(now.getDate() - (now.getDay() || 7) + 1);
+
+        // ตัวกรองเวลา: บังคับให้นับเฉพาะข้อมูลของรอบปัจจุบันเท่านั้น
+        let isMatchPeriod = (dStr) => {
+            let d = new Date(dStr);
+            if (period === 'week') return d >= startOfWeek && d <= now;
+            if (period === 'month') return d.getMonth() === cMonth && d.getFullYear() === cYear;
+            if (period === 'quarter') return Math.floor(d.getMonth() / 3) === cQuarter && d.getFullYear() === cYear;
+            if (period === 'year') return d.getFullYear() === cYear;
+            return false;
+        };
+
+        // --- 3. ดึงยอด รายรับ-รายจ่าย เฉพาะของรอบปฏิทินปัจจุบัน ---
+        let filteredTx = transactions.filter(t => t.type === 'expense' && isMatchPeriod(t.dateObj));
+        let incTxs = transactions.filter(t => t.type === 'main_income' && isMatchPeriod(t.dateObj));
         
-        let incTxs = transactions.filter(t => { if(t.type !== 'main_income') return false; let diffDays = (now - new Date(t.dateObj)) / (1000 * 3600 * 24); return diffDays <= periodDays; });
         let totalInc = incTxs.reduce((s,t) => s + t.amount, 0);
         let totalExp = filteredTx.reduce((s,t) => s + t.amount, 0);
         let net = totalInc - totalExp;
         
+        // อัปเดตกล่อง Net ด้านล่าง
         document.getElementById('sumIncomeText').innerText = `฿${totalInc.toLocaleString()}`;
         document.getElementById('sumExpenseText').innerText = `฿${totalExp.toLocaleString()}`;
         let netEl = document.getElementById('sumNetText'); netEl.innerText = `฿${net.toLocaleString()}`;
@@ -2217,6 +2325,35 @@
         pctText.innerText = `ใช้ไป ${Math.round(pct)}% ของรายรับ`;
         pctText.style.color = pct > 100 ? 'var(--danger)' : 'var(--gray-text)';
 
+        // --- 4. 🌟 คำนวณทรัพย์สินรวม & แช่แข็งยอดต้นเดือน ---
+        let totalWealth = currentBalances.growth + currentBalances.security + currentBalances.essential + currentBalances.joy;
+        if(document.getElementById('totalWealthText')) {
+            document.getElementById('totalWealthText').innerText = `฿${totalWealth.toLocaleString()}`;
+            
+            // ดึงข้อมูลเงินยืมเข้า-ออก (ที่ไม่ใช่ legacy_debt)
+            let debtInTxs = transactions.filter(t => t.type === 'debt_in' && isMatchPeriod(t.dateObj));
+            let debtOutTxs = transactions.filter(t => t.type === 'debt_out' && isMatchPeriod(t.dateObj));
+            
+            let periodDebtIn = debtInTxs.reduce((s,t) => s + t.amount, 0);
+            let periodDebtOut = debtOutTxs.reduce((s,t) => s + t.amount, 0);
+
+            // กระแสเงินสดทั้งหมดที่เกิดขึ้นในเดือนนี้ (+รายรับ -รายจ่าย +ยืมเขามา -จ่ายคืนเขาไป)
+            let periodNet = (totalInc + periodDebtIn) - (totalExp + periodDebtOut);
+            
+            // 💡 สูตรวิเศษ: แช่แข็งเงินต้นเดือน = เงินปัจจุบัน หักส่วนต่างที่เพิ่งเกิดขึ้นในเดือนนี้ทิ้งไป
+            let startOfPeriodWealth = totalWealth - periodNet;
+
+            let periodLabel = period === 'week' ? 'ต้นสัปดาห์' : (period === 'month' ? 'ต้นเดือน' : (period === 'quarter' ? 'ต้นไตรมาส' : 'ต้นปี'));
+
+            let compareText = "";
+            if (periodNet > 0) { compareText = `เทียบกับ${periodLabel} (฿${startOfPeriodWealth.toLocaleString()}): <span style="color:var(--success); font-weight:bold;">+฿${periodNet.toLocaleString()} 📈</span>`; } 
+            else if (periodNet < 0) { compareText = `เทียบกับ${periodLabel} (฿${startOfPeriodWealth.toLocaleString()}): <span style="color:var(--danger); font-weight:bold;">-฿${Math.abs(periodNet).toLocaleString()} 📉</span>`; } 
+            else { compareText = `เทียบกับ${periodLabel} (฿${startOfPeriodWealth.toLocaleString()}): เท่าเดิม ⚖️`; }
+            
+            document.getElementById('wealthCompareText').innerHTML = compareText;
+        }
+
+        // --- 5. กล่องประเมินเงินเดือน (Ideal Salary) ---
         let idealBox = document.getElementById('idealSalaryBox');
         if(period === 'year' || period === 'quarter') {
             idealBox.style.display = 'block';
@@ -2238,32 +2375,36 @@
             idealBox.style.display = 'none';
         }
 
+        // --- 6. พฤติกรรมเชิงลึก (Insights) ---
         let joyTxs = filteredTx.filter(t => t.tank === 'joy');
         let smallWinAmt = joyTxs.filter(t => t.joyType === 'small').reduce((s,t) => s+t.amount, 0);
         let bigWinAmt = joyTxs.filter(t => t.joyType === 'big').reduce((s,t) => s+t.amount, 0);
         let totalJoyFund = currentBalances.joy + smallWinAmt + bigWinAmt;
         let smallWinEatPct = totalJoyFund > 0 ? Math.round((smallWinAmt / totalJoyFund) * 100) : 0;
         let bigWinRemainPct = 100 - smallWinEatPct;
-        document.getElementById('insightSmallWin').innerText = `กินงบไป ${smallWinEatPct}%`;
-        document.getElementById('insightBigWin').innerText = `เหลือให้เป้าหมาย ${bigWinRemainPct}%`;
+        if(document.getElementById('insightSmallWin')) {
+            document.getElementById('insightSmallWin').innerText = `กินงบไป ${smallWinEatPct}%`;
+            document.getElementById('insightBigWin').innerText = `เหลือให้เป้าหมาย ${bigWinRemainPct}%`;
+        }
         
-        let crossTxs = filteredTx.filter(t => t.isCross); document.getElementById('insightCrossCount').innerText = stats.crossTankCount;
+        let crossTxs = filteredTx.filter(t => t.isCross); 
+        if(document.getElementById('insightCrossCount')) document.getElementById('insightCrossCount').innerText = stats.crossTankCount;
         let reasons = {}; crossTxs.forEach(t => { if(t.crossReason) reasons[t.crossReason] = (reasons[t.crossReason] || 0) + 1; });
         let topReason = Object.keys(reasons).length > 0 ? Object.keys(reasons).reduce((a, b) => reasons[a] > reasons[b] ? a : b) : '-';
-        document.getElementById('insightCrossReason').innerText = topReason;
+        if(document.getElementById('insightCrossReason')) document.getElementById('insightCrossReason').innerText = topReason;
 
         let dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสฯ', 'ศุกร์', 'เสาร์'];
         let dayCounts = [0,0,0,0,0,0,0];
         filteredTx.forEach(t => { let d = new Date(t.dateObj).getDay(); dayCounts[d] += t.amount; });
         let maxDayIdx = dayCounts.indexOf(Math.max(...dayCounts));
-        document.getElementById('insightDay').innerText = Math.max(...dayCounts) > 0 ? dayNames[maxDayIdx] : '-';
+        if(document.getElementById('insightDay')) document.getElementById('insightDay').innerText = Math.max(...dayCounts) > 0 ? dayNames[maxDayIdx] : '-';
 
-        document.getElementById('insightSavedTemptation').innerText = stats.savedFromTemptation.toLocaleString();
-        document.getElementById('insightWinTemptCount').innerText = stats.temptationAbandonedCount || 0;
-        document.getElementById('insightLoseTemptCount').innerText = stats.temptationYieldedCount || 0;
+        if(document.getElementById('insightSavedTemptation')) document.getElementById('insightSavedTemptation').innerText = stats.savedFromTemptation.toLocaleString();
+        if(document.getElementById('insightWinTemptCount')) document.getElementById('insightWinTemptCount').innerText = stats.temptationAbandonedCount || 0;
+        if(document.getElementById('insightLoseTemptCount')) document.getElementById('insightLoseTemptCount').innerText = stats.temptationYieldedCount || 0;
 
         let futureMoneySum = transactions.flatMap(t => t.installments || []).filter(i => !i.paid).reduce((s,i) => s + i.amount, 0);
-        document.getElementById('insightFutureMoney').innerText = futureMoneySum.toLocaleString();
+        if(document.getElementById('insightFutureMoney')) document.getElementById('insightFutureMoney').innerText = futureMoneySum.toLocaleString();
         
         let futurePct = totalInc > 0 ? (futureMoneySum / totalInc) * 100 : 0;
         let futureAdviceTxt = `คิดเป็น ${Math.round(futurePct)}% ของรายรับ<br>`;
@@ -2271,10 +2412,15 @@
         else if (futurePct <= 15) futureAdviceTxt += `<span style="color:var(--success);">อยู่ในเกณฑ์ปลอดภัยครับ แต่ก็อย่ารูดเพลินนะ</span>`;
         else if (futurePct <= 30) futureAdviceTxt += `<span style="color:#f59e0b;">เริ่มเยอะแล้วนะบอส! เดือนหน้าระวังช็อตนะ</span>`;
         else futureAdviceTxt += `<span style="color:var(--danger); font-weight:bold;">อันตรายมาก! ยืมอนาคตมาเกิน 30% แล้ว หยุดรูดด่วน!</span>`;
-        document.getElementById('insightFutureAdvice').innerHTML = futureAdviceTxt;
+        if(document.getElementById('insightFutureAdvice')) document.getElementById('insightFutureAdvice').innerHTML = futureAdviceTxt;
 
-        if(filteredTx.length === 0) { document.getElementById('analyticsChart').style.display = 'none';
-        document.getElementById('noDataText').style.display = 'block'; document.getElementById('aiAdviceText').innerText = "ยังไม่มีข้อมูลใช้จ่ายเลยบอส ลองบันทึกข้อมูลก่อนนะ แล้วเลขาจะช่วยวิเคราะห์ให้!"; return; }
+        // --- 7. วาดกราฟโดนัท ---
+        if(filteredTx.length === 0) { 
+            document.getElementById('analyticsChart').style.display = 'none';
+            document.getElementById('noDataText').style.display = 'block'; 
+            document.getElementById('aiAdviceText').innerText = "ยังไม่มีข้อมูลใช้จ่ายเลยบอส ลองบันทึกข้อมูลก่อนนะ แล้วเลขาจะช่วยวิเคราะห์ให้!"; 
+            return; 
+        }
 
         document.getElementById('analyticsChart').style.display = 'block';
         document.getElementById('noDataText').style.display = 'none';
@@ -2282,8 +2428,11 @@
         let labels = Object.keys(totals);
         let data = Object.values(totals);
 
-        let ctx = document.getElementById('analyticsChart').getContext('2d'); if(analyticsChartInstance) analyticsChartInstance.destroy();
+        let ctx = document.getElementById('analyticsChart').getContext('2d'); 
+        if(analyticsChartInstance) analyticsChartInstance.destroy();
         analyticsChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: ['#a13a1e','#a79058','#8babca','#f1c166', '#542916'], borderWidth: 2, borderColor: '#fbfaf0' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } }, cutout: '55%' } });
+        
+        // --- 8. AI วิเคราะห์ ---
         let maxCat = labels[data.indexOf(Math.max(...data))];
         let advice = `💡 บอสครับ! เดือนนี้เงินไหลออกไปกับ <strong>${maxCat}</strong> เยอะสุดเลยนะ สายเปย์ไปไหน!<br>`;
         if (smallWinEatPct > 50) {
@@ -2303,7 +2452,11 @@
         }
 
         if(period === 'quarter') {
-            let prevQFiltered = transactions.filter(t => { if(t.type !== 'expense') return false; let diffDays = (now - new Date(t.dateObj)) / (1000 * 3600 * 24); return diffDays > 90 && diffDays <= 180; });
+            let prevQFiltered = transactions.filter(t => { 
+                if(t.type !== 'expense') return false; 
+                let diffDays = (now - new Date(t.dateObj)) / (1000 * 3600 * 24); 
+                return diffDays > 90 && diffDays <= 180; 
+            });
             let prevQExp = prevQFiltered.reduce((s,t)=>s+t.amount, 0);
             if(prevQExp > 0) {
                 if(totalExp < prevQExp) advice += `<br><br>📉 <strong>เยี่ยมมากบอส!</strong> ไตรมาสนี้ใช้จ่ายน้อยกว่าไตรมาสที่แล้ว ฿${(prevQExp - totalExp).toLocaleString()} ถือว่าพัฒนาขึ้นมากครับ`;
@@ -2501,6 +2654,36 @@
         
         closeModal('configModal');
         showToast('✅ ปรับปรุงยอดเงินตั้งต้นให้ตรงกับธนาคารเรียบร้อย!');
+    }
+
+function openLegacyBorrowedModal() {
+        document.getElementById('lbAmt').value = '';
+        document.getElementById('lbNote').value = '';
+        openModal('addLegacyBorrowedModal');
+    }
+
+    function saveLegacyBorrowed() {
+        let amt = parseFloat(document.getElementById('lbAmt').value);
+        let note = document.getElementById('lbNote').value || 'ยืมเก่าทั่วไป';
+        if(!amt || amt <= 0) return alert('กรอกจำนวนเงินให้ถูกต้องครับ');
+
+        totalLiability += amt; // เพิ่มยอดหนี้รวมอย่างเดียว (เงินกระเป๋าไม่เปลี่ยน)
+
+        // บันทึกประวัติเป็นประเภท legacy_debt_in
+        transactions.push({ 
+            id: Date.now(), 
+            type: 'legacy_debt_in', 
+            tank: 'none', 
+            amount: amt, 
+            cat: 'หนี้ยืมค้างเก่า', 
+            note: note, 
+            dateObj: new Date().toISOString() 
+        });
+
+        saveStorage(); updateUI(); 
+        if(typeof renderDebtChart === 'function') renderDebtChart(); 
+        closeModal('addLegacyBorrowedModal');
+        showToast(`📜 บันทึกหนี้ค้างเก่าจาก ${note} เรียบร้อย!`);
     }
 
     window.onload = () => { 
