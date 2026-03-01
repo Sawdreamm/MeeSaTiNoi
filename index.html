@@ -152,9 +152,13 @@
         <div class="header">
             <div class="header-left">
                 <h1 id="userGreeting">มีสติหน่อยคุณ Dream!!!</h1>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <div class="point-badge" onclick="openModal('rewardShopModal')">
+                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+                    <div class="point-badge" onclick="openModal('rewardShopModal')" style="gap:4px;">
                         <span id="userPointsDisplay">🪙 0 แต้ม</span>
+                        <span style="font-size:9px; opacity:0.7;">🛒</span>
+                    </div>
+                    <div class="point-badge" onclick="openQuestPage()" style="background: linear-gradient(135deg, #d6e8ff, #bfdbfe); color: #1e40af; gap:4px;">
+                        <span>📜 ภารกิจ</span>
                     </div>
                     <div class="streak-badge">🔥 <span id="streakDisplay">1 วัน</span></div>
                 </div>
@@ -193,8 +197,8 @@
                 </div>
             </div>
             <button class="btn-outline" style="width:100%; border-style:dashed; margin-top:25px; padding:10px; color:var(--eau-trouble); border-color:var(--eau-trouble);" onclick="openModal('wishlistModal')">
-                ⏳ ตู้เย็นดองกิเลส 7 วัน (<span id="wishlistCount" style="color:var(--danger);">0</span>)
-            </button>
+    🛒 ตะกร้าดึงสติ (<span id="wishlistCount" style="color:var(--danger);">0</span>)
+</button>
         </div>
 
         <div class="card">
@@ -206,14 +210,6 @@
                 </div>
             </div>
             <div class="categories-grid" id="homeCategories"></div>
-        </div>
-
-        <div class="card" style="background: var(--nuage-de-lait); border: 1px solid var(--eau-trouble);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h4 style="margin:0; color:var(--espresso); font-size:15px;">📜 ภารกิจดัดนิสัย</h4>
-                <button class="btn-outline" style="border-color:var(--eau-trouble); color:var(--eau-trouble); padding:4px 8px; font-size:11px;" onclick="openModal('customQuestModal')">+ สร้างเอง</button>
-            </div>
-            <div id="questList" style="margin-top:10px;"></div>
         </div>
 
         <div class="card" style="padding: 15px; margin-bottom: 20px; background: var(--white); border:1px solid #e5e7eb;">
@@ -307,18 +303,44 @@
     <div id="view-analytics" class="view-section">
         <div class="header"><h1>📊 สรุปผล & วิเคราะห์</h1><button class="btn-outline" style="background:var(--gray-light);" onclick="switchTab('view-cashflow', document.querySelectorAll('.nav-item')[2]); drawSankey();">🌊 Cashflow</button></div>
 
-        <div class="month-swiper">
+        <div class="month-swiper" id="monthSwiperWrapper">
             <button class="swiper-btn" onclick="changeMonth(-1)">◀</button>
             <span id="currentMonthDisplay" style="font-weight:bold; color:var(--espresso); font-size:13px;">รอบบิล</span>
             <button class="swiper-btn" onclick="changeMonth(1)">▶</button>
         </div>
 
         <div class="sub-nav-tabs" style="margin-bottom: 15px;">
-            <button class="tab-btn active" id="btn-tab-overview" onclick="switchAnalyticTab('tab-overview')">ภาพรวมเดือน</button>
+            <button class="tab-btn active" id="btn-tab-overview" onclick="switchAnalyticTab('tab-overview')">ภาพรวม</button>
             <button class="tab-btn" id="btn-tab-insights" onclick="switchAnalyticTab('tab-insights')">เจาะลึกพฤติกรรม</button>
         </div>
 
         <div id="tab-overview" class="tab-content active">
+            <div style="display:flex; gap:5px; margin-bottom: 10px;">
+                <button class="btn-outline" style="flex:1; border-color:#cbd5e1; background:white; font-size:11px; padding:6px 0;" id="btnAnalyticWeek" onclick="renderAnalyticsChart('week')">สัปดาห์</button>
+                <button class="btn-outline" style="flex:1; border-color:#cbd5e1; background:var(--espresso); color:white; font-size:11px; padding:6px 0;" id="btnAnalyticMonth" onclick="renderAnalyticsChart('month')">เดือน</button>
+                <button class="btn-outline" style="flex:1; border-color:#cbd5e1; background:white; font-size:11px; padding:6px 0;" id="btnAnalyticQuarter" onclick="renderAnalyticsChart('quarter')">ไตรมาส</button>
+                <button class="btn-outline" style="flex:1; border-color:#cbd5e1; background:white; font-size:11px; padding:6px 0;" id="btnAnalyticYear" onclick="renderAnalyticsChart('year')">รายปี</button>
+                <button class="btn-outline" style="flex:1; border-color:var(--eau-trouble); background:white; color:var(--eau-trouble); font-size:11px; padding:6px 0;" id="btnAnalyticCustom" onclick="renderAnalyticsChart('custom')">กำหนดเอง</button>
+            </div>
+
+            <div id="customDateSelector" style="display:none; gap:10px; margin-bottom:15px; background:var(--white); padding:10px; border-radius:12px; border:1px solid var(--eau-trouble); align-items:flex-end;">
+                <div style="flex:1;">
+                    <label style="font-size:10px; color:var(--gray-text); display:block; margin-bottom:2px;">เริ่มต้น:</label>
+                    <input type="date" id="customStartDate" style="width:100%; padding:5px; border-radius:8px; border:1px solid #cbd5e1; font-size:12px; outline:none; font-family:'Kanit';">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:10px; color:var(--gray-text); display:block; margin-bottom:2px;">สิ้นสุด:</label>
+                    <input type="date" id="customEndDate" style="width:100%; padding:5px; border-radius:8px; border:1px solid #cbd5e1; font-size:12px; outline:none; font-family:'Kanit';">
+                </div>
+                <button class="btn-main" style="width:auto; padding:5px 15px; margin:0; background:var(--eau-trouble); font-size:12px;" onclick="renderAnalyticsChart('custom')">ค้นหา</button>
+            </div>
+
+            <div class="card" style="background: var(--mint-light); border: 1px solid #86efac; text-align: center; margin-bottom: 15px; padding:15px;">
+                <h3 style="margin:0 0 5px 0; font-size:13px; color:var(--mint-dark); font-weight:600;">💼 ทรัพย์สินรวมตอนนี้ (ทุกกระเป๋า)</h3>
+                <h2 style="margin:5px 0; font-size:28px; color:var(--mint-dark); font-weight:bold;" id="totalWealthText">฿0</h2>
+                <p style="margin:0; font-size:11px; color:var(--mint-dark);" id="wealthCompareText">กำลังคำนวณ...</p>
+            </div>
+
             <div class="summary-dashboard">
                 <div class="sum-box"><p class="sum-title">📥 หาได้ (In)</p><p class="sum-val val-in" id="sumIncomeText">฿0</p></div>
                 <div class="sum-box"><p class="sum-title">📤 ใช้ไป (Out)</p><p class="sum-val val-out" id="sumExpenseText">฿0</p></div>
@@ -365,7 +387,7 @@
                     <h4 style="margin:5px 0 0 0; font-size:14px; color:var(--danger);"><span id="insightCrossCount">0</span> ครั้ง <span style="font-size:11px; font-weight:normal; color:var(--espresso);">(เหตุผล: <span id="insightCrossReason">-</span>)</span></h4>
                 </div>
                 <div class="data-insight-box" style="border-left-color: var(--success);">
-                    <p style="margin:0; font-size:11px; color:var(--gray-text);">🛡️ ตะกร้าดึงสติ (7-Day Rule)</p>
+                    <p style="margin:0; font-size:11px; color:var(--gray-text);">🛒 ตะกร้าดึงสติ (7-Day Rule)</p>
                     <h4 style="margin:5px 0 0 0; font-size:14px; color:var(--success);">รอดไป ฿<span id="insightSavedTemptation">0</span></h4>
                     <p style="margin:2px 0 0 0; font-size:10px; color:var(--espresso);">ชนะใจตัวเอง: <span id="insightWinTemptCount" style="color:var(--success); font-weight:bold;">0</span> ครั้ง | แพ้กิเลส: <span id="insightLoseTemptCount" style="color:var(--danger); font-weight:bold;">0</span> ครั้ง</p>
                 </div>
@@ -393,10 +415,66 @@
         </div>
     </div>
 
+    <div id="view-quest" class="view-section" style="display:none; background: var(--nuage-de-lait);">
+        <div class="header" style="position:sticky; top:0; background:var(--nuage-de-lait); z-index:10; padding-bottom:10px;">
+            <div>
+                <h1 style="font-size:18px;">📜 ภารกิจดัดนิสัย</h1>
+                <p style="margin:2px 0 0 0; font-size:11px; color:var(--gray-text);">ทำกิจกรรมในแอปแล้วรับแต้มอัตโนมัติ!</p>
+            </div>
+            <button class="btn-outline" style="background:var(--gray-light); border:none; white-space:nowrap;" onclick="closeQuestPage()">↩️ กลับ</button>
+        </div>
+
+        <!-- แต้มสรุป -->
+        <div style="background: linear-gradient(135deg, var(--espresso), #7c3f23); border-radius:20px; padding:20px; margin-bottom:20px; color:white; text-align:center;">
+            <p style="margin:0; font-size:11px; opacity:0.8;">แต้มสะสมทั้งหมด</p>
+            <h2 style="margin:8px 0 0 0; font-size:32px; font-weight:bold;" id="questPagePoints">🪙 0 แต้ม</h2>
+            <p style="margin:8px 0 0 0; font-size:11px; opacity:0.8;">เคลมแต้มอัตโนมัติเมื่อทำกิจกรรมสำเร็จ</p>
+        </div>
+
+        <!-- หมวด: รายวัน -->
+        <div style="margin-bottom:5px; display:flex; align-items:center; gap:8px;">
+            <div style="flex:1; height:1px; background:#e5e7eb;"></div>
+            <span style="font-size:11px; color:var(--gray-text); font-weight:bold; white-space:nowrap;">⚡ ภารกิจรายวัน (รีเซ็ตทุกวัน)</span>
+            <div style="flex:1; height:1px; background:#e5e7eb;"></div>
+        </div>
+        <div id="questListDaily" style="margin-bottom:20px;"></div>
+
+        <!-- หมวด: Streak / ต่อเนื่อง + สะสมรวม -->
+        <div style="margin-bottom:5px; display:flex; align-items:center; gap:8px;">
+            <div style="flex:1; height:1px; background:#e5e7eb;"></div>
+            <span style="font-size:11px; color:var(--gray-text); font-weight:bold; white-space:nowrap;">🔥 Streak ต่อเนื่อง & 📅 วันสะสมรวม</span>
+            <div style="flex:1; height:1px; background:#e5e7eb;"></div>
+        </div>
+        <div style="background:#fffbeb; border:1px dashed var(--miel-dore); border-radius:10px; padding:10px 14px; margin-bottom:10px; font-size:11px; color:#92400e; line-height:1.6;">
+            🔥 <b>Streak ต่อเนื่อง</b> — ถ้าขาดแล้ว streak หาย แต่สร้างใหม่จนถึง tier เดิมได้แต้มอีกครั้ง<br>
+            📅 <b>วันสะสมรวม</b> — นับสะสมตลอดชีวิต ไม่ต้องติดกัน ทำครั้งเดียวจบ
+        </div>
+        <div id="questListStreak" style="margin-bottom:20px;"></div>
+
+        <!-- หมวด: Milestone -->
+        <div style="margin-bottom:5px; display:flex; align-items:center; gap:8px;">
+            <div style="flex:1; height:1px; background:#e5e7eb;"></div>
+            <span style="font-size:11px; color:var(--gray-text); font-weight:bold; white-space:nowrap;">🏆 ภารกิจ Milestone (ทำครั้งเดียว)</span>
+            <div style="flex:1; height:1px; background:#e5e7eb;"></div>
+        </div>
+        <div id="questListMilestone" style="margin-bottom:20px;"></div>
+
+        <!-- หมวด: พฤติกรรมดี -->
+        <div style="margin-bottom:5px; display:flex; align-items:center; gap:8px;">
+            <div style="flex:1; height:1px; background:#e5e7eb;"></div>
+            <span style="font-size:11px; color:var(--gray-text); font-weight:bold; white-space:nowrap;">💚 ภารกิจพฤติกรรมการเงิน</span>
+            <div style="flex:1; height:1px; background:#e5e7eb;"></div>
+        </div>
+        <div style="background:#f0fdf4; border:1px dashed #86efac; border-radius:10px; padding:10px 14px; margin-bottom:10px; font-size:11px; color:#166534; line-height:1.6;">
+            ♻️ <b>รีเซ็ตทุกเดือน</b> — ทำซ้ำได้ทุกรอบบิล ยิ่งทำพฤติกรรมดีสม่ำเสมอ ยิ่งได้แต้มต่อเนื่อง
+        </div>
+        <div id="questListBehavior" style="margin-bottom:20px;"></div>
+    </div>
+
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('view-home', this)"><div class="nav-icon">🏠</div>หน้าแรก</div>
         <div class="nav-item" onclick="switchTab('view-fixed', this)"><div class="nav-icon">📅</div>บิล/เป้า</div>
-        <div class="nav-item" onclick="switchTab('view-analytics', this); renderAnalyticsCycle();"><div class="nav-icon">📊</div>สรุปผล</div>
+        <div class="nav-item" onclick="switchTab('view-analytics', this); renderAnalyticsChart('month');"><div class="nav-icon">📊</div>สรุปผล</div>
         <div class="nav-item" onclick="switchTab('view-debt', this); renderDebtChart();"><div class="nav-icon">🤝</div>หนี้สิน</div>
     </nav>
 </div> 
@@ -463,8 +541,9 @@
         <div class="form-group"><label>จำนวนเงิน (฿)</label><input type="number" id="tfAmt" placeholder="0" style="font-size:20px; font-weight:bold;"></div>
         
         <div id="transferFrictionBox" style="display:none; background:#fee2e2; border:1px dashed var(--danger); padding:15px; border-radius:12px; margin-bottom:15px; text-align:center;">
-            <p style="color:var(--danger); font-size:13px; font-weight:bold; margin:0 0 10px 0;">🚨 จะดึงเงินเก็บมาเปย์จริงๆ ดิ?</p>
-            <p style="color:var(--danger); font-size:11px; margin:0 0 10px 0;">เป้าหมายในอนาคตจะช้าลงนะ พิมพ์ <b>"ฉันตบะแตก"</b> ลงในช่องเพื่อยืนยัน</p>
+            <div style="font-size:24px; margin-bottom:5px;">🚨</div>
+            <p style="color:var(--danger); font-size:14px; font-weight:bold; margin:0 0 5px 0;">ดึงสติหน่อยบอส!</p>
+            <p style="color:var(--danger); font-size:11px; margin:0 0 10px 0;">การดึงเงินเก็บมาเปย์ จะทำให้เป้าหมายช้าลง<br>และ <b style="background:#fca5a5; padding:2px 4px; border-radius:4px; color:#991b1b;">จะถูกทำโทษหัก 50 แต้ม!</b><br>พิมพ์ <b>"ฉันตบะแตก"</b> ลงในช่องเพื่อยืนยัน</p>
             <input type="text" id="tfConfirmWord" placeholder="พิมพ์ ฉันตบะแตก" style="width:100%; padding:10px; border-radius:8px; border:1px solid #fca5a5; text-align:center; color:var(--danger); font-weight:bold;" onkeyup="checkFrictionWord()">
         </div>
         <button class="btn-main" id="btnTransferSubmit" onclick="processTransfer()">ยืนยันการโอน</button>
@@ -538,15 +617,27 @@
         
         <div style="max-height: 300px; overflow-y:auto; padding-right:5px;">
             <p style="font-size:11px; font-weight:bold; color:var(--gray-text); margin:0 0 5px 0;">📱 หมวดไอเทมในแอป</p>
-            <div class="reward-item" style="border:1px solid #e5e7eb; padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--bleu-porcelaine);">🎟️ โอน Essential เข้า Joy</h4><p style="margin:0; color:var(--gray-text);">ดึง 500฿ มาสมทบทุนแบบถูกกฎ</p></div><button class="btn-outline" style="border-color:var(--bleu-porcelaine); color:var(--bleu-porcelaine); font-size:10px;" onclick="buyReward('🎟️ โอน Essential เข้า Joy 500฿', 1500)">1500 แต้ม</button></div>
-            <div class="reward-item" style="border:1px solid #e5e7eb; padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--danger);">🧼 ล้างบาปประวัติ</h4><p style="margin:0; color:var(--gray-text);">ลบประวัติแหกกฎ 1 ครั้ง</p></div><button class="btn-outline" style="border-color:var(--danger); color:var(--danger); font-size:10px;" onclick="buyReward('🧼 น้ำยาล้างบาปลบประวัติ', 1000)">1000 แต้ม</button></div>
-            <div class="reward-item" style="border:1px solid #e5e7eb; padding:10px; border-radius:10px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--terre-cuite);">🍰 ซื้อของไร้สาระ</h4><p style="margin:0; color:var(--gray-text);">หักเงิน E ได้เลย AI ไม่ด่า!</p></div><button class="btn-outline" style="border-color:var(--terre-cuite); color:var(--terre-cuite); font-size:10px;" onclick="buyReward('🍰 อนุมัติของไร้สาระ 1 ชิ้น', 800)">800 แต้ม</button></div>
+            
+            <div class="reward-item" style="background:var(--nuage-de-lait); border:1px solid var(--miel-dore); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:11px;">
+                    <h4 style="margin:0; color:var(--espresso);">👑 VIP ข้ามตะกร้าดึงสติ</h4>
+                    <p style="margin:0; color:var(--gray-text);">ซื้อเลยไม่ต้องรอ ไม่เสียแต้มปรับ!</p>
+                </div>
+                <button class="btn-main" style="width:auto; background:var(--espresso); color:var(--miel-dore); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('👑 VIP ข้ามตะกร้าดึงสติ', 1500)">1500 แต้ม</button>
+            </div>
 
-            <p style="font-size:11px; font-weight:bold; color:var(--espresso); margin:0 0 5px 0;">🌍 หมวดทวงสิทธิ์ในโลกจริง</p>
+            <div class="reward-item" style="border:1px solid #e5e7eb; padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:11px;">
+                    <h4 style="margin:0; color:var(--bleu-porcelaine);">🎟️ บัตรผ่านโอนเงินข้ามถัง</h4>
+                    <p style="margin:0; color:var(--gray-text);">โอนเงินเก็บมาใช้ ไม่โดนหักแต้ม/ประจาน</p>
+                </div>
+                <button class="btn-outline" style="border-color:var(--bleu-porcelaine); color:var(--bleu-porcelaine); font-size:10px;" onclick="buyReward('🎟️ บัตรผ่านโอนเงินข้ามถัง', 1500)">1500 แต้ม</button>
+            </div>
+            <div class="reward-item" style="border:1px solid #e5e7eb; padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--danger);">🧼 ล้างบาปประวัติ</h4><p style="margin:0; color:var(--gray-text);">ลบประวัติแหกกฎ 1 ครั้ง</p></div><button class="btn-outline" style="border-color:var(--danger); color:var(--danger); font-size:10px;" onclick="buyReward('🧼 น้ำยาล้างบาปลบประวัติ', 1000)">1000 แต้ม</button></div>
+            
+            <p style="font-size:11px; font-weight:bold; color:var(--espresso); margin:15px 0 5px 0;">🌍 หมวดทวงสิทธิ์ในโลกจริง</p>
             <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">🤝 บังคับเพื่อนเปย์มื้อนี้</h4><p style="margin:0; color:var(--gray-text);">ยื่นจอนี้ให้เพื่อน/แฟน เลี้ยงข้าว!</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('🤝 บังคับเพื่อนเปย์มื้อนี้', 2000)">2000 แต้ม</button></div>
             <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">🚗 กลับบ้านฟรี 1 วัน</h4><p style="margin:0; color:var(--gray-text);">บังคับคนไปส่ง หรือให้จ่ายค่ารถให้</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('🚗 กลับบ้านฟรี 1 วัน (มีคนเปย์)', 1200)">1200 แต้ม</button></div>
-            <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">🛋️ ละเว้นงานบ้าน 1 วัน</h4><p style="margin:0; color:var(--gray-text);">วันนี้ไม่ล้างจาน! โยนให้คนอื่นทำ</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('🛋️ ละเว้นงานบ้าน 1 วัน', 1000)">1000 แต้ม</button></div>
-            <div class="reward-item" style="border:1px dashed var(--eau-trouble); background:var(--nuage-de-lait); padding:10px; border-radius:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px;"><h4 style="margin:0; color:var(--espresso);">🍲 สิทธิ์ขาดเลือกร้านข้าว</h4><p style="margin:0; color:var(--gray-text);">ห้ามมีคำว่า "อะไรก็ได้" ฉันเลือกเอง</p></div><button class="btn-main" style="width:auto; background:var(--eau-trouble); font-size:10px; padding:6px 10px; margin:0;" onclick="buyReward('🍲 สิทธิ์ขาดเลือกร้านข้าว (ห้ามเถียง)', 600)">600 แต้ม</button></div>
         </div>
         <h4 style="margin:15px 0 10px 0; font-size:13px;">🎒 คลังคูปองของฉัน</h4><div id="inventoryList" style="font-size:12px; color:var(--gray-text);"></div>
     </div>
@@ -569,8 +660,8 @@
 
 <div class="modal-overlay center-popup" id="wishlistModal" onclick="if(event.target===this) closeModal('wishlistModal')">
     <div class="modal-content center-popup">
-        <div class="modal-header"><h2>⏳ ตู้เย็นดองกิเลส</h2><button class="close-btn" onclick="closeModal('wishlistModal')">✕</button></div>
-        <p style="font-size:11px; color:var(--gray-text); margin-top:-10px;">รอครบ 7 วันค่อยตัดสินใจ (ลบทิ้งรับ +50 แต้ม!)</p>
+        <div class="modal-header"><h2>🛒 ตะกร้าดึงสติ</h2><button class="close-btn" onclick="closeModal('wishlistModal')">✕</button></div>
+        <p style="font-size:11px; color:var(--gray-text); margin-top:-10px;">รอครบเวลาค่อยตัดสินใจอีกที (ลบทิ้งรับโบนัส +50 แต้ม!)</p>
         <div id="wishlistContainer"></div>
     </div>
 </div>
@@ -832,6 +923,7 @@
             if(localStorage.getItem('wq18_profileImg')) profileImgBase64 = localStorage.getItem('wq18_profileImg');
             if(localStorage.getItem('wq18_streak')) streakCount = parseInt(localStorage.getItem('wq18_streak'));
             if(localStorage.getItem('wq18_lastLogin')) lastActiveDate = localStorage.getItem('wq18_lastLogin');
+            if(localStorage.getItem('wq18_cq')) { let cq = JSON.parse(localStorage.getItem('wq18_cq')); if(!stats.claimedQuests) stats.claimedQuests = cq; else stats.claimedQuests = cq; }
         } catch (e) { console.error("Error loading storage", e); }
         
         // Daily Streak Logic
@@ -865,6 +957,7 @@
         localStorage.setItem('wq18_stats', JSON.stringify(stats)); localStorage.setItem('wq18_incCat', JSON.stringify(incomeCats));
         localStorage.setItem('wq18_streak', streakCount); localStorage.setItem('wq18_lastLogin', lastActiveDate);
         localStorage.setItem('wq18_onboarded', 'true');
+        if(stats.claimedQuests) localStorage.setItem('wq18_cq', JSON.stringify(stats.claimedQuests));
     }
 
     // --- Backup & Restore ---
@@ -876,7 +969,13 @@
         document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active'); navElement.classList.add('active');
-        if(tabId === 'view-home') { renderCategories(); renderQuests(); renderWishlist(); }
+        
+        // Track page visits for quest system
+        let todayStr = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+        if(tabId === 'view-analytics') { stats.lastAnalyticViewDate = todayStr; autoCheckAndClaimQuests(); }
+        if(tabId === 'view-fixed') { stats.lastBillViewDate = todayStr; }
+        
+        if(tabId === 'view-home') { renderCategories(); renderWishlist(); }
         if(tabId === 'view-fixed') { renderFixedCosts(); renderYearlyFunds(); renderCreditBills(); }
     }
     
@@ -897,6 +996,10 @@
     function showToast(msg) { let t = document.getElementById('toastMsg'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
     function clearData() { if(confirm('รีเซ็ตข้อมูลทั้งหมดจริงดิบอส? (หายเกลี้ยงเลยนะ!)')) { localStorage.clear(); location.reload(); } }
 
+    // --- ตัวแปรสำหรับ VIP โอนเงิน ---
+    let vipTransferActive = false;
+    let vipTransferId = null;
+
     function updateUI() {
         document.getElementById('sub-growth').innerText = `ลงทุน (${cfg.g}%)`; document.getElementById('sub-security').innerText = `สำรอง (${cfg.s}%)`;
         document.getElementById('sub-essential').innerText = `จำเป็น (${cfg.e}%)`; document.getElementById('sub-joy').innerText = `รางวัล (${cfg.j}%)`;
@@ -904,11 +1007,17 @@
         document.getElementById('streakDisplay').innerText = `${streakCount} วัน`;
 
         ['growth', 'security', 'essential', 'joy'].forEach(tank => {
-            document.getElementById(`val-${tank}`).innerText = '฿' + currentBalances[tank].toLocaleString();
+            let valEl = document.getElementById(`val-${tank}`); if(valEl) valEl.innerText = '฿' + currentBalances[tank].toLocaleString();
             let pct = baseAmounts[tank] > 0 ? (currentBalances[tank] / baseAmounts[tank]) * 100 : 0;
-            let bar = document.getElementById(`bar-${tank}`); bar.style.height = `${Math.min(100, Math.max(0, pct))}%`; bar.innerText = pct > 5 ? Math.round(pct) + '%' : ''; 
+            let bar = document.getElementById(`bar-${tank}`); if(bar) { bar.style.height = `${Math.min(100, Math.max(0, pct))}%`; bar.innerText = pct > 5 ? Math.round(pct) + '%' : ''; }
         });
-        renderCategories(); renderFixedCosts(); renderYearlyFunds(); renderQuests(); renderWishlist(); renderInventory(); renderDebtLog(); renderCreditBills(); renderReceivables();
+        
+        // 🔥 รีเซ็ตเควสรายวันถ้าข้ามวัน (handled by initQuestStats)
+
+        renderCategories(); renderFixedCosts(); renderYearlyFunds(); renderWishlist(); renderInventory(); renderDebtLog(); renderCreditBills(); renderReceivables();
+        
+        // auto-check quests on any UI update
+        autoCheckAndClaimQuests();
         
         let liabilityDisplay = document.getElementById('totalLiabilityDisplay'); if(liabilityDisplay) liabilityDisplay.innerText = '฿' + totalLiability.toLocaleString();
         saveStorage();
@@ -1014,16 +1123,59 @@
     }
     
     function submitExpense() {
-        let amt = parseFloat(document.getElementById('exAmount').value); let pt = document.getElementById('exTank').value; let note = document.getElementById('exNote').value; if(!amt) return;
-        let payMethod = document.getElementById('exPayMethod').value; let emotion = pt === 'joy' ? document.getElementById('exEmotion').value : null; let needRating = pt === 'essential' ? parseInt(document.getElementById('exNeedRating').value) : null; let joyType = pt === 'joy' ? document.getElementById('exJoyType').value : null;
-        let isReimbursable = document.getElementById('isReimbursable') && document.getElementById('isReimbursable').checked; let reimbursableAmt = isReimbursable ? parseFloat(document.getElementById('exReimbursableAmt').value) || 0 : 0; let lendTo = isReimbursable ? document.getElementById('exLendTo').value || 'เพื่อน' : '';
+        let amt = parseFloat(document.getElementById('exAmount').value); 
+        let pt = document.getElementById('exTank').value; 
+        let note = document.getElementById('exNote').value; 
+        if(!amt) return;
+        
+        let payMethod = document.getElementById('exPayMethod').value; 
+        let emotion = pt === 'joy' ? document.getElementById('exEmotion').value : null; 
+        let needRating = pt === 'essential' ? parseInt(document.getElementById('exNeedRating').value) : null; 
+        let joyType = pt === 'joy' ? document.getElementById('exJoyType').value : null;
+        let isReimbursable = document.getElementById('isReimbursable') && document.getElementById('isReimbursable').checked; 
+        let reimbursableAmt = isReimbursable ? parseFloat(document.getElementById('exReimbursableAmt').value) || 0 : 0; 
+        let lendTo = isReimbursable ? document.getElementById('exLendTo').value || 'เพื่อน' : '';
+        
         if (isReimbursable && reimbursableAmt >= amt) return alert('บอส! ยอดที่จ่ายแทนคนอื่น ต้องน้อยกว่ายอดจ่ายรวมสิครับ!');
         
-        // 7-Day Rule Feature
-        if(pt === 'joy' && amt >= 2000) {
-            if(confirm(`⚠️ ยอด ฿${amt} สูงอยู่นะ!\nทฤษฎี 7-Day Rule: พักไว้ใน "ตู้เย็นดองกิเลส" 7 วัน ก่อนไหม?\n\n(กด OK เพื่อดอง / กด Cancel เพื่อยอมแพ้ไม่ซื้อ)`)) { 
-                wishlist.push({id: Date.now(), cat: activeExpenseCat, tank: pt, amount: amt, note, unlockAt: new Date().getTime() + (7*24*60*60*1000), payMethod, emotion, needRating}); 
-                updateUI(); closeModal('expenseModal'); showToast('⏳ ดองกิเลส 7 วัน สำเร็จ!'); return; 
+        // 🔥 ระบบตะกร้าดึงสติ (แบ่ง Tier ตามราคา)
+        if(pt === 'joy' && amt >= 700) {
+            let waitDays = 0;
+            let penaltyPoints = 0;
+            
+            // ตั้งค่า Tier ตามราคา
+            if(amt >= 700 && amt < 1000) { waitDays = 1; penaltyPoints = 100; }
+            else if(amt >= 1000 && amt < 2000) { waitDays = 3; penaltyPoints = 300; }
+            else if(amt >= 2000 && amt < 3000) { waitDays = 5; penaltyPoints = 500; }
+            else if(amt >= 3000) { waitDays = 7; penaltyPoints = 1000; }
+
+            // เช็คว่ามีบัตร VIP ในคลังไหม
+            let vipIndex = inventory.findIndex(i => i.name === '👑 VIP ข้ามตะกร้าดึงสติ');
+            
+            if (vipIndex !== -1) {
+                // กรณีมีบัตร VIP
+                if(confirm(`✨ คุณมี "บัตร VIP" อยู่ในคลัง!\nยอดนี้ปกติต้องดอง ${waitDays} วัน จะใช้บัตร VIP กดข้ามเพื่อซื้อทันทีเลยไหม?\n\n👉 กด OK = ใช้บัตร VIP (ซื้อได้เลย)\n👉 กด Cancel = ไม่ใช้บัตร (เก็บลงตะกร้า)`)) {
+                    inventory.splice(vipIndex, 1); // หักบัตรทิ้ง
+                    showToast('👑 ใช้บัตร VIP ข้ามกฎผ่านฉลุย!');
+                } else {
+                    wishlist.push({id: Date.now(), cat: activeExpenseCat, tank: pt, amount: amt, note, unlockAt: new Date().getTime() + (waitDays*24*60*60*1000), payMethod, emotion, needRating});
+                    updateUI(); closeModal('expenseModal'); showToast(`🛒 นำใส่ตะกร้า ${waitDays} วัน สำเร็จ!`); return;
+                }
+            } else {
+                // กรณีไม่มีบัตร VIP (เจอด่าน Friction 2 ชั้น)
+                if(confirm(`⚠️ ยอด ฿${amt.toLocaleString()} ถือว่าเอาเรื่องนะบอส!\nกติกาบังคับให้พักไว้ใน "ตะกร้าดึงสติ" ${waitDays} วัน\n\n👉 กด OK เพื่อ "เก็บลงตะกร้า" (รอเวลา)\n👉 กด Cancel เพื่อ "ฝืนซื้อเลย" (จะโดนลงโทษ!)`)) {
+                    wishlist.push({id: Date.now(), cat: activeExpenseCat, tank: pt, amount: amt, note, unlockAt: new Date().getTime() + (waitDays*24*60*60*1000), payMethod, emotion, needRating});
+                    updateUI(); closeModal('expenseModal'); showToast(`🛒 นำใส่ตะกร้า ${waitDays} วัน สำเร็จ!`); return;
+                } else {
+                    // ด่าน 2: ขู่หักแต้มถ้าจะฝืน
+                    if(confirm(`🚨 ยืนยันการฝืนกติกา?\nการซื้อชิ้นนี้จะทำให้คุณถูกหัก ${penaltyPoints} แต้มทันที!\n\n👉 กด OK เพื่อ "ยอมรับกรรมและซื้อ"\n👉 กด Cancel เพื่อ "ยอมแพ้ไม่ซื้อแล้ว (เซฟเงิน!)"`)) {
+                        userPoints = Math.max(0, userPoints - penaltyPoints);
+                        showToast(`🚨 ฝืนกติกา! โดนหัก ${penaltyPoints} แต้ม`);
+                        showGifOverlay('crosstank'); // เรียก GIF ตกใจขึ้นมาเตือน
+                    } else {
+                        closeModal('expenseModal'); showToast(`❌ ยกเลิก! เซฟเงินได้ ฿${amt.toLocaleString()}`); return;
+                    }
+                }
             }
         }
         
@@ -1052,33 +1204,113 @@
     }
 
     // --- Transfer & Sweep ---
-    function openTransferModal() { document.getElementById('tfAmt').value = ''; openModal('transferModal'); checkTransferFriction(); }
+    function openTransferModal() { 
+        document.getElementById('tfAmt').value = ''; 
+        document.getElementById('tfConfirmWord').value = ''; 
+        openModal('transferModal'); 
+        checkTransferFriction(); 
+    }
+    
     function checkTransferFriction() {
         let from = document.getElementById('tfFrom').value; let to = document.getElementById('tfTo').value;
         let frictionBox = document.getElementById('transferFrictionBox'); let submitBtn = document.getElementById('btnTransferSubmit'); let confirmWord = document.getElementById('tfConfirmWord');
+        
+        // ถ้าอยู่ในโหมด VIP ปิดกล่องลงโทษไปเลย เปลี่ยนปุ่มเป็นสีทอง
+        if (vipTransferActive) {
+            frictionBox.style.display = 'none'; 
+            submitBtn.style.background = 'var(--miel-dore)'; 
+            submitBtn.style.color = 'var(--espresso)'; 
+            submitBtn.innerText = '✨ ยืนยันการโอน (ใช้บัตร VIP)'; 
+            submitBtn.disabled = false;
+            return;
+        }
+
+        submitBtn.style.color = 'var(--white)'; submitBtn.innerText = 'ยืนยันการโอน';
         if ((from === 'growth' || from === 'security') && (to === 'joy' || to === 'essential')) {
             frictionBox.style.display = 'block'; submitBtn.style.background = '#ccc'; submitBtn.disabled = true; confirmWord.value = '';
-        } else { frictionBox.style.display = 'none'; submitBtn.style.background = 'var(--espresso)'; submitBtn.disabled = false; }
+        } else { 
+            frictionBox.style.display = 'none'; submitBtn.style.background = 'var(--espresso)'; submitBtn.disabled = false; 
+        }
     }
+
     function checkFrictionWord() {
+        if (vipTransferActive) return; // VIP ไม่ต้องพิมพ์
         let word = document.getElementById('tfConfirmWord').value; let submitBtn = document.getElementById('btnTransferSubmit');
-        if (word.trim() === 'ฉันตบะแตก') { submitBtn.style.background = 'var(--danger)'; submitBtn.disabled = false; } else { submitBtn.style.background = '#ccc'; submitBtn.disabled = true; }
+        if (word.trim() === 'ฉันตบะแตก') { submitBtn.style.background = 'var(--danger)'; submitBtn.disabled = false; } 
+        else { submitBtn.style.background = '#ccc'; submitBtn.disabled = true; }
     }
+
     function processTransfer() {
-        let from = document.getElementById('tfFrom').value; let to = document.getElementById('tfTo').value; let amt = parseFloat(document.getElementById('tfAmt').value);
-        if(from === to) return alert('เลือกกระเป๋าให้ต่างกันสิบอส!'); if(!amt || amt <= 0) return alert('กรอกจำนวนเงินให้ถูกต้องครับ');
-        if(currentBalances[from] < amt) return alert(`เงินใน ${from} ไม่พอโอนนะบอส!`);
-        currentBalances[from] -= amt; currentBalances[to] += amt;
-        transactions.push({ id: Date.now(), type: 'transfer', tank: from, toTank: to, amount: amt, cat: '↔️ โอนข้ามกระเป๋า', note: `จาก ${from} ไป ${to}`, dateObj: new Date().toISOString() });
-        saveStorage(); updateUI(); closeModal('transferModal'); showToast(`↔️ ย้ายเงิน ฿${amt} ไป ${to} สำเร็จ!`);
+        let f = document.getElementById('tfFrom').value; let t = document.getElementById('tfTo').value; let a = parseFloat(document.getElementById('tfAmt').value);
+        if(f === t) return alert('เลือกกระเป๋าให้ต่างกันสิบอส!'); if(!a || a <= 0) return alert('กรอกจำนวนเงินให้ถูกต้องครับ');
+        if(currentBalances[f] < a) return alert(`เงินใน ${f} ไม่พอโอนนะบอส!`);
+        
+        let isFriction = ((f==='growth'||f==='security') && (t==='joy'||t==='essential'));
+        
+        if(isFriction && !vipTransferActive) {
+            // ระบบลงโทษแบบออริจินัล
+            let reason = prompt('⚠️ AI ขอเหตุผลหน่อย ทำไมถึงดึงเงินเก็บมาใช้? (พิมพ์สั้นๆ ให้รู้สึกผิดนะ):');
+            if(!reason) { alert('ไม่ยอมบอกเหตุผล ก็ไม่อนุมัติให้โอนครับ!'); return; }
+            
+            userPoints = Math.max(0, userPoints - 50); // หัก 50 แต้ม
+            stats.crossTankCount++;
+            
+            transactions.push({ id: Date.now(), type: 'transfer', tank: f, toTank: t, amount: a, cat: '🚨 โอนแหกกฎ', note: `เหตุผล: ${reason}`, dateObj: new Date().toISOString() });
+            showToast('🚨 โอนเงินสำเร็จ! โดนหัก 50 แต้ม และบันทึกประวัติแหกกฎแล้ว!');
+            showGifOverlay('crosstank');
+        } else if (vipTransferActive) {
+            // ระบบ VIP โอนผ่านฉลุย
+            inventory = inventory.filter(x => x.id !== vipTransferId); // ลบบัตรทิ้ง
+            vipTransferActive = false; vipTransferId = null; // คืนค่าสถานะ
+            
+            transactions.push({ id: Date.now(), type: 'transfer', tank: f, toTank: t, amount: a, cat: '✨ โอนข้ามกระเป๋า (VIP)', note: `ใช้บัตรผ่านจาก ${f} ไป ${t}`, dateObj: new Date().toISOString() });
+            showToast(`✨ ย้ายเงิน ฿${a} ไป ${t} สำเร็จโดยไม่โดนทำโทษ!`);
+        } else {
+            // โอนปกติ (ไปลงทุน/ไปเก็บ)
+            transactions.push({ id: Date.now(), type: 'transfer', tank: f, toTank: t, amount: a, cat: '↔️ โอนข้ามกระเป๋า', note: `จาก ${f} ไป ${t}`, dateObj: new Date().toISOString() });
+            showToast(`↔️ ย้ายเงิน ฿${a} ไป ${t} สำเร็จ!`);
+        }
+
+        currentBalances[f] -= a; currentBalances[t] += a;
+        
+        // รีเซ็ตหน้าต่างกลับเป็นแบบปกติเผื่อเปิดครั้งหน้า
+        let submitBtn = document.getElementById('btnTransferSubmit');
+        submitBtn.style.color = 'var(--white)'; submitBtn.innerText = 'ยืนยันการโอน';
+        vipTransferActive = false;
+
+        saveStorage(); updateUI(); closeModal('transferModal'); 
     }
 
     function sweepChange() {
-        let eChange = currentBalances.essential % 100; let jChange = currentBalances.joy % 100; let total = eChange + jChange;
-        if(total <= 0) return alert('ไม่มีเศษให้ปัดครับลงตัวเป๊ะ!');
-        currentBalances.essential -= eChange; currentBalances.joy -= jChange; currentBalances.growth += total;
-        transactions.push({ id: Date.now(), type: 'income', tank: 'growth', amount: total, cat: 'กวาดเศษเหรียญ', dateObj: new Date().toISOString() });
-        userPoints += 20; updateUI(); showToast(`🧹 ปัดเศษ ฿${total} ไปลงทุน! รับโบนัส 20 แต้ม`);
+        // หาเศษหลักหน่วยและสิบ (หารเอาเศษ 100) จากทั้ง 3 กระเป๋า
+        let eChange = currentBalances.essential % 100; 
+        let jChange = currentBalances.joy % 100; 
+        let sChange = currentBalances.security % 100; 
+        let total = eChange + jChange + sChange;
+        
+        if(total <= 0) return alert('ไม่มีเศษให้ปัดครับ ลงตัวเป๊ะ!');
+        
+        // ถ้ามีเศษกระเป๋าไหน ให้โอนไป Growth พร้อมเก็บประวัติ
+        if(eChange > 0) {
+            currentBalances.essential -= eChange; 
+            currentBalances.growth += eChange;
+            transactions.push({ id: Date.now() + Math.random(), type: 'transfer', tank: 'essential', toTank: 'growth', amount: eChange, cat: '🧹 ปัดเศษเหรียญ', note: 'ปัดจาก Essential', dateObj: new Date().toISOString() });
+        }
+        if(jChange > 0) {
+            currentBalances.joy -= jChange; 
+            currentBalances.growth += jChange;
+            transactions.push({ id: Date.now() + Math.random(), type: 'transfer', tank: 'joy', toTank: 'growth', amount: jChange, cat: '🧹 ปัดเศษเหรียญ', note: 'ปัดจาก Joy', dateObj: new Date().toISOString() });
+        }
+        if(sChange > 0) {
+            currentBalances.security -= sChange; 
+            currentBalances.growth += sChange;
+            transactions.push({ id: Date.now() + Math.random(), type: 'transfer', tank: 'security', toTank: 'growth', amount: sChange, cat: '🧹 ปัดเศษเหรียญ', note: 'ปัดจาก Security', dateObj: new Date().toISOString() });
+        }
+        
+        userPoints += 20; 
+        saveStorage();
+        updateUI(); 
+        showToast(`🧹 ปัดเศษรวม ฿${total} ไปลงทุน! รับโบนัส 20 แต้ม`); 
     }
 
     // --- Bulk Entry ---
@@ -1103,7 +1335,7 @@
                 if(currentBalances[tank] >= amt) {
                     currentBalances[tank] -= amt; let em = tank==='joy' ? '🤩 อยากให้รางวัลตัวเอง' : null; let nr = tank==='essential' ? 3 : null;
                     if(tank === 'growth') stats.monthlyGrowthTouched = true;
-                    transactions.push({ id: Date.now()+Math.random(), type:'expense', dateObj: finalDateObj, tank: tank, amount: amt, cat: cat, note: 'Daily Dump', payMethod: 'สแกนจ่าย/โอน', emotion: em, needRating: nr, creditPaid: false });
+                    transactions.push({ id: Date.now()+Math.random(), type:'expense', dateObj: finalDateObj, tank: tank, amount: amt, cat: cat, note: 'Daily Dump', payMethod: 'สแกนจ่าย/โอน', emotion: em, needRating: nr, creditPaid: false, isBulk: true });
                     successCount++;
                 } else { errCount++; }
             }
@@ -1178,10 +1410,21 @@
     function renderInventory() { let inv = document.getElementById('inventoryList'); inv.innerHTML = ''; if(!inventory || inventory.length === 0) { inv.innerHTML = '<p style="text-align:center; font-size:12px;">ยังไม่มีคูปอง</p>'; return; } inventory.forEach(i => { inv.innerHTML += `<div style="background:var(--nuage-de-lait); border:1px solid var(--eau-trouble); padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><span style="color:var(--espresso); font-weight:bold; font-size:11px;">🎟️ ${i.name}</span><button class="btn-main" style="width:auto; padding:4px 12px; margin:0; background:var(--eau-trouble); font-size:11px;" onclick="useReward(${i.id}, '${i.name}')">ใช้สิทธิ์</button></div>`; }); }
     function useReward(id, name) { 
         if(confirm(`คุณต้องการใช้คูปอง "${name}" ตอนนี้เลยใช่ไหม? (ใช้แล้วจะหายไปนะ)`)) { 
-            if(name === '🎟️ โอน Essential เข้า Joy 500฿') {
-                if(currentBalances.essential < 500) return alert('บอส! เงินใน Essential ไม่พอ 500฿ ให้โยกนะ'); currentBalances.essential -= 500; currentBalances.joy += 500;
-                transactions.push({ id: Date.now(), type: 'income', tank: 'joy', amount: 500, cat: '🎟️ โยกเงินด้วยแต้ม', note: 'รับจาก Essential', dateObj: new Date().toISOString() });
-                transactions.push({ id: Date.now()+1, type: 'expense', tank: 'essential', amount: 500, cat: '🎟️ จ่ายแต้มโยกเงิน', note: 'โอนไป Joy', payMethod: 'เงินสด', dateObj: new Date().toISOString(), creditPaid: false });
+            
+            if(name === '👑 VIP ข้ามตะกร้าดึงสติ') {
+                alert('👉 บัตร VIP นี้ ต้องไปกดใช้ในหน้า "ตะกร้าดึงสติ" นะครับบอส!\n(ปุ่ม "รอเวลา" จะเปลี่ยนเป็นปุ่ม "👑 ใช้ VIP ซื้อเลย" ให้กดได้ทันทีครับ)');
+                return; 
+            }
+            
+            // 🎫 ใช้บัตร VIP โอนเงิน
+            if(name === '🎟️ บัตรผ่านโอนเงินข้ามถัง') {
+                vipTransferActive = true;
+                vipTransferId = id;
+                closeModal('rewardShopModal');
+                openModal('transferModal');
+                checkTransferFriction();
+                showToast('✨ โหมด VIP: โอนเงินข้ามถังโดยไม่ต้องพิมพ์สารภาพบาป!');
+                return; // ยังไม่ลบบัตร ให้ไปลบตอนกดยืนยันโอนเสร็จ
             }
             else if(name === '🧼 น้ำยาล้างบาปลบประวัติ') { if(stats.crossTankCount <= 0) return alert('ประวัติบอสขาวสะอาดอยู่แล้วครับ! เก็บน้ำยาไว้ใช้ตอนพลาดเถอะนะ'); stats.crossTankCount -= 1; alert('✨ ล้างบาปสำเร็จ! AI ลืมไปแล้วว่าบอสเคยดึงเงินข้ามถัง 1 ครั้ง สบายใจได้!'); }
             else if(name === '🤝 บังคับเพื่อนเปย์มื้อนี้' || name === '🚗 กลับบ้านฟรี 1 วัน (มีคนเปย์)' || name === '🍲 สิทธิ์ขาดเลือกร้านข้าว (ห้ามเถียง)' || name === '🛋️ ละเว้นงานบ้าน 1 วัน') { alert(`🎉 ยินดีด้วยบอส!! รีบเปิดหน้าจอนี้ค้างไว้ แล้วเอาไปยื่นใส่หน้าเป้าหมาย เพื่อทวงสิทธิ์คูปอง:\n\n👉 "${name}"\n\n(ไม่ต้องจดลงแอป เพราะมีคนรับจบให้แล้ว 🤣)`); }
@@ -1189,23 +1432,282 @@
                 let cost = prompt(`ใช้สิทธิ์ VIP! บอสซื้อรายการนี้ไปกี่บาท? (เดี๋ยวระบบแอบหักเงินให้ยอดตรงกับธนาคารแบบเงียบๆ AI จะไม่ว่าครับ)`); let amt = parseFloat(cost); if(isNaN(amt) || amt <= 0) return alert('ใส่ตัวเลขไม่ถูกต้อง คูปองยังไม่ถูกใช้นะบอส!'); if(currentBalances.essential < amt) return alert('บอส! เงินใน Essential ไม่พอหักนะ!'); currentBalances.essential -= amt;
                 transactions.push({ id: Date.now(), type:'expense', dateObj: new Date().toISOString(), tank: 'essential', amount: amt, cat: `🎁 VIP: ใช้คูปองแต้มแลกมา`, note: name, payMethod: 'สแกนจ่าย/โอน', emotion: '🤩 อยากให้รางวัลตัวเอง', needRating: 5, creditPaid: false, isCross: false }); alert(`หักเงิน ฿${amt} ออกจากกระเป๋าเรียบร้อย ยอดตรงเป๊ะ บอสกินให้อร่อยไม่ต้องรู้สึกผิด!`);
             }
+            
             inventory = inventory.filter(x => x.id !== id); saveStorage(); updateUI(); showToast(`✅ ใช้สิทธิ์ "${name}" เรียบร้อยแล้ว!`); 
         } 
     }
 
     // --- 7. Quests & Wishlist ---
-    function renderWishlist() { let c = document.getElementById('wishlistContainer'); c.innerHTML = ''; if(wishlist.length===0) c.innerHTML = '<p style="text-align:center; color:#888; font-size:12px;">ไม่มีของดอง เก่งมากบอส!</p>'; let now = new Date().getTime(); wishlist.forEach(w => { let remain = Math.max(0, Math.ceil((w.unlockAt - now)/(1000*60*60*24))); let btn = remain <= 0 ? `<button class="btn-main" style="padding:5px; background:var(--success); font-size:11px;" onclick="buyWishlist(${w.id})">ซื้อเลย!</button>` : `<button class="btn-main" style="padding:5px; background:#ddd; color:#888; font-size:11px;" disabled>รอ ${remain} วัน</button>`; c.innerHTML += `<div class="list-item" style="border-left: 4px solid var(--eau-trouble); padding: 10px; border-radius: 8px; margin-top: 10px; background:var(--nuage-de-lait); border-top:1px solid #cbd5e1; border-right:1px solid #cbd5e1; border-bottom:1px solid #cbd5e1;"><h4 style="color:var(--espresso); margin:0;">${w.cat} (฿${w.amount})</h4><div style="display:flex; gap:10px; margin-top:5px;"><button class="btn-outline" style="padding:5px; color:var(--danger); border-color:var(--danger);" onclick="deleteWishlist(${w.id}, ${w.amount})">ลบทิ้ง (+50 แต้ม)</button>${btn}</div></div>`; }); }
+    function renderWishlist() { 
+        let c = document.getElementById('wishlistContainer'); 
+        let countBadge = document.getElementById('wishlistCount');
+        if(countBadge) countBadge.innerText = wishlist.length; 
+
+        c.innerHTML = ''; 
+        if(wishlist.length === 0) {
+            c.innerHTML = '<p style="text-align:center; color:var(--gray-text); font-size:12px; margin-top:20px;">ไม่มีของดอง เก่งมากบอส!</p>'; 
+        }
+        
+        let now = new Date().getTime(); 
+        
+        // 🔍 เช็คว่ามีบัตร VIP ในคลังไหม?
+        let hasVip = inventory.some(i => i.name === '👑 VIP ข้ามตะกร้าดึงสติ');
+
+        wishlist.forEach(w => { 
+            let remain = Math.max(0, Math.ceil((w.unlockAt - now)/(1000*60*60*24))); 
+            let btn = '';
+            
+            if (remain <= 0) {
+                // ครบกำหนดแล้ว ซื้อได้ปกติ
+                btn = `<button class="btn-main" style="padding:6px 10px; margin:0; background:var(--success); font-size:11px; width:auto;" onclick="buyWishlist(${w.id})">ซื้อเลย!</button>`;
+            } else if (hasVip) {
+                // ยังไม่ครบกำหนด แต่มีบัตร VIP!
+                btn = `<button class="btn-main" style="padding:6px 10px; margin:0; background:var(--espresso); color:var(--miel-dore); border:1px solid var(--miel-dore); font-size:11px; width:auto;" onclick="useVipOnWishlist(${w.id})">👑 ใช้ VIP ซื้อเลย</button>`;
+            } else {
+                // ติดดอง และไม่มีบัตร
+                btn = `<button class="btn-main" style="padding:6px 10px; margin:0; background:#e2e8f0; color:var(--gray-text); font-size:11px; width:auto;" disabled>รอ ${remain} วัน</button>`;
+            }
+            
+            c.innerHTML += `
+            <div class="list-item" style="border-left: 4px solid var(--eau-trouble); padding: 12px; border-radius: 10px; margin-top: 10px; background:var(--nuage-de-lait); border-top:1px solid #cbd5e1; border-right:1px solid #cbd5e1; border-bottom:1px solid #cbd5e1;">
+                <div style="flex:1;">
+                    <h4 style="color:var(--espresso); margin:0 0 5px 0; font-size:13px;">${w.cat}</h4>
+                    <span style="font-weight:bold; color:var(--danger); font-size:15px;">฿${w.amount.toLocaleString()}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+                    ${btn}
+                    <button style="background:transparent; border:none; padding:0; color:var(--gray-text); text-decoration:underline; font-size:10px; cursor:pointer;" onclick="deleteWishlist(${w.id}, ${w.amount})">ลบทิ้ง (+50 แต้ม)</button>
+                </div>
+            </div>`; 
+        }); 
+    }
+
+    // 🌟 ฟังก์ชันใหม่: จัดการตอนกดใช้ VIP ในตะกร้า
+    function useVipOnWishlist(id) {
+        let vipIndex = inventory.findIndex(i => i.name === '👑 VIP ข้ามตะกร้าดึงสติ');
+        if (vipIndex === -1) return alert('อ้าว! บัตร VIP หายไปไหนแล้ว?');
+        
+        if(confirm('👑 ยืนยันใช้บัตร VIP 1 ใบ เพื่อปลดล็อคและซื้อของชิ้นนี้ทันทีใช่ไหม?')) {
+            inventory.splice(vipIndex, 1); // หักบัตรทิ้ง 1 ใบ
+            saveStorage();
+            renderInventory(); // อัปเดตคลัง
+            buyWishlist(id); // ทำการหักเงินและเอาออกจากตะกร้า
+            showToast('👑 ปลดล็อคด้วยบัตร VIP สำเร็จ!');
+        }
+    }
+
     function buyWishlist(id) { let w = wishlist.find(x=>x.id===id); if(!w) return; wishlist = wishlist.filter(x=>x.id!==id); stats.temptationYieldedCount++; executePayment(w.amount, w.tank, w.note, w.cat, w.payMethod, w.emotion, w.needRating); renderWishlist(); closeModal('wishlistModal'); }
     function deleteWishlist(id, amt) { wishlist = wishlist.filter(x=>x.id!==id); stats.savedFromTemptation += amt; stats.temptationAbandonedCount++; userPoints += 50; updateUI(); showToast('🎉 ชนะกิเลสตัวเองได้แล้ว! รับโบนัส 50 แต้ม'); saveStorage(); showGifOverlay('wishlist_delete'); }
 
-    function initQuests() { if(!activeQuests || activeQuests.length === 0) { activeQuests = []; activeQuests.push(questPool[0], questPool[1]); } }
-    function renderQuests() {
-        let ql = document.getElementById('questList'); ql.innerHTML = '';
-        activeQuests.forEach((q, idx) => { let chk = q.done ? 'checked' : ''; let classes = q.done ? 'quest-item completed' : 'quest-item'; ql.innerHTML += `<div class="${classes}"><div style="display:flex; gap:10px; align-items:center;"><input type="checkbox" ${chk} onchange="toggleQuest(${idx}, this.checked)"> <div><strong style="color:var(--espresso);">${q.title}</strong><br><span style="color:var(--gray-text); font-size:10px;">🎁 +${q.pts} แต้ม</span></div></div> <button class="btn-outline" style="padding:2px 5px; font-size:10px; border-color:var(--gray-text); color:var(--gray-text);" onclick="skipQuest(${idx})">🔄</button></div>`; });
+    // --- 7. AUTO QUEST SYSTEM ---
+    // กำหนดภารกิจทั้งหมด (ระบบตรวจสอบและให้แต้มอัตโนมัติ)
+    const QUEST_DEFS = [
+        // ======= รายวัน (daily) =======
+        { id: 'daily_login',       cat: 'daily',    icon: '📱', title: 'เปิดแอปวันนี้',                pts: 5,   desc: 'เพียงแค่เข้าแอป ก็ได้แต้มแล้ว!',               check: () => true },
+        { id: 'daily_log_expense', cat: 'daily',    icon: '✏️', title: 'บันทึกรายจ่ายวันนี้',           pts: 10,  desc: 'จดรายจ่ายอย่างน้อย 1 รายการวันนี้',            check: () => { let t = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}); return transactions.some(x => x.type==='expense' && new Date(x.dateObj).toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'})===t); } },
+        { id: 'daily_view_analytic', cat: 'daily', icon: '📊', title: 'เปิดดูหน้าสรุปผลวันนี้',        pts: 15,  desc: 'กดเข้าหน้า "สรุปผล" อย่างน้อยวันละครั้ง',       check: () => { let t = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}); return (stats.lastAnalyticViewDate || '') === t; } },
+        { id: 'daily_no_joy',      cat: 'daily',    icon: '🚫', title: 'วันนี้ไม่จ่ายเงิน Joy เลย',     pts: 20,  desc: 'ผ่านไป 1 วันโดยไม่แตะกระเป๋า Joy',             check: () => { let t = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}); return !transactions.some(x => x.type==='expense' && x.tank==='joy' && new Date(x.dateObj).toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'})===t); } },
+        { id: 'daily_check_bills', cat: 'daily',    icon: '📅', title: 'เข้าดูหน้าบิลวันนี้',           pts: 5,   desc: 'กดเข้าหน้า "บิล/เป้า" เพื่อเช็คสถานะ',          check: () => { let t = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}); return (stats.lastBillViewDate || '') === t; } },
+
+        // ======= Streak (ต่อเนื่อง) =======
+        // รวมวันเข้าแอปสะสมตลอดกาล (ไม่ต้องติดต่อกัน)
+        { id: 'total_days_10',  cat: 'streak', icon: '📅', title: 'เข้าแอปรวม 10 วัน (ไม่ต้องติดกัน)',  pts: 50,  desc: 'เข้าใช้งานสะสมครบ 10 วัน',          check: () => getTotalDaysUsed() >= 10 },
+        { id: 'total_days_20',  cat: 'streak', icon: '📅', title: 'เข้าแอปรวม 20 วัน',                  pts: 80,  desc: 'เข้าใช้งานสะสมครบ 20 วัน',          check: () => getTotalDaysUsed() >= 20 },
+        { id: 'total_days_30',  cat: 'streak', icon: '🗓️', title: 'เข้าแอปรวม 30 วัน',                  pts: 120, desc: 'ใช้งานครบ 1 เดือนรวม!',              check: () => getTotalDaysUsed() >= 30 },
+        { id: 'total_days_50',  cat: 'streak', icon: '🗓️', title: 'เข้าแอปรวม 50 วัน',                  pts: 200, desc: 'ครึ่งร้อยวันแล้วบอส!',               check: () => getTotalDaysUsed() >= 50 },
+        { id: 'total_days_60',  cat: 'streak', icon: '🏅', title: 'เข้าแอปรวม 60 วัน',                  pts: 250, desc: '2 เดือนสะสม เริ่มเป็นนิสัย!',        check: () => getTotalDaysUsed() >= 60 },
+        { id: 'total_days_90',  cat: 'streak', icon: '🏅', title: 'เข้าแอปรวม 90 วัน',                  pts: 400, desc: '3 เดือนรวม นิสัยติดตัวแล้ว!',        check: () => getTotalDaysUsed() >= 90 },
+        { id: 'total_days_100', cat: 'streak', icon: '🏆', title: 'เข้าแอปรวม 100 วัน',                 pts: 500, desc: 'หลักร้อยวัน! Legend แห่งการมีสติ!',  check: () => getTotalDaysUsed() >= 100 },
+        // Streak ต่อเนื่อง (reset ถ้า streak หาย แล้วสร้างใหม่จนถึง tier → รับได้อีก)
+        { id: 'streak_3',          cat: 'streak',   icon: '🔥', title: 'เข้าแอป 3 วันติดต่อกัน',        pts: 30,  desc: 'สะสม Streak ถึง 3 วัน',                         check: () => streakCount >= 3 },
+        { id: 'streak_5',          cat: 'streak',   icon: '🔥', title: 'เข้าแอป 5 วันติดต่อกัน',        pts: 80,  desc: 'สะสม Streak ถึง 5 วัน',                         check: () => streakCount >= 5 },
+        { id: 'streak_7',          cat: 'streak',   icon: '🔥', title: 'เข้าแอป 7 วันติดต่อกัน',        pts: 150, desc: '1 สัปดาห์เต็มไม่ขาด! เก่งมากบอส',               check: () => streakCount >= 7 },
+        { id: 'streak_14',         cat: 'streak',   icon: '🔥', title: 'เข้าแอป 14 วันติดต่อกัน',       pts: 300, desc: '2 สัปดาห์ติดต่อกัน สุดยอด!',                    check: () => streakCount >= 14 },
+        { id: 'streak_30',         cat: 'streak',   icon: '💎', title: 'เข้าแอป 30 วันติดต่อกัน',       pts: 700, desc: '1 เดือนเต็ม! บอสอาชีพมากเลย',                   check: () => streakCount >= 30 },
+        { id: 'log_3days',         cat: 'streak',   icon: '📝', title: 'บันทึกรายจ่าย 3 วันติดกัน',     pts: 50,  desc: 'มีข้อมูลรายจ่ายครบ 3 วันต่อเนื่อง',              check: () => checkConsecutiveExpenseDays(3) },
+        { id: 'log_7days',         cat: 'streak',   icon: '📝', title: 'บันทึกรายจ่าย 7 วันติดกัน',     pts: 200, desc: 'มีข้อมูลรายจ่ายครบ 7 วันต่อเนื่อง',              check: () => checkConsecutiveExpenseDays(7) },
+
+        // ======= Milestone (ครั้งแรก/จำนวน) =======
+        { id: 'mile_first_income', cat: 'milestone', icon: '💰', title: 'บันทึกรายรับครั้งแรก',         pts: 50,  desc: 'กรอกรายรับเป็นครั้งแรกในชีวิต',                 check: () => transactions.some(x => x.type==='main_income') },
+        { id: 'mile_tx_10',        cat: 'milestone', icon: '📝', title: 'บันทึกรายการรวม 10 รายการ',    pts: 30,  desc: 'จดรายจ่ายครบ 10 รายการ',                         check: () => transactions.filter(x=>x.type==='expense').length >= 10 },
+        { id: 'mile_tx_30',        cat: 'milestone', icon: '📝', title: 'บันทึกรายการรวม 30 รายการ',    pts: 100, desc: 'จดรายจ่ายครบ 30 รายการ',                         check: () => transactions.filter(x=>x.type==='expense').length >= 30 },
+        { id: 'mile_tx_50',        cat: 'milestone', icon: '🏅', title: 'บันทึกรายการรวม 50 รายการ',    pts: 200, desc: 'จดรายจ่ายครบ 50 รายการ นักบัญชีตัวจริง!',       check: () => transactions.filter(x=>x.type==='expense').length >= 50 },
+        { id: 'mile_tx_100',       cat: 'milestone', icon: '🏆', title: 'บันทึกรายการรวม 100 รายการ',   pts: 500, desc: 'ครบ 100 รายการ! Legendary!',                     check: () => transactions.filter(x=>x.type==='expense').length >= 100 },
+        { id: 'mile_sweep',        cat: 'milestone', icon: '🧹', title: 'ปัดเศษเข้า Growth ครั้งแรก',  pts: 30,  desc: 'กดปุ่ม "ปัดเศษ" เพื่อโยนเศษไปลงทุน',           check: () => transactions.some(x => x.cat === '🧹 ปัดเศษเหรียญ') },
+        { id: 'mile_set_goal',     cat: 'milestone', icon: '🎯', title: 'ตั้งเป้าหมาย Joy หรือ Security',pts:30,  desc: 'ตั้งชื่อเป้าหมายไว้ในหน้าประวัติถัง',            check: () => (joyGoal.name && joyGoal.target > 0) || (secGoal.name && secGoal.target > 0) },
+        { id: 'mile_add_bill',     cat: 'milestone', icon: '📋', title: 'เพิ่มบิลประจำครั้งแรก',        pts: 30,  desc: 'เพิ่มบิล/ผ่อนในหน้า "บิล/เป้า"',               check: () => fixedCosts.length > 1 },
+        { id: 'mile_add_yearly',   cat: 'milestone', icon: '🗓️', title: 'ตั้งกองทุนรายปีครั้งแรก',      pts: 50,  desc: 'เพิ่มเป้าหมายรายปี เช่น ประกัน, ภาษี',          check: () => yearlyFunds.length > 1 },
+        { id: 'mile_wishlist_win', cat: 'milestone', icon: '🧘', title: 'ชนะกิเลส! ลบของดองออก',        pts: 50,  desc: 'ลบรายการออกจากตะกร้าดึงสติ (ไม่ซื้อแล้ว)',       check: () => stats.temptationAbandonedCount >= 1 },
+        { id: 'mile_wishlist_3',   cat: 'milestone', icon: '💪', title: 'ชนะกิเลส 3 ครั้ง',             pts: 150, desc: 'ลบของออกจากตะกร้าครบ 3 รายการ',                  check: () => stats.temptationAbandonedCount >= 3 },
+        { id: 'mile_pay_debt',     cat: 'milestone', icon: '🤝', title: 'คืนหนี้สำเร็จครั้งแรก',        pts: 100, desc: 'กดคืนหนี้ในหน้า "หนี้สิน" สำเร็จ',              check: () => transactions.some(x => x.type==='debt_payment') },
+        { id: 'mile_debt_zero',    cat: 'milestone', icon: '🎉', title: 'หนี้สินเป็น ฿0!',              pts: 500, desc: 'ปลดหนี้ทุกอย่างได้สำเร็จ!',                      check: () => totalLiability <= 0 && transactions.some(x=>x.type==='debt_payment') },
+
+        // ======= พฤติกรรมการเงินดี =======
+        { id: 'beh_no_growth_touch', cat: 'behavior', icon: '🌱', title: 'ไม่แตะกระเป๋า Growth เลยเดือนนี้', pts: 200, desc: 'ไม่มีรายจ่ายจากถัง Growth ตลอดรอบบิล',      check: () => !stats.monthlyGrowthTouched },
+        { id: 'beh_joy_to_growth',   cat: 'behavior', icon: '🚀', title: 'โอนเงิน Joy เหลือไปลงทุน',    pts: 150, desc: 'โอนเงินจาก Joy ไปยัง Growth ได้ (ยับยั้งชั่งใจ!)', check: () => transactions.some(x => x.type==='transfer' && x.tank==='joy' && x.toTank==='growth') },
+        { id: 'beh_no_cross',        cat: 'behavior', icon: '🛡️', title: 'ไม่ดึงเงินข้ามถังเลย',         pts: 100, desc: 'ตลอดทั้งรอบบิลไม่มีการแหกกฎโอนข้ามถัง',       check: () => stats.crossTankCount === 0 },
+        { id: 'beh_credit_paid',     cat: 'behavior', icon: '💳', title: 'จ่ายบิลบัตรเครดิตครบ',         pts: 80,  desc: 'กดจ่ายบิลรอตัดบัญชีสำเร็จอย่างน้อย 1 รายการ', check: () => transactions.some(x => x.creditPaid === true) },
+        { id: 'beh_yearly_fund',     cat: 'behavior', icon: '🗄️', title: 'หยอดกองทุนรายปีครบเดือนนี้',  pts: 60,  desc: 'กดหยอดกองทุนรายปีอย่างน้อย 1 ครั้ง',           check: () => transactions.some(x => x.cat && x.cat.includes('กองทุนรายปี')) },
+        { id: 'beh_bulk_entry',      cat: 'behavior', icon: '📦', title: 'ใช้ Daily Dump บันทึกรวบยอด',   pts: 20,  desc: 'กดปุ่ม "รวบยอด" บันทึกรายจ่ายหลายรายการทีเดียว', check: () => transactions.some(x => x.isBulk === true) },
+        { id: 'beh_low_fixed_pct',   cat: 'behavior', icon: '📉', title: 'บิลประจำไม่เกิน 15% ของรายรับ', pts: 100, desc: 'ควบคุมบิลประจำให้อยู่ในเกณฑ์ปลอดภัย',          check: () => { if(totalIncomeThisMonth <= 0) return false; let total=fixedCosts.reduce((s,f)=>s+f.amount,0); return total/totalIncomeThisMonth <= 0.15; } },
+        { id: 'beh_sunday_review',   cat: 'behavior', icon: '🗓️', title: 'ดูสรุปวันอาทิตย์',             pts: 25,  desc: 'เปิดหน้าสรุปผลในวันอาทิตย์',                    check: () => { let d = new Date(); return d.getDay() === 0 && (stats.lastAnalyticViewDate || '') === d.toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}); } },
+    ];
+
+    // ติดตามสถานะ quest ที่เคลมไปแล้ว (daily reset ทุกวัน, milestone/streak ไม่ reset)
+    // stats.claimedQuests = { daily: { date: '2025-01-01', ids: [] }, milestone: [], streak: [] }
+
+    function checkConsecutiveExpenseDays(n) {
+        let days = new Set(transactions.filter(x=>x.type==='expense').map(x => new Date(x.dateObj).toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'})));
+        let today = new Date(); let count = 0;
+        for(let i = 0; i < 60; i++) {
+            let d = new Date(today); d.setDate(today.getDate() - i);
+            if(days.has(d.toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'}))) count++;
+            else break;
+        }
+        return count >= n;
     }
-    function toggleQuest(index, isDone) { if(!isDone) return; let q = activeQuests[index]; q.done = true; userPoints += q.pts; showToast(`🎉 สำเร็จเควสต์! รับ +${q.pts} แต้ม`); renderQuests(); setTimeout(() => { skipQuest(index); }, 800); }
-    function skipQuest(index) { let excludeIds = activeQuests.map(x=>x.id); let available = questPool.filter(q => !excludeIds.includes(q.id)); if(available.length === 0) activeQuests[index] = {...questPool[0], done: false, id: Date.now() + Math.random()}; else { let r = Math.floor(Math.random() * available.length); activeQuests[index] = {...available[r], done: false, id: Date.now() + Math.random()}; } updateUI(); }
-    function addCustomQuest() { let n = document.getElementById('cqName').value; let diff = parseInt(document.getElementById('cqDiff').value) || 30; if(n) { let newQ = {id: Date.now(), title: n, pts: diff, done: false}; questPool.push(newQ); activeQuests[0] = newQ; updateUI(); closeModal('customQuestModal'); showToast('ลุยเควสต์ใหม่ได้เลย!'); } }
+
+    function getTotalDaysUsed() {
+        // นับจากจำนวน unique วันที่เคยเข้าแอป เก็บใน stats.totalLoginDays (Set เก็บเป็น array)
+        if(!stats.loginDaySet) stats.loginDaySet = [];
+        return stats.loginDaySet.length;
+    }
+
+    function initQuestStats() {
+        if(!stats.claimedQuests) stats.claimedQuests = { daily: { date: '', ids: [] }, milestone: [], streak: { ids: [] }, behavior: { month: '', ids: [] } };
+        if(stats.claimedQuests.streak && !stats.claimedQuests.streak.ids) {
+            stats.claimedQuests.streak = { ids: Array.isArray(stats.claimedQuests.streak) ? stats.claimedQuests.streak : [] };
+        }
+        if(!stats.claimedQuests.behavior) stats.claimedQuests.behavior = { month: '', ids: [] };
+
+        // Daily reset
+        let todayStr = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+        if(stats.claimedQuests.daily.date !== todayStr) { stats.claimedQuests.daily = { date: todayStr, ids: [] }; }
+
+        // Track total unique login days (สำหรับ total_days quests)
+        if(!stats.loginDaySet) stats.loginDaySet = [];
+        if(!stats.loginDaySet.includes(todayStr)) { stats.loginDaySet.push(todayStr); }
+
+        // Behavior: reset รายเดือน
+        let now = new Date();
+        let currentMonth = `${now.getFullYear()}-${now.getMonth()}`;
+        if(stats.claimedQuests.behavior.month !== currentMonth) {
+            stats.claimedQuests.behavior = { month: currentMonth, ids: [] };
+        }
+
+        // Streak tier quests: ถ้า streak หาย (streakCount ต่ำกว่า tier) → ลบ claim นั้นออก ให้รับใหม่ได้
+        // total_days quests ไม่ reset (เป็น milestone ถาวร แค่อยู่ใน cat streak)
+        const streakTierMap = { streak_3: 3, streak_5: 5, streak_7: 7, streak_14: 14, streak_30: 30, log_3days: 3, log_7days: 7 };
+        let claimedIds = stats.claimedQuests.streak.ids || [];
+        claimedIds = claimedIds.filter(id => {
+            if(id.startsWith('total_days_')) return true; // total_days ไม่ reset ตลอดกาล
+            if(streakTierMap[id] !== undefined) {
+                if(id.startsWith('log_')) return checkConsecutiveExpenseDays(streakTierMap[id]);
+                return streakCount >= streakTierMap[id];
+            }
+            return true;
+        });
+        stats.claimedQuests.streak.ids = claimedIds;
+    }
+
+    function autoCheckAndClaimQuests() {
+        initQuestStats();
+        let claimed = [];
+        QUEST_DEFS.forEach(q => {
+            if(!q.check()) return;
+            let alreadyClaimed = false;
+            if(q.cat === 'daily')     alreadyClaimed = stats.claimedQuests.daily.ids.includes(q.id);
+            else if(q.cat === 'milestone') alreadyClaimed = stats.claimedQuests.milestone.includes(q.id);
+            else if(q.cat === 'streak')    alreadyClaimed = (stats.claimedQuests.streak.ids || []).includes(q.id);
+            else if(q.cat === 'behavior')  alreadyClaimed = stats.claimedQuests.behavior.ids.includes(q.id);
+
+            if(!alreadyClaimed) {
+                userPoints += q.pts;
+                claimed.push(q);
+                if(q.cat === 'daily')      stats.claimedQuests.daily.ids.push(q.id);
+                else if(q.cat === 'milestone') stats.claimedQuests.milestone.push(q.id);
+                else if(q.cat === 'streak')    stats.claimedQuests.streak.ids.push(q.id);
+                else if(q.cat === 'behavior')  stats.claimedQuests.behavior.ids.push(q.id);
+            }
+        });
+        if(claimed.length > 0) { 
+            saveStorage(); 
+            let names = claimed.map(q=>`${q.icon} +${q.pts}`).join('  ');
+            showToast(`🎉 รับแต้มอัตโนมัติ! ${names}`);
+        }
+        return claimed;
+    }
+
+    function openQuestPage() {
+        initQuestStats();
+        autoCheckAndClaimQuests();
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        document.getElementById('view-quest').style.display = 'block';
+        document.getElementById('view-quest').classList.add('active');
+        renderQuestPage();
+    }
+
+    function closeQuestPage() {
+        document.getElementById('view-quest').classList.remove('active');
+        document.getElementById('view-quest').style.display = 'none';
+        // กลับหน้าแรก
+        document.getElementById('view-home').classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item')[0].classList.add('active');
+    }
+
+    function renderQuestPage() {
+        initQuestStats();
+        let todayStr = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+        document.getElementById('questPagePoints').innerText = `🪙 ${userPoints.toLocaleString()} แต้ม`;
+
+        function buildQuestCard(q) {
+            let done = false;
+            if(q.cat === 'daily')     done = stats.claimedQuests.daily.ids.includes(q.id);
+            else if(q.cat === 'milestone') done = stats.claimedQuests.milestone.includes(q.id);
+            else if(q.cat === 'streak')    done = (stats.claimedQuests.streak.ids || []).includes(q.id);
+            else if(q.cat === 'behavior')  done = stats.claimedQuests.behavior.ids.includes(q.id);
+
+            let achievable = q.check();
+            let bg = done ? '#f0fdf4' : (achievable ? '#fffbeb' : 'var(--white)');
+            let borderColor = done ? '#86efac' : (achievable ? 'var(--miel-dore)' : '#e5e7eb');
+            let status = done ? `<span style="color:var(--success); font-size:11px; font-weight:bold;">✅ รับแล้ว</span>` 
+                              : (achievable ? `<span style="color:var(--eau-trouble); font-size:11px; font-weight:bold;">✨ พร้อมรับ!</span>` 
+                                           : `<span style="color:var(--gray-text); font-size:11px;">🔒 ยังไม่สำเร็จ</span>`);
+            let resetBadge = '';
+            if(q.cat === 'daily') resetBadge = `<span style="font-size:9px; background:#dbeafe; color:#1d4ed8; padding:1px 5px; border-radius:4px; margin-left:5px;">รายวัน</span>`;
+            else if(q.cat === 'behavior') resetBadge = `<span style="font-size:9px; background:#dcfce7; color:#166534; padding:1px 5px; border-radius:4px; margin-left:5px;">รายเดือน</span>`;
+            else if(q.cat === 'streak' && !q.id.startsWith('total_days_')) resetBadge = `<span style="font-size:9px; background:#fef9c3; color:#854d0e; padding:1px 5px; border-radius:4px; margin-left:5px;">ทำซ้ำได้</span>`;
+            else resetBadge = `<span style="font-size:9px; background:#f3f4f6; color:#6b7280; padding:1px 5px; border-radius:4px; margin-left:5px;">ครั้งเดียว</span>`;
+
+            return `<div style="background:${bg}; border:1px solid ${borderColor}; border-radius:14px; padding:14px 16px; margin-bottom:10px; display:flex; align-items:center; gap:12px;">
+                <div style="font-size:28px; flex-shrink:0;">${q.icon}</div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-weight:bold; color:var(--espresso); font-size:13px;">${q.title}${resetBadge}</div>
+                    <div style="font-size:11px; color:var(--gray-text); margin-top:2px;">${q.desc}</div>
+                    <div style="margin-top:5px;">${status}</div>
+                </div>
+                <div style="text-align:center; flex-shrink:0; background:${done?'#dcfce7':'rgba(241,193,102,0.2)'}; padding:8px 12px; border-radius:10px;">
+                    <div style="font-size:16px; font-weight:bold; color:${done?'var(--success)':'var(--espresso)'};">+${q.pts}</div>
+                    <div style="font-size:9px; color:var(--gray-text);">แต้ม</div>
+                </div>
+            </div>`;
+        }
+
+        ['daily','streak','milestone','behavior'].forEach(cat => {
+            let suffix = cat === 'behavior' ? 'Behavior' : cat.charAt(0).toUpperCase() + cat.slice(1);
+            let el = document.getElementById(`questList${suffix}`);
+            if(!el) return;
+            let quests = QUEST_DEFS.filter(q => q.cat === cat);
+            el.innerHTML = quests.map(buildQuestCard).join('');
+        });
+    }
+
+    // ฟังก์ชัน renderQuests เดิม - ยังใช้อยู่ (แต่ไม่แสดงใน home แล้ว)
+    function renderQuests() { /* deprecated - replaced by openQuestPage */ }
+    function initQuests() { initQuestStats(); }
+    function skipQuest() { /* deprecated */ }
+    function toggleQuest() { /* deprecated */ }
 
     // --- 8. Fixed Costs, Credit Bills & Yearly ---
     function renderFixedCosts() {
@@ -1298,29 +1800,134 @@
         hBadge.innerText = bTxt; hBadge.style.background = bCol; hDesc.innerText = text;
     }
 
-    function changeMonth(dir) { viewingMonthOffset += dir; if(viewingMonthOffset > 0) viewingMonthOffset = 0; renderAnalyticsCycle(); }
+    let currentAnalyticPeriod = 'month';
+    function changeMonth(dir) { 
+        viewingMonthOffset += dir; 
+        if(viewingMonthOffset > 0) viewingMonthOffset = 0; 
+        renderAnalyticsChart(currentAnalyticPeriod, true); 
+    }
     
-    function renderAnalyticsCycle() {
+    function renderAnalyticsChart(period = 'month', keepOffset = false) {
+        if (currentAnalyticPeriod !== period && !keepOffset) {
+            viewingMonthOffset = 0; 
+        }
+        currentAnalyticPeriod = period;
         evaluateHealth();
-        let now = new Date(); let pd = cfg.payday || 25;
-        let currentCycleStart = new Date(now.getFullYear(), now.getMonth(), pd);
-        if(now.getDate() < pd) currentCycleStart.setMonth(currentCycleStart.getMonth() - 1);
-        let cycleStart = new Date(currentCycleStart); cycleStart.setMonth(cycleStart.getMonth() + viewingMonthOffset);
-        let cycleEnd = new Date(cycleStart); cycleEnd.setMonth(cycleEnd.getMonth() + 1); cycleEnd.setDate(cycleEnd.getDate() - 1);
-        cycleStart.setHours(0,0,0,0); cycleEnd.setHours(23,59,59,999);
+        
+        // อัปเดตสีปุ่มทั้งหมดรวมถึงปุ่มกำหนดเอง
+        ['btnAnalyticWeek', 'btnAnalyticMonth', 'btnAnalyticQuarter', 'btnAnalyticYear', 'btnAnalyticCustom'].forEach(id => { 
+            let btn = document.getElementById(id);
+            if(btn) { 
+                btn.style.background = 'white'; 
+                btn.style.color = id === 'btnAnalyticCustom' ? 'var(--eau-trouble)' : 'var(--espresso)'; 
+            }
+        });
+        let activeBtn = document.getElementById(`btnAnalytic${period.charAt(0).toUpperCase() + period.slice(1)}`);
+        if(activeBtn) { 
+            activeBtn.style.background = period === 'custom' ? 'var(--eau-trouble)' : 'var(--espresso)'; 
+            activeBtn.style.color = 'white'; 
+        }
+
+        let swiper = document.getElementById('monthSwiperWrapper');
+        let customSelector = document.getElementById('customDateSelector');
+        
+        // สลับแสดงกล่องเลื่อนเดือน กับ กล่องเลือกวัน
+        if (period === 'custom') {
+            if(swiper) swiper.style.display = 'none';
+            if(customSelector) customSelector.style.display = 'flex';
+        } else {
+            if(swiper) swiper.style.display = 'flex';
+            if(customSelector) customSelector.style.display = 'none';
+        }
+
+        let now = new Date(); 
+        let cycleStart, cycleEnd;
+        let periodLabel = '';
+
+        if(period === 'month') {
+            let pd = cfg.payday || 25;
+            let currentCycleStart = new Date(now.getFullYear(), now.getMonth(), pd);
+            if(now.getDate() < pd) currentCycleStart.setMonth(currentCycleStart.getMonth() - 1);
+            cycleStart = new Date(currentCycleStart); 
+            cycleStart.setMonth(cycleStart.getMonth() + viewingMonthOffset);
+            cycleEnd = new Date(cycleStart); 
+            cycleEnd.setMonth(cycleEnd.getMonth() + 1); 
+            cycleEnd.setDate(cycleEnd.getDate() - 1);
+            periodLabel = 'ต้นรอบบิล';
+        } else if (period === 'week') {
+            let day = now.getDay() || 7; 
+            cycleStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 1);
+            cycleStart.setDate(cycleStart.getDate() + (viewingMonthOffset * 7));
+            cycleEnd = new Date(cycleStart); 
+            cycleEnd.setDate(cycleEnd.getDate() + 6);
+            periodLabel = 'ต้นสัปดาห์';
+        } else if (period === 'quarter') {
+            let currentQ = Math.floor(now.getMonth() / 3);
+            cycleStart = new Date(now.getFullYear(), currentQ * 3, 1);
+            cycleStart.setMonth(cycleStart.getMonth() + (viewingMonthOffset * 3));
+            cycleEnd = new Date(cycleStart); 
+            cycleEnd.setMonth(cycleEnd.getMonth() + 3); 
+            cycleEnd.setDate(0); 
+            periodLabel = 'ต้นไตรมาส';
+        } else if (period === 'year') {
+            cycleStart = new Date(now.getFullYear() + viewingMonthOffset, 0, 1);
+            cycleEnd = new Date(now.getFullYear() + viewingMonthOffset, 11, 31);
+            periodLabel = 'ต้นปี';
+        } else if (period === 'custom') {
+            let sDate = document.getElementById('customStartDate').value;
+            let eDate = document.getElementById('customEndDate').value;
+            if(!sDate || !eDate) {
+                cycleEnd = new Date(now);
+                cycleStart = new Date(now); cycleStart.setDate(now.getDate() - 7); // Default ย้อนหลัง 7 วัน
+                document.getElementById('customStartDate').value = cycleStart.toISOString().split('T')[0];
+                document.getElementById('customEndDate').value = cycleEnd.toISOString().split('T')[0];
+            } else {
+                cycleStart = new Date(sDate);
+                cycleEnd = new Date(eDate);
+            }
+            periodLabel = 'ช่วงเวลาที่เลือก';
+        }
+
+        cycleStart.setHours(0,0,0,0); 
+        cycleEnd.setHours(23,59,59,999);
         
         let mNames = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
-        document.getElementById('currentMonthDisplay').innerText = `${cycleStart.getDate()} ${mNames[cycleStart.getMonth()]} ${cycleStart.getFullYear().toString().substr(2,2)} - ${cycleEnd.getDate()} ${mNames[cycleEnd.getMonth()]} ${cycleEnd.getFullYear().toString().substr(2,2)}`;
+        let dateText = '';
+        if (period === 'year') {
+            dateText = `ปี ${cycleStart.getFullYear()}`;
+        } else {
+            dateText = `${cycleStart.getDate()} ${mNames[cycleStart.getMonth()]} ${cycleStart.getFullYear().toString().substr(2,2)} - ${cycleEnd.getDate()} ${mNames[cycleEnd.getMonth()]} ${cycleEnd.getFullYear().toString().substr(2,2)}`;
+        }
+        document.getElementById('currentMonthDisplay').innerText = dateText;
 
         let cycleTx = transactions.filter(t => { let d = new Date(t.dateObj); return d >= cycleStart && d <= cycleEnd; });
         let exTx = cycleTx.filter(t=>t.type==='expense'); let inTx = cycleTx.filter(t=>t.type==='main_income');
         
         let sumIn = inTx.reduce((s,t)=>s+t.amount,0); let sumEx = exTx.reduce((s,t)=>s+t.amount,0);
-        document.getElementById('sumIncomeText').innerText = `฿${sumIn.toLocaleString()}`; document.getElementById('sumExpenseText').innerText = `฿${sumEx.toLocaleString()}`; document.getElementById('sumNetText').innerText = `฿${(sumIn-sumEx).toLocaleString()}`;
+        document.getElementById('sumIncomeText').innerText = `฿${sumIn.toLocaleString()}`; 
+        document.getElementById('sumExpenseText').innerText = `฿${sumEx.toLocaleString()}`; 
+        document.getElementById('sumNetText').innerText = `฿${(sumIn-sumEx).toLocaleString()}`;
         document.getElementById('sumPctText').innerText = `ใช้ไป ${sumIn>0 ? Math.round((sumEx/sumIn)*100) : 0}%`;
 
-        // Insights Update (Original UI Mapping)
-        let targetSpendPct = (cfg.e + cfg.j) / 100; document.getElementById('idealPctShow').innerText = (cfg.e + cfg.j);
+        // 💰 ทรัพย์สินรวม
+        let totalWealth = currentBalances.growth + currentBalances.security + currentBalances.essential + currentBalances.joy;
+        if(document.getElementById('totalWealthText')) {
+            document.getElementById('totalWealthText').innerText = `฿${totalWealth.toLocaleString()}`;
+            let debtInTxs = cycleTx.filter(t => t.type === 'debt_in' || t.type === 'legacy_debt_in'); 
+            let debtOutTxs = cycleTx.filter(t => t.type === 'debt_out');
+            let periodDebtIn = debtInTxs.reduce((s,t) => s + t.amount, 0); let periodDebtOut = debtOutTxs.reduce((s,t) => s + t.amount, 0);
+            let periodNet = (sumIn + periodDebtIn) - (sumEx + periodDebtOut); 
+            let startOfPeriodWealth = totalWealth - periodNet;
+            
+            let compareText = "";
+            if (periodNet > 0) compareText = `เทียบกับ${periodLabel} (฿${startOfPeriodWealth.toLocaleString()}): <span style="color:var(--success); font-weight:bold;">+฿${periodNet.toLocaleString()} 📈</span>`; 
+            else if (periodNet < 0) compareText = `เทียบกับ${periodLabel} (฿${startOfPeriodWealth.toLocaleString()}): <span style="color:var(--danger); font-weight:bold;">-฿${Math.abs(periodNet).toLocaleString()} 📉</span>`; 
+            else compareText = `เทียบกับ${periodLabel} (฿${startOfPeriodWealth.toLocaleString()}): เท่าเดิม ⚖️`;
+            document.getElementById('wealthCompareText').innerHTML = compareText;
+        }
+
+        // Insights Update
+        let targetSpendPct = (cfg.e + cfg.j) / 100; if(document.getElementById('idealPctShow')) document.getElementById('idealPctShow').innerText = (cfg.e + cfg.j);
         let avgMonthlyExp = 0; let expenseTxsAll = transactions.filter(t=>t.type==='expense');
         if(expenseTxsAll.length > 0) { 
             let minDate = expenseTxsAll.reduce((min, t) => { let d = new Date(t.dateObj); return d < min ? d : min; }, now); 
@@ -1328,67 +1935,99 @@
             let allTimeExp = expenseTxsAll.reduce((s,t)=>s+t.amount, 0); avgMonthlyExp = allTimeExp / monthsActive; 
         }
         let idealSal = targetSpendPct > 0 ? avgMonthlyExp / targetSpendPct : 0; 
-        document.getElementById('idealSalaryBox').style.display = 'block';
-        document.getElementById('idealSalaryTxt').innerHTML = idealSal > 0 ? `฿${Math.round(idealSal).toLocaleString()} <span style="font-size:11px;">/เดือน</span>` : `รอข้อมูล...`;
+        let idealBox = document.getElementById('idealSalaryBox');
+        if(idealBox) {
+            if(period === 'quarter' || period === 'year') {
+                idealBox.style.display = 'block';
+                document.getElementById('idealSalaryTxt').innerHTML = idealSal > 0 ? `฿${Math.round(idealSal).toLocaleString()} <span style="font-size:12px;">/เดือน</span>` : `รอข้อมูล...`;
+            } else {
+                idealBox.style.display = 'none';
+            }
+        }
 
         let joyTxs = cycleTx.filter(t => t.tank === 'joy'); 
         let smallWinAmt = joyTxs.filter(t => t.joyType === 'small').reduce((s,t) => s+t.amount, 0); 
         let bigWinAmt = joyTxs.filter(t => t.joyType === 'big').reduce((s,t) => s+t.amount, 0);
         let totalJoyFund = currentBalances.joy + smallWinAmt + bigWinAmt; 
         let smallWinEatPct = totalJoyFund > 0 ? Math.round((smallWinAmt / totalJoyFund) * 100) : 0; 
-        let bigWinRemainPct = 100 - smallWinEatPct;
-        document.getElementById('insightSmallWin').innerText = `กินงบไป ${smallWinEatPct}%`; 
-        document.getElementById('insightBigWin').innerText = `เหลือ 100%`;
+        if(document.getElementById('insightSmallWin')) document.getElementById('insightSmallWin').innerText = `กินงบไป ${smallWinEatPct}%`; 
+        if(document.getElementById('insightBigWin')) document.getElementById('insightBigWin').innerText = `เหลือ 100%`;
 
         let dayNames = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสฯ', 'ศุกร์', 'เสาร์']; let dayCounts = [0,0,0,0,0,0,0];
         exTx.forEach(t => { let d = new Date(t.dateObj).getDay(); dayCounts[d] += t.amount; }); 
         let maxDayIdx = dayCounts.indexOf(Math.max(...dayCounts));
-        document.getElementById('insightDay').innerText = Math.max(...dayCounts) > 0 ? dayNames[maxDayIdx] : '-';
+        if(document.getElementById('insightDay')) document.getElementById('insightDay').innerText = Math.max(...dayCounts) > 0 ? dayNames[maxDayIdx] : '-';
 
         let crossTxs = cycleTx.filter(t => t.isCross); 
-        document.getElementById('insightCrossCount').innerText = crossTxs.length;
+        if(document.getElementById('insightCrossCount')) document.getElementById('insightCrossCount').innerText = crossTxs.length;
         let reasons = {}; crossTxs.forEach(t => { if(t.crossReason) reasons[t.crossReason] = (reasons[t.crossReason] || 0) + 1; }); 
         let topReason = Object.keys(reasons).length > 0 ? Object.keys(reasons).reduce((a, b) => reasons[a] > reasons[b] ? a : b) : '-';
-        document.getElementById('insightCrossReason').innerText = topReason;
+        if(document.getElementById('insightCrossReason')) document.getElementById('insightCrossReason').innerText = topReason;
 
-        document.getElementById('insightSavedTemptation').innerText = stats.savedFromTemptation.toLocaleString();
-        document.getElementById('insightWinTemptCount').innerText = stats.temptationAbandonedCount || 0;
-        document.getElementById('insightLoseTemptCount').innerText = stats.temptationYieldedCount || 0;
+        if(document.getElementById('insightSavedTemptation')) document.getElementById('insightSavedTemptation').innerText = stats.savedFromTemptation.toLocaleString();
+        if(document.getElementById('insightWinTemptCount')) document.getElementById('insightWinTemptCount').innerText = stats.temptationAbandonedCount || 0;
+        if(document.getElementById('insightLoseTemptCount')) document.getElementById('insightLoseTemptCount').innerText = stats.temptationYieldedCount || 0;
 
-        let futureMoneySum = transactions.flatMap(t => t.installments || []).filter(i => !i.paid).reduce((s,i) => s + i.amount, 0);
-        document.getElementById('insightFutureMoney').innerText = futureMoneySum.toLocaleString();
+        let futureMoneySum = 0;
+        transactions.forEach(t => { if (t.installments) { t.installments.forEach(i => { if (!i.paid) futureMoneySum += i.amount; }); } });
+        if(document.getElementById('insightFutureMoney')) document.getElementById('insightFutureMoney').innerText = futureMoneySum.toLocaleString();
+        
         let futurePct = sumIn > 0 ? (futureMoneySum / sumIn) * 100 : 0; 
         let futureAdviceTxt = `คิดเป็น ${Math.round(futurePct)}% ของรายรับ<br>`;
         if (futurePct === 0) futureAdviceTxt += `<span style="color:var(--success);">ยอดเยี่ยมมากบอส! ไม่สร้างหนี้เพิ่มเลย</span>`; 
         else if (futurePct <= 15) futureAdviceTxt += `<span style="color:var(--success);">อยู่ในเกณฑ์ปลอดภัยครับ แต่ก็อย่ารูดเพลินนะ</span>`; 
         else if (futurePct <= 30) futureAdviceTxt += `<span style="color:var(--terre-cuite);">เริ่มเยอะแล้วนะบอส! เดือนหน้าระวังช็อตนะ</span>`; 
         else futureAdviceTxt += `<span style="color:var(--danger); font-weight:bold;">อันตรายมาก! ยืมอนาคตมาเกิน 30% แล้ว หยุดรูดด่วน!</span>`;
-        document.getElementById('insightFutureAdvice').innerHTML = futureAdviceTxt;
+        if(document.getElementById('insightFutureAdvice')) document.getElementById('insightFutureAdvice').innerHTML = futureAdviceTxt;
 
-        // AI Storytelling Generator
+        // AI Storytelling
         let winR = (stats.temptationAbandonedCount + stats.temptationYieldedCount) > 0 ? (stats.temptationAbandonedCount / (stats.temptationAbandonedCount + stats.temptationYieldedCount))*100 : 0;
         let dti = sumIn > 0 ? (totalLiability / sumIn) * 100 : (totalLiability > 0 ? 100 : 0);
-        
+        if(document.getElementById('stWinRate')) document.getElementById('stWinRate').innerText = `${Math.round(winR)}%`;
+        if(document.getElementById('stDTI')) document.getElementById('stDTI').innerText = `${Math.round(dti)}%`;
+
         let story = ``;
-        if (sumIn === 0) story += "เดือนนี้ยังไม่มีรายรับเข้าเลยบอส! อย่าลืมกดรับเงินเดือนในหน้าแรกนะ";
-        else if (sumEx > sumIn) story += `🚨 <b>วิกฤตแล้วบอส!</b> รอบบิลนี้คุณใช้เงินทะลุรายรับไปแล้ว (ติดลบ ฿${(sumEx-sumIn).toLocaleString()}) หยุดเปย์สิ่งที่ไม่จำเป็นด่วน!`;
-        else if (winR > 70) story += `✨ <b>สุดยอดนักสู้!</b> เดือนนี้คุณชนะใจตัวเองได้บ่อยมาก การปล่อยของแช่ตู้เย็นช่วยประหยัดเงินได้เยอะเลย สิ้นเดือนนี้เอาเงินที่เหลือไปเติมเป้าหมายใหญ่ได้เลยนะ!`;
-        else if (crossTxs.length > 3) story += `⚠️ <b>ระวังพัง!</b> เดือนนี้คุณดึงเงินข้ามกระเป๋าบ่อยเกินไปแล้วแปลว่าการตั้งงบ % อาจจะไม่สอดคล้องกับชีวิตจริง ลองกด "ตั้งค่า" แล้วปรับสัดส่วน Essential ให้เยอะขึ้นดูไหม?`;
-        else story += `⚖️ <b>ทรงตัวได้ดี:</b> รอบบิลนี้ยังถือว่าประคองตัวรอดมาได้ครับบอส รักษามาตรฐานการจดแบบนี้ไว้ อนาคตเป้าหมายใหญ่ทำได้แน่นอน!`;
+        if (sumIn === 0) story += "ช่วงเวลานี้ยังไม่มีรายรับเข้าเลยบอส! อย่าลืมกดรับเงินนะ";
+        else if (sumEx > sumIn) story += `🚨 <b>วิกฤตแล้วบอส!</b> ช่วงเวลานี้คุณใช้เงินทะลุรายรับไปแล้ว (ติดลบ ฿${(sumEx-sumIn).toLocaleString()}) หยุดเปย์สิ่งที่ไม่จำเป็นด่วน!`;
+        else if (winR > 70) story += `✨ <b>สุดยอดนักสู้!</b> ช่วงนี้คุณชนะใจตัวเองได้บ่อยมาก การปล่อยของแช่ตู้เย็นช่วยประหยัดเงินได้เยอะเลย สิ้นเดือนนี้เอาเงินที่เหลือไปเติมเป้าหมายใหญ่ได้เลยนะ!`;
+        else if (crossTxs.length > 3) story += `⚠️ <b>ระวังพัง!</b> ช่วงนี้คุณดึงเงินข้ามกระเป๋าบ่อยเกินไปแล้วแปลว่าการตั้งงบ % อาจจะไม่สอดคล้องกับชีวิตจริง ลองกด "ตั้งค่า" แล้วปรับสัดส่วน Essential ให้เยอะขึ้นดูไหม?`;
+        else story += `⚖️ <b>ทรงตัวได้ดี:</b> ช่วงนี้ยังถือว่าประคองตัวรอดมาได้ครับบอส รักษามาตรฐานการจดแบบนี้ไว้ อนาคตเป้าหมายใหญ่ทำได้แน่นอน!`;
         
         if (smallWinEatPct > 50) { story += `<br><br>🚨 <b>เตือนเรื่องกิเลส:</b> บอสเอา Small Win กินงบ Big Win ไปตั้ง ${smallWinEatPct}% แล้วนะ! แบบนี้เมื่อไหร่จะถึงเป้าหมายเนี่ย!`; }
-        let stressedAmt = exTx.filter(t=>t.emotion==='😩 เครียดเลยช้อป').reduce((s,t)=>s+t.amount,0);
-        if(stressedAmt > 0) { story += `<br><br>🎭 <b>ช้อปบำบัด:</b> บอสเสียเงินไปกับความ 'เครียด' ฿${stressedAmt.toLocaleString()} พักผ่อนหาอะไรฮีลใจฟรีๆ ดูบ้างนะ`; }
+        let stressAmt = exTx.filter(t=>t.emotion==='😩 เครียดเลยช้อป').reduce((s,t)=>s+t.amount,0);
+        if(stressAmt > 0) { story += `<br><br>🎭 <b>ช้อปบำบัด:</b> บอสเสียเงินไปกับความ 'เครียด' ฿${stressAmt.toLocaleString()} พักผ่อนหาอะไรฮีลใจฟรีๆ ดูบ้างนะ`; }
+        if(document.getElementById('aiAdviceText')) document.getElementById('aiAdviceText').innerHTML = story;
 
-        document.getElementById('aiAdviceText').innerHTML = story;
-
-        // Chart
+        // Chart (แก้บั๊กกราฟวงกลมไม่ขึ้น)
         let totals = {}; exTx.forEach(t => totals[t.cat] = (totals[t.cat] || 0) + t.amount);
-        let ctx = document.getElementById('analyticsChart').getContext('2d'); if(analyticsChartInstance) analyticsChartInstance.destroy();
-        if(Object.keys(totals).length === 0) { document.getElementById('analyticsChart').style.display='none'; document.getElementById('noDataText').style.display='block'; }
-        else {
-            document.getElementById('analyticsChart').style.display='block'; document.getElementById('noDataText').style.display='none';
-            analyticsChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(totals), datasets: [{ data: Object.values(totals), backgroundColor: ['#4b2613','#a79058','#a13a1e','#8babca','#f1c166'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout:'55%', plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit', size:11}}} } } });
+        let canvas = document.getElementById('analyticsChart');
+        if(!canvas) return;
+        
+        if(analyticsChartInstance) {
+            analyticsChartInstance.destroy();
+        }
+        
+        let noDataTxt = document.getElementById('noDataText');
+        if(Object.keys(totals).length === 0) { 
+            canvas.style.display = 'none'; 
+            if(noDataTxt) noDataTxt.style.display = 'block'; 
+        } else {
+            canvas.style.display = 'block'; 
+            if(noDataTxt) noDataTxt.style.display = 'none';
+            let ctx = canvas.getContext('2d');
+            analyticsChartInstance = new Chart(ctx, { 
+                type: 'doughnut', 
+                data: { 
+                    labels: Object.keys(totals), 
+                    datasets: [{ data: Object.values(totals), backgroundColor: ['#4b2613','#a79058','#a13a1e','#8babca','#f1c166'] }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout:'55%', 
+                    plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit', size:11}}} } 
+                } 
+            });
         }
     }
 
