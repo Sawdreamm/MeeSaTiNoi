@@ -31,7 +31,7 @@
         body { background-color: #d1d5db; margin: 0; display: flex; justify-content: center; height: 100vh; overflow: hidden; overscroll-behavior-y: none; }
         .app { width: 100%; max-width: 420px; background-color: var(--nuage-de-lait); height: 100%; position: relative; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
         .view-section { display: none; flex: 1; overflow-y: auto; padding: 20px 16px calc(100px + env(safe-area-inset-bottom)) 16px; box-sizing:border-box; }
-        .view-section.active { display: block; animation: fadeIn 0.3s; }
+        .view-section.active { display: block; }
 
         .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; gap: 8px; }
         .header h1 { color: var(--espresso); margin: 0; font-size: 18px; font-weight: 700; }
@@ -72,7 +72,7 @@
         .sub-nav-tabs { display: flex; background: var(--gray-light); border-radius: 12px; padding: 4px; margin-bottom: 15px; flex-wrap: wrap; gap: 2px; }
         .tab-btn { flex: 1; background: transparent; border: none; padding: 8px 0; font-size: 12px; font-weight: 600; color: var(--gray-text); border-radius: 10px; cursor: pointer; transition: 0.3s; }
         .tab-btn.active { background: white; color: var(--espresso); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .tab-content { display: none; box-sizing: border-box; } .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        .tab-content { display: none; box-sizing: border-box; } .tab-content.active { display: block; }
         
         .month-swiper { display:flex; justify-content:space-between; align-items:center; background:white; padding:8px 15px; border-radius:12px; margin-bottom:15px; border:1px solid #e5e7eb; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .swiper-btn { background:var(--gray-light); border:none; font-size:12px; color:var(--espresso); border-radius:8px; cursor:pointer; padding:5px 12px; font-weight:bold;}
@@ -357,7 +357,7 @@
 
         <div class="month-swiper" id="monthSwiperWrapper">
             <button class="swiper-btn" onclick="changeMonth(-1)">◀</button>
-            <span id="currentMonthDisplay" style="font-weight:bold; color:var(--espresso); font-size:13px;">รอบบิล</span>
+            <span style="font-size:11px; color:var(--gray-text); margin-right:2px;">รอบบิล</span><span id="currentMonthDisplay" style="font-weight:bold; color:var(--espresso); font-size:13px;">—</span>
             <button class="swiper-btn" onclick="changeMonth(1)">▶</button>
         </div>
 
@@ -494,16 +494,25 @@
         <div id="tab-savings" class="tab-content">
             <!-- Growth investment goal card -->
             <div class="card" style="border-left:4px solid var(--success);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <h2 class="card-title" style="margin:0;">🌱 เป้าหมายการลงทุน</h2>
-                    <button onclick="editGrowthGoal()" style="background:transparent; border:none; color:var(--bleu-porcelaine); font-size:11px; cursor:pointer; font-weight:bold;">[แก้]</button>
+                    <button onclick="editGrowthGoal()" id="growthGoalEditBtn" style="background:transparent; border:none; color:var(--bleu-porcelaine); font-size:11px; cursor:pointer; font-weight:bold;">แก้ไข</button>
                 </div>
-                <p id="growthGoalName" style="margin:4px 0 8px 0; font-size:13px; font-weight:bold; color:var(--espresso);">เงินลงทุน 1 ล้าน</p>
-                <p id="growthGoalAmt" style="margin:0 0 6px 0; font-size:12px; color:var(--gray-text);">฿0 / ฿1,000,000</p>
-                <div style="height:8px; background:#e5e7eb; border-radius:4px; overflow:hidden; margin-bottom:4px;">
-                    <div id="growthGoalBar" style="height:100%; background:linear-gradient(90deg,var(--success),#22c55e); border-radius:4px; width:0%; transition:width 0.5s;"></div>
+                <!-- Display mode -->
+                <div id="growthGoalDisplay">
+                    <p id="growthGoalName" style="margin:0 0 6px 0; font-size:13px; font-weight:bold; color:var(--espresso);">เงินลงทุน 1 ล้าน</p>
+                    <p id="growthGoalAmt" style="margin:0 0 6px 0; font-size:12px; color:var(--gray-text);">฿0 / ฿1,000,000</p>
+                    <div style="height:8px; background:#e5e7eb; border-radius:4px; overflow:hidden; margin-bottom:4px;">
+                        <div id="growthGoalBar" style="height:100%; background:linear-gradient(90deg,var(--success),#22c55e); border-radius:4px; width:0%; transition:width 0.5s;"></div>
+                    </div>
+                    <p id="growthGoalPct" style="margin:0; font-size:11px; color:var(--success); font-weight:bold;">0%</p>
                 </div>
-                <p id="growthGoalPct" style="margin:0; font-size:11px; color:var(--success); font-weight:bold;">0%</p>
+                <!-- Edit mode (inline) -->
+                <div id="growthGoalEdit" style="display:none;">
+                    <input type="text" id="growthGoalNameInput" style="width:100%; padding:8px; margin-bottom:6px; border-radius:8px; border:1px solid #cbd5e1; font-size:12px; font-family:'Kanit'; box-sizing:border-box;" placeholder="ชื่อเป้าหมาย เช่น ลงทุน 1 ล้าน">
+                    <input type="number" id="growthGoalTargetInput" style="width:100%; padding:8px; margin-bottom:8px; border-radius:8px; border:1px solid #cbd5e1; font-size:12px; font-family:'Kanit'; box-sizing:border-box;" placeholder="ยอดเป้าหมาย (฿)">
+                    <button class="btn-main" style="padding:8px; font-size:12px; margin-top:0; background:var(--success);" onclick="saveGrowthGoal()">✅ บันทึกเป้าหมาย</button>
+                </div>
             </div>
             <!-- ยอดเงินเก็บรวม -->
             <div style="background: linear-gradient(135deg, #1e3a5f, #2563eb); border-radius:20px; padding:20px; margin-bottom:15px; color:white; text-align:center;">
@@ -634,7 +643,7 @@
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('view-home', this)"><div class="nav-icon">🏠</div>หน้าแรก</div>
         <div class="nav-item" onclick="switchTab('view-fixed', this)"><div class="nav-icon">📅</div>บิล/เป้า</div>
-        <div class="nav-item" onclick="switchTab('view-analytics', this); renderAnalyticsChart('month');"><div class="nav-icon">📊</div>สรุปผล</div>
+        <div class="nav-item" onclick="switchTab('view-analytics', this)"><div class="nav-icon">📊</div>สรุปผล</div>
         <div class="nav-item" onclick="switchTab('view-debt', this); renderDebtChart();"><div class="nav-icon">🤝</div>หนี้สิน</div>
     </nav>
 </div> 
@@ -678,7 +687,7 @@
                 <option value="สแกนจ่าย/โอน">📱 สแกนจ่าย / โอน</option>
                 <option value="เงินสด">💵 เงินสด</option>
                 <option value="บัตรเครดิต">💳 บัตรเครดิต</option>
-                <option value="ผ่อน (BNPL)">🛍️ ผ่อนชำระ</option>
+                <option value="ผ่อน (BNPL)">🛍️ ผ่อนชำระ/Spaylater</option>
             </select>
         </div>
         <div class="form-group" id="installmentDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px; border: 1px dashed var(--bleu-porcelaine);">
@@ -744,7 +753,9 @@
         <div id="transferFrictionBox" style="display:none; background:#fee2e2; border:1px dashed var(--danger); padding:15px; border-radius:12px; margin-bottom:15px; text-align:center;">
             <div style="font-size:24px; margin-bottom:5px;">🚨</div>
             <p style="color:var(--danger); font-size:14px; font-weight:bold; margin:0 0 5px 0;">ดึงสติหน่อยบอส!</p>
-            <p style="color:var(--danger); font-size:11px; margin:0 0 10px 0;">การดึงเงินเก็บมาเปย์ จะทำให้เป้าหมายช้าลง<br>และ <b style="background:#fca5a5; padding:2px 4px; border-radius:4px; color:#991b1b;">จะถูกทำโทษหัก 50 แต้ม!</b><br>พิมพ์ <b>"ฉันตบะแตก"</b> ลงในช่องเพื่อยืนยัน</p>
+            <p style="color:var(--danger); font-size:11px; margin:0 0 8px 0;">การดึงเงินเก็บมาเปย์ จะทำให้เป้าหมายช้าลง<br>และ <b style="background:#fca5a5; padding:2px 4px; border-radius:4px; color:#991b1b;">จะถูกทำโทษหัก 50 แต้ม!</b></p>
+            <input type="text" id="crossReasonInput" placeholder="บอกเหตุผลก่อนนะบอส..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #fca5a5; text-align:center; color:var(--danger); font-weight:bold; margin-bottom:8px; font-family:'Kanit'; box-sizing:border-box;">
+            <p style="color:#991b1b; font-size:10px; margin:0 0 8px 0;">แล้วพิมพ์ <b>"ฉันตบะแตก"</b> ด้านล่างเพื่อยืนยัน</p>
             <input type="text" id="tfConfirmWord" placeholder="พิมพ์ ฉันตบะแตก" style="width:100%; padding:10px; border-radius:8px; border:1px solid #fca5a5; text-align:center; color:var(--danger); font-weight:bold;" onkeyup="checkFrictionWord()">
         </div>
         <button class="btn-main" id="btnTransferSubmit" onclick="processTransfer()">ยืนยันการโอน</button>
@@ -1306,6 +1317,8 @@
     let totalLiability = 0; let transactions = []; let isEditCatMode = false; let currentActiveGoalTank = '';
     let stats = { savedFromTemptation: 0, crossTankCount: 0, achievedJoy: false, achievedSec: false, temptationAbandonedCount: 0, temptationYieldedCount: 0, monthlyGrowthTouched: false };
     let userPoints = 0; let inventory = []; let streakCount = 1; let lastActiveDate = ''; let viewingMonthOffset = 0;
+    let currentAnalyticPeriod = 'month';
+    let customRangeStart = ''; let customRangeEnd = '';
     let incomeCats = [ {id: 1, name: 'เงินเดือน', icon: '💰'}, {id: 2, name: 'งานเสริม/ฟรีแลนซ์', icon: '💻'}, {id: 3, name: 'ปันผล/ดอกเบี้ย', icon: '📈'} ];
     const questPool = [
         {id: 1, title: '🍱 ห่อข้าวมาทำงาน 3 วัน', pts: 50}, {id: 2, title: '☕ งดสั่งกาแฟแบรนด์ 5 วัน', pts: 80},
@@ -1348,79 +1361,255 @@
     function closeGifOverlay() { document.getElementById('gifOverlay').classList.remove('show'); }
 
     // --- 2. Storage & Init ---
-    function loadStorage() {
+    // ══════════════════════════════════════════════════════════════
+    // IndexedDB Storage Layer
+    // ══════════════════════════════════════════════════════════════
+    const DB_NAME = 'MeeSatiDB';
+    const DB_VERSION = 1;
+    const STORE = 'appData';
+    let _db = null;
+
+    // เปิด/สร้าง IndexedDB
+    function _openDB() {
+        return new Promise((resolve, reject) => {
+            if (_db) { resolve(_db); return; }
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE)) {
+                    db.createObjectStore(STORE); // key-value store
+                }
+            };
+            req.onsuccess = (e) => { _db = e.target.result; resolve(_db); };
+            req.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    // อ่านค่าจาก IndexedDB
+    function _idbGet(key) {
+        return _openDB().then(db => new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE, 'readonly');
+            const req = tx.objectStore(STORE).get(key);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = (e) => reject(e.target.error);
+        }));
+    }
+
+    // เขียนค่าลง IndexedDB
+    function _idbSet(key, val) {
+        return _openDB().then(db => new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE, 'readwrite');
+            tx.objectStore(STORE).put(val, key);
+            tx.oncomplete = () => resolve();
+            tx.onerror = (e) => reject(e.target.error);
+        }));
+    }
+
+    // อ่านหลาย keys พร้อมกัน (เร็วกว่า loop)
+    function _idbGetAll(keys) {
+        return _openDB().then(db => Promise.all(keys.map(key => new Promise((resolve) => {
+            const tx = db.transaction(STORE, 'readonly');
+            const req = tx.objectStore(STORE).get(key);
+            req.onsuccess = () => resolve({ key, val: req.result });
+            req.onerror = () => resolve({ key, val: undefined });
+        }))));
+    }
+
+    // เขียนหลาย keys ใน 1 transaction (เร็วกว่า loop มาก)
+    function _idbSetBatch(pairs) {
+        return _openDB().then(db => new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE, 'readwrite');
+            const store = tx.objectStore(STORE);
+            pairs.forEach(([key, val]) => store.put(val, key));
+            tx.oncomplete = () => resolve();
+            tx.onerror = (e) => reject(e.target.error);
+        }));
+    }
+
+    // ลบทุก key ใน DB (reset)
+    function _idbClear() {
+        return _openDB().then(db => new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE, 'readwrite');
+            tx.objectStore(STORE).clear();
+            tx.oncomplete = () => resolve();
+            tx.onerror = (e) => reject(e.target.error);
+        }));
+    }
+
+    // ── Migration: localStorage → IndexedDB ──────────────────────
+    // ทำครั้งเดียวเมื่อ user เปิดแอปครั้งแรกหลัง deploy ใหม่
+    async function _migrateFromLocalStorage() {
+        const keys = [
+            'wq18_name','wq18_age','wq18_pts','wq18_profileImg','wq18_inv',
+            'wq18_cfg','wq18_base','wq18_curr','wq18_tx','wq18_cat',
+            'wq18_fc','wq18_yf','wq18_wl','wq18_q','wq18_debt','wq18_inc',
+            'wq18_joyG','wq18_secG','wq18_growG','wq18_stats','wq18_incCat',
+            'wq18_streak','wq18_lastLogin','wq18_cq','wq18_bc','wq18_cc','wq18_onboarded'
+        ];
+        let hasSomething = false;
+        const pairs = [];
+        for (const key of keys) {
+            const v = localStorage.getItem(key);
+            if (v !== null) { pairs.push([key, v]); hasSomething = true; }
+        }
+        if (!hasSomething) return false; // ไม่มีข้อมูลเก่า
+        await _idbSetBatch(pairs);
+        // Mark migration done แต่ยังไม่ลบ localStorage ทันที (safety net 30 วัน)
+        localStorage.setItem('wq18_migrated_idb', '1');
+        console.log('✅ Migrated localStorage → IndexedDB (' + pairs.length + ' keys)');
+        return true;
+    }
+
+    // ── โหลดข้อมูลทั้งหมดจาก IndexedDB ──────────────────────────
+    async function loadStorage() {
+        // ตรวจ migration: ถ้ายังไม่ได้ migrate ให้ทำก่อน
+        const migrated = localStorage.getItem('wq18_migrated_idb');
+        if (!migrated) { await _migrateFromLocalStorage(); }
+
+        const keys = [
+            'wq18_name','wq18_age','wq18_pts','wq18_profileImg','wq18_inv',
+            'wq18_cfg','wq18_base','wq18_curr','wq18_tx','wq18_cat',
+            'wq18_fc','wq18_yf','wq18_wl','wq18_q','wq18_debt','wq18_inc',
+            'wq18_joyG','wq18_secG','wq18_growG','wq18_stats','wq18_incCat',
+            'wq18_streak','wq18_lastLogin','wq18_cq','wq18_bc','wq18_cc','wq18_onboarded'
+        ];
+        const results = await _idbGetAll(keys);
+        const d = {};
+        results.forEach(r => { d[r.key] = r.val; });
+
         try {
-            if(localStorage.getItem('wq18_age')) userAge = parseInt(localStorage.getItem('wq18_age'));
-            if(localStorage.getItem('wq18_name')) userName = localStorage.getItem('wq18_name');
-            if(localStorage.getItem('wq18_pts')) userPoints = parseInt(localStorage.getItem('wq18_pts'));
-            if(localStorage.getItem('wq18_inv')) inventory = JSON.parse(localStorage.getItem('wq18_inv'));
-            if(localStorage.getItem('wq18_cfg')) cfg = JSON.parse(localStorage.getItem('wq18_cfg'));
-            if(localStorage.getItem('wq18_base')) baseAmounts = JSON.parse(localStorage.getItem('wq18_base'));
-            if(localStorage.getItem('wq18_curr')) currentBalances = JSON.parse(localStorage.getItem('wq18_curr'));
-            if(localStorage.getItem('wq18_tx')) transactions = JSON.parse(localStorage.getItem('wq18_tx'));
-            if(localStorage.getItem('wq18_cat')) customCats = JSON.parse(localStorage.getItem('wq18_cat'));
-            if(localStorage.getItem('wq18_fc')) fixedCosts = JSON.parse(localStorage.getItem('wq18_fc'));
-            if(localStorage.getItem('wq18_yf')) yearlyFunds = JSON.parse(localStorage.getItem('wq18_yf'));
-            if(localStorage.getItem('wq18_wl')) wishlist = JSON.parse(localStorage.getItem('wq18_wl'));
-            if(localStorage.getItem('wq18_q')) activeQuests = JSON.parse(localStorage.getItem('wq18_q'));
-            if(localStorage.getItem('wq18_debt')) totalLiability = parseFloat(localStorage.getItem('wq18_debt'));
-            if(localStorage.getItem('wq18_inc')) totalIncomeThisMonth = parseFloat(localStorage.getItem('wq18_inc'));
-            if(localStorage.getItem('wq18_joyG')) joyGoal = JSON.parse(localStorage.getItem('wq18_joyG'));
-            if(localStorage.getItem('wq18_secG')) secGoal = JSON.parse(localStorage.getItem('wq18_secG'));
-            if(localStorage.getItem('wq18_growG')) growthGoal = JSON.parse(localStorage.getItem('wq18_growG'));
-            if(localStorage.getItem('wq18_stats')) stats = JSON.parse(localStorage.getItem('wq18_stats'));
-            if(localStorage.getItem('wq18_incCat')) incomeCats = JSON.parse(localStorage.getItem('wq18_incCat'));
-            if(localStorage.getItem('wq18_profileImg')) profileImgBase64 = localStorage.getItem('wq18_profileImg');
-            if(localStorage.getItem('wq18_streak')) streakCount = parseInt(localStorage.getItem('wq18_streak'));
-            if(localStorage.getItem('wq18_lastLogin')) lastActiveDate = localStorage.getItem('wq18_lastLogin');
-            if(localStorage.getItem('wq18_cq')) { let cq = JSON.parse(localStorage.getItem('wq18_cq')); if(!stats.claimedQuests) stats.claimedQuests = cq; else stats.claimedQuests = cq; }
-            if(localStorage.getItem('wq18_bc')) budgetCaps = JSON.parse(localStorage.getItem('wq18_bc'));
-            if(localStorage.getItem('wq18_cc')) creditCards = JSON.parse(localStorage.getItem('wq18_cc'));
-        } catch (e) { console.error("Error loading storage", e); }
-        
+            if(d['wq18_age']) userAge = parseInt(d['wq18_age']);
+            if(d['wq18_name']) userName = d['wq18_name'];
+            if(d['wq18_pts']) userPoints = parseInt(d['wq18_pts']);
+            if(d['wq18_profileImg']) profileImgBase64 = d['wq18_profileImg'];
+            const parse = (k, fallback) => { try { return d[k] ? JSON.parse(d[k]) : fallback; } catch(e) { return fallback; } };
+            inventory = parse('wq18_inv', inventory);
+            cfg = parse('wq18_cfg', cfg);
+            baseAmounts = parse('wq18_base', baseAmounts);
+            currentBalances = parse('wq18_curr', currentBalances);
+            transactions = parse('wq18_tx', transactions);
+            customCats = parse('wq18_cat', customCats);
+            fixedCosts = parse('wq18_fc', fixedCosts);
+            yearlyFunds = parse('wq18_yf', yearlyFunds);
+            wishlist = parse('wq18_wl', wishlist);
+            activeQuests = parse('wq18_q', activeQuests);
+            if(d['wq18_debt']) totalLiability = parseFloat(d['wq18_debt']);
+            if(d['wq18_inc']) totalIncomeThisMonth = parseFloat(d['wq18_inc']);
+            joyGoal = parse('wq18_joyG', joyGoal);
+            secGoal = parse('wq18_secG', secGoal);
+            growthGoal = parse('wq18_growG', growthGoal);
+            stats = parse('wq18_stats', stats);
+            incomeCats = parse('wq18_incCat', incomeCats);
+            if(d['wq18_streak']) streakCount = parseInt(d['wq18_streak']);
+            if(d['wq18_lastLogin']) lastActiveDate = d['wq18_lastLogin'];
+            const cq = parse('wq18_cq', null);
+            if(cq) stats.claimedQuests = cq;
+            budgetCaps = parse('wq18_bc', budgetCaps);
+            creditCards = parse('wq18_cc', creditCards);
+        } catch(e) { console.error('Error parsing storage', e); }
+
         // Daily Streak Logic
         let todayStr = new Date().toLocaleDateString('en-CA', {timeZone: 'Asia/Bangkok'});
         if(lastActiveDate !== todayStr) {
             let yest = new Date(); yest.setDate(yest.getDate()-1);
-            if(lastActiveDate === yest.toLocaleDateString('en-CA', {timeZone: 'Asia/Bangkok'})) streakCount++; else if(lastActiveDate) streakCount = 1;
+            if(lastActiveDate === yest.toLocaleDateString('en-CA', {timeZone: 'Asia/Bangkok'})) streakCount++;
+            else if(lastActiveDate) streakCount = 1;
             lastActiveDate = todayStr;
         }
 
-        if(!cfg.payday) cfg.payday = 25; // Default Fallback
-        if(!localStorage.getItem('wq18_onboarded')) { document.getElementById('onboardingOverlay').style.display = 'flex'; }
+        if(!cfg.payday) cfg.payday = 25;
+        if(!d['wq18_onboarded']) { document.getElementById('onboardingOverlay').style.display = 'flex'; }
         else {
             document.getElementById('userGreeting').innerText = `มีสติหน่อยคุณ ${userName}!!!`;
-            document.getElementById('userNameInput').value = userName; 
+            document.getElementById('userNameInput').value = userName;
             document.getElementById('incomeDateInput').valueAsDate = new Date();
-            updateProfilePicUI(); renderIncomeCats(); initQuests(); updateUI();
+            updateProfilePicUI(); renderIncomeCats(); initQuests(); _txCacheVersion = -1; _rebuildTxCache(); updateUI();
         }
     }
     
+    // ── Render cache invalidation ──────────────────────────────
+    // Call this whenever data changes so next updateUI does a full refresh
+    function clearRenderCaches() {
+        renderCategories._lastKey = null;
+        renderWishlist._lastKey = null;
+        renderInventory._lastKey = null;
+        renderFixedCosts._lastKey = null;
+        renderDebtLog._lastKey = null;
+        renderReceivables._lastKey = null;
+        renderCreditBills._lastKey = null;
+        renderYearlyFunds._lastKey = null;
+        _doUpdateUI._lastFp = null;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // Save System — IndexedDB (async, non-blocking)
+    // ══════════════════════════════════════════════════════════════
+    const _prevVal = {};
+    let _saveStorage_didChange = false;
+
+    // เขียนเฉพาะ key ที่ค่าเปลี่ยนจริง (ลด write)
+    function _setIfChanged(key, val) {
+        const s = (typeof val === 'string') ? val : JSON.stringify(val);
+        if (_prevVal[key] === s) return;
+        _prevVal[key] = s;
+        _saveStorage_didChange = true;
+        _pendingSaveData[key] = s; // สะสมไว้ flush ใน batch
+    }
+
+    // pending save buffer — flush เป็น 1 IDB transaction
+    const _pendingSaveData = {};
+
+    // ── Debounced save ─────────────────────────────────────────
+    let _saveDebounceTimer = null;
+    function saveStorageDebounced() {
+        clearTimeout(_saveDebounceTimer);
+        _saveDebounceTimer = setTimeout(() => saveStorage(), 300);
+    }
+
+    // ── saveStorage: collect dirty keys → batch write IDB ──────
     function saveStorage() {
-        // Check storage usage after save
-        try {
-            let total = Object.values(localStorage).reduce((s,v)=>s+v.length,0)*2; // bytes
-            if(total > 4*1024*1024 && !window._storageWarnShown) { // 4MB warning
-                window._storageWarnShown = true;
-                showToast('⚠️ ข้อมูลใกล้เต็ม! ควัก Backup แล้ว Clear ข้อมูลเก่าออกบ้างนะบอส');
-                setTimeout(()=>window._storageWarnShown=false, 60000);
-            }
-        } catch(e) {}
-        localStorage.setItem('wq18_name', userName); localStorage.setItem('wq18_age', userAge); localStorage.setItem('wq18_pts', userPoints); 
-        localStorage.setItem('wq18_profileImg', profileImgBase64 || '');
-        localStorage.setItem('wq18_inv', JSON.stringify(inventory)); localStorage.setItem('wq18_cfg', JSON.stringify(cfg)); 
-        localStorage.setItem('wq18_base', JSON.stringify(baseAmounts)); localStorage.setItem('wq18_curr', JSON.stringify(currentBalances));
-        localStorage.setItem('wq18_tx', JSON.stringify(transactions)); localStorage.setItem('wq18_cat', JSON.stringify(customCats));
-        localStorage.setItem('wq18_fc', JSON.stringify(fixedCosts)); localStorage.setItem('wq18_yf', JSON.stringify(yearlyFunds));
-        localStorage.setItem('wq18_wl', JSON.stringify(wishlist)); localStorage.setItem('wq18_q', JSON.stringify(activeQuests)); 
-        localStorage.setItem('wq18_debt', totalLiability); localStorage.setItem('wq18_inc', totalIncomeThisMonth); 
-        localStorage.setItem('wq18_joyG', JSON.stringify(joyGoal)); localStorage.setItem('wq18_secG', JSON.stringify(secGoal)); localStorage.setItem('wq18_growG', JSON.stringify(growthGoal)); 
-        localStorage.setItem('wq18_stats', JSON.stringify(stats)); localStorage.setItem('wq18_incCat', JSON.stringify(incomeCats));
-        localStorage.setItem('wq18_streak', streakCount); localStorage.setItem('wq18_lastLogin', lastActiveDate);
-        localStorage.setItem('wq18_onboarded', 'true');
-        if(stats.claimedQuests) localStorage.setItem('wq18_cq', JSON.stringify(stats.claimedQuests));
-        localStorage.setItem('wq18_bc', JSON.stringify(budgetCaps));
-        localStorage.setItem('wq18_cc', JSON.stringify(creditCards));
+        // collect all current values into pending buffer
+        _setIfChanged('wq18_name', userName);
+        _setIfChanged('wq18_age', userAge);
+        _setIfChanged('wq18_pts', userPoints);
+        _setIfChanged('wq18_profileImg', profileImgBase64 || '');
+        _setIfChanged('wq18_inv', inventory);
+        _setIfChanged('wq18_cfg', cfg);
+        _setIfChanged('wq18_base', baseAmounts);
+        _setIfChanged('wq18_curr', currentBalances);
+        _setIfChanged('wq18_tx', transactions);
+        _setIfChanged('wq18_cat', customCats);
+        _setIfChanged('wq18_fc', fixedCosts);
+        _setIfChanged('wq18_yf', yearlyFunds);
+        _setIfChanged('wq18_wl', wishlist);
+        _setIfChanged('wq18_q', activeQuests);
+        _setIfChanged('wq18_debt', totalLiability);
+        _setIfChanged('wq18_inc', totalIncomeThisMonth);
+        _setIfChanged('wq18_joyG', joyGoal);
+        _setIfChanged('wq18_secG', secGoal);
+        _setIfChanged('wq18_growG', growthGoal);
+        _setIfChanged('wq18_stats', stats);
+        _setIfChanged('wq18_incCat', incomeCats);
+        _setIfChanged('wq18_streak', streakCount);
+        _setIfChanged('wq18_lastLogin', lastActiveDate);
+        _setIfChanged('wq18_onboarded', 'true');
+        if(stats.claimedQuests) _setIfChanged('wq18_cq', stats.claimedQuests);
+        _setIfChanged('wq18_bc', budgetCaps);
+        _setIfChanged('wq18_cc', creditCards);
+
+        if (!_saveStorage_didChange) return; // ไม่มีอะไรเปลี่ยน ไม่ต้องเขียน
+        _saveStorage_didChange = false;
+        clearRenderCaches();
+
+        // flush pending data → IndexedDB (1 batch transaction, non-blocking)
+        const pairs = Object.entries(_pendingSaveData).map(([k,v]) => [k, v]);
+        Object.keys(_pendingSaveData).forEach(k => delete _pendingSaveData[k]);
+        if (pairs.length === 0) return;
+        _idbSetBatch(pairs).catch(err => {
+            console.error('IDB save error, fallback to localStorage:', err);
+            // Fallback: เขียน localStorage แทนถ้า IDB ล้มเหลว
+            pairs.forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch(e) {} });
+        });
     }
 
     // --- Backup & Restore ---
@@ -1441,8 +1630,38 @@
         a.download = `MeeSati_${new Date().toLocaleDateString('th-TH')}.csv`; a.click();
         showToast('📊 Export CSV เรียบร้อย! เปิดด้วย Excel ได้เลย');
     }
-    function exportData() { let d={...localStorage}; let b=new Blob([JSON.stringify(d)], {type:"application/json"}); let u=URL.createObjectURL(b); let a=document.createElement('a'); a.href=u; a.download=`MeeSati_Backup_${new Date().toLocaleDateString('th-TH')}.json`; a.click(); }
-    function importData(e) { let f=e.target.files[0]; if(!f) return; let r=new FileReader(); r.onload=function(ev){ try{let d=JSON.parse(ev.target.result); for(let k in d){localStorage.setItem(k,d[k]);} alert('กู้คืนข้อมูลสำเร็จ! ระบบจะรีเฟรช'); location.reload(); }catch(err){alert('ไฟล์เสียครับ!');} }; r.readAsText(f); }
+    async function exportData() {
+        const keys = [
+            'wq18_name','wq18_age','wq18_pts','wq18_profileImg','wq18_inv',
+            'wq18_cfg','wq18_base','wq18_curr','wq18_tx','wq18_cat',
+            'wq18_fc','wq18_yf','wq18_wl','wq18_q','wq18_debt','wq18_inc',
+            'wq18_joyG','wq18_secG','wq18_growG','wq18_stats','wq18_incCat',
+            'wq18_streak','wq18_lastLogin','wq18_cq','wq18_bc','wq18_cc','wq18_onboarded'
+        ];
+        const results = await _idbGetAll(keys);
+        const d = {};
+        results.forEach(r => { if(r.val !== undefined) d[r.key] = r.val; });
+        const b = new Blob([JSON.stringify(d)], {type:'application/json'});
+        const u = URL.createObjectURL(b);
+        const a = document.createElement('a'); a.href=u;
+        a.download = `MeeSati_Backup_${new Date().toLocaleDateString('th-TH')}.json`; a.click();
+    }
+    function importData(e) {
+        const f = e.target.files[0]; if(!f) return;
+        const r = new FileReader();
+        r.onload = async function(ev) {
+            try {
+                const d = JSON.parse(ev.target.result);
+                const pairs = Object.entries(d).map(([k,v]) => [k, v]);
+                await _idbSetBatch(pairs);
+                // mark migrated so we don't overwrite on next load
+                localStorage.setItem('wq18_migrated_idb', '1');
+                alert('กู้คืนข้อมูลสำเร็จ! ระบบจะรีเฟรช');
+                location.reload();
+            } catch(err) { alert('ไฟล์เสียครับ!'); }
+        };
+        r.readAsText(f);
+    }
 
     // --- 3. UI Navigation & Actions ---
     function switchTab(tabId, navElement) {
@@ -1468,6 +1687,7 @@
         
         if(tabId === 'view-home') { renderCategories(); renderWishlist(); }
         if(tabId === 'view-fixed') { renderFixedCosts(); renderYearlyFunds(); renderCreditBills(); }
+        if(tabId === 'view-analytics') { renderAnalyticsChart._lastKey = null; renderAnalyticsChart(currentAnalyticPeriod || 'month', true); }
     }
     
     function switchAnalyticTab(tabId) {
@@ -1476,6 +1696,7 @@
         document.getElementById(tabId).classList.add('active'); 
         let btn = document.getElementById(`btn-${tabId}`);
         if(btn) btn.classList.add('active');
+        if(tabId === 'tab-overview') { renderAnalyticsChart._lastKey = null; renderAnalyticsChart(currentAnalyticPeriod || 'month', true); }
         if(tabId === 'tab-savings') renderSavingsTab();
         if(tabId === 'tab-budget') renderBudgetTab();
         if(tabId === 'tab-insights') renderReportCard();
@@ -1506,9 +1727,9 @@
         let cat = sel ? sel.value : '';
         let limit = parseFloat(document.getElementById('bcLimit').value);
         if(!cat || !limit) return;
-        budgetCaps.push({ id: Date.now(), cat, limit }); saveStorage(); closeModal('addBudgetCapModal'); renderBudgetTab();
+        budgetCaps.push({ id: Date.now(), cat, limit }); saveStorageDebounced(); closeModal('addBudgetCapModal'); renderBudgetTab();
     }
-    function deleteBudgetCap(id) { budgetCaps = budgetCaps.filter(x => x.id !== id); saveStorage(); renderBudgetTab(); }
+    function deleteBudgetCap(id) { budgetCaps = budgetCaps.filter(x => x.id !== id); saveStorageDebounced(); renderBudgetTab(); }
 
     function suggestBudgetCaps() {
         // Calculate avg spend per category over last 3 cycles
@@ -1703,7 +1924,14 @@
         if(id === 'expenseModal') { activeFixedId = null; }
     }
     function showToast(msg) { let t = document.getElementById('toastMsg'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-    function clearData() { if(confirm('รีเซ็ตข้อมูลทั้งหมดจริงดิบอส? (หายเกลี้ยงเลยนะ!)')) { localStorage.clear(); location.reload(); } }
+    function clearData() {
+        if(confirm('รีเซ็ตข้อมูลทั้งหมดจริงดิบอส? (หายเกลี้ยงเลยนะ!)')) {
+            _idbClear().then(() => {
+                localStorage.clear();
+                location.reload();
+            });
+        }
+    }
 
     // --- ตัวแปรสำหรับ VIP โอนเงิน ---
     let vipTransferActive = false;
@@ -1728,7 +1956,7 @@
                 changed.push(tank);
             }
         });
-        if(changed.length) { saveStorage(); updateUI(); closeModal('manualAdjustModal'); showToast(`✅ ปรับยอด ${changed.join(', ')} เรียบร้อย!`); }
+        if(changed.length) { _txCacheVersion = -1; saveStorage(); updateUI(); closeModal('manualAdjustModal'); showToast(`✅ ปรับยอด ${changed.join(', ')} เรียบร้อย!`); }
         else closeModal('manualAdjustModal');
     }
     // Negative balance guard — call after any balance change
@@ -1805,10 +2033,77 @@
     }
 
     let _lastTxCount = -1; let _cachedBalances = null;
+    let _uiPending = false;
+    // Pre-filtered transaction caches — rebuilt only when tx array changes
+    let _txByType = {}; // { 'expense': [...], 'main_income': [...], ... }
+    let _txCacheVersion = -1;
+    function _rebuildTxCacheKey() {
+        let last = transactions[transactions.length-1];
+        return transactions.length + '_' + (last ? last.id : 0);
+    }
+    function _rebuildTxCache() {
+        let vkey = _rebuildTxCacheKey();
+        if(_txCacheVersion === vkey) return; // already up-to-date
+        _txCacheVersion = vkey;
+        _txByType = {};
+        transactions.forEach(t => {
+            if(!_txByType[t.type]) _txByType[t.type] = [];
+            _txByType[t.type].push(t);
+        });
+        // Also compute currentBalances here once (not per-render)
+        let bal = {growth:0, security:0, essential:0, joy:0};
+        transactions.forEach(t => {
+            let amt = parseFloat(t.amount)||0;
+            if(t.type === 'main_income') {
+                bal.growth   += amt*(cfg.g/100);
+                bal.security += amt*(cfg.s/100);
+                bal.essential+= amt*(cfg.e/100);
+                bal.joy      += amt*(cfg.j/100);
+            } else if(t.type === 'income') {
+                if(t.tank && bal[t.tank] !== undefined) bal[t.tank] += amt;
+            } else if(t.type === 'expense') {
+                if(t.tank && bal[t.tank] !== undefined) bal[t.tank] -= amt;
+            } else if(t.type === 'transfer') {
+                if(t.tank && bal[t.tank] !== undefined) bal[t.tank] -= amt;
+                if(t.toTank && bal[t.toTank] !== undefined) bal[t.toTank] += amt;
+            } else if(t.type === 'debt_in') {
+                bal.essential += amt;
+            } else if(t.type === 'debt_out') {
+                bal.security -= amt;
+            }
+        });
+        Object.keys(bal).forEach(k => { currentBalances[k] = Math.round(bal[k]*100)/100; });
+        _cachedBalances = {...currentBalances};
+        // Pre-sort transactions by date once (ใช้ใน analytics filter)
+        _txSortedByDate = transactions.slice().sort((a,b) => new Date(a.dateObj) - new Date(b.dateObj));
+    }
+    let _txSortedByDate = [];
     function updateUI() {
+        // Debounce: ถ้า updateUI() ถูกเรียกซ้อนกันหลายครั้งใน frame เดียว → run ครั้งเดียว
+        if(_uiPending) return;
+        _uiPending = true;
+        requestAnimationFrame(() => { _uiPending = false; _doUpdateUI(); });
+    }
+    function _doUpdateUI() {
+        // Rebuild tx cache + balances if transactions changed (O(n) once, not per-render)
+        _rebuildTxCache();
         // Recalculate balances only when transaction list changes
         let txCount = transactions.length;
         if(txCount !== _lastTxCount) { _lastTxCount = txCount; _cachedBalances = null; }
+        // ── Fast-path cache: build a lightweight fingerprint of things that affect DOM
+        // Only recompute expensive renders when their source data actually changed
+        let _lastTxId = transactions.length ? (transactions[transactions.length-1].id||0) : 0;
+        let _fp = txCount + '|' + _lastTxId + '|' + userPoints + '|' + streakCount + '|' + 
+                  currentBalances.growth + '|' + currentBalances.security + '|' + 
+                  currentBalances.essential + '|' + currentBalances.joy + '|' +
+                  totalLiability + '|' + totalIncomeThisMonth;
+        if(_fp === _doUpdateUI._lastFp) {
+            // Micro-update only: just refresh points/streak display (cheapest possible)
+            let pts = userPoints.toLocaleString();
+            ['userPointsDisplay','questPagePoints'].forEach(id => { let el = document.getElementById(id); if(el) el.innerText = `🪙 ${pts} แต้ม`; });
+            return;
+        }
+        _doUpdateUI._lastFp = _fp;
         document.getElementById('sub-growth').innerText = `ลงทุน (${cfg.g}%)`; document.getElementById('sub-security').innerText = `สำรอง (${cfg.s}%)`;
         document.getElementById('sub-essential').innerText = `จำเป็น (${cfg.e}%)`; document.getElementById('sub-joy').innerText = `รางวัล (${cfg.j}%)`;
         
@@ -1842,38 +2137,45 @@
         
         let liabilityDisplay = document.getElementById('totalLiabilityDisplay'); if(liabilityDisplay) liabilityDisplay.innerText = '฿' + totalLiability.toLocaleString();
         guardNegativeBalances();
-        // January check: prompt to reset yearly funds + review security goal
+        // January check: run at most ONCE per day (not every updateUI)
         try {
-            let _jan = new Date();
-            if(_jan.getMonth() === 0 && !stats.janPromptShown) { // January
-                let doneYF = yearlyFunds.filter(y => y.paidMonths >= 12);
-                if(doneYF.length > 0) {
-                    stats.janPromptShown = true;
-                    showToast(`🎊 ปีใหม่! กองทุนรายปี ${doneYF.length} รายการครบแล้ว กด "เริ่มปีใหม่" ในหน้าบิล/เป้า`);
-                }
-                // Auto-suggest security goal update if income grew
-                let avgInc = transactions.filter(t=>t.type==='main_income').slice(-3).reduce((s,t)=>s+t.amount,0)/3;
-                if(avgInc > 0 && secGoal && secGoal.target > 0) {
-                    let suggestedGoal = Math.round(avgInc * 6 / 1000) * 1000; // 6 months emergency fund
-                    if(suggestedGoal > secGoal.target * 1.1) {
-                        showToast(`💡 รายได้เพิ่มแล้ว! แนะนำปรับเป้าเงินสำรองเป็น ฿${suggestedGoal.toLocaleString()} (6 เดือน × ฿${Math.round(avgInc).toLocaleString()})`);
+            let _todayKey = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+            if(_doUpdateUI._lastJanCheck !== _todayKey) {
+                _doUpdateUI._lastJanCheck = _todayKey;
+                let _jan = new Date();
+                if(_jan.getMonth() === 0 && !stats.janPromptShown) {
+                    let doneYF = yearlyFunds.filter(y => y.paidMonths >= 12);
+                    if(doneYF.length > 0) {
+                        stats.janPromptShown = true;
+                        showToast(`🎊 ปีใหม่! กองทุนรายปี ${doneYF.length} รายการครบแล้ว กด "เริ่มปีใหม่" ในหน้าบิล/เป้า`);
                     }
-                }
-            } else if(_jan.getMonth() !== 0) { stats.janPromptShown = false; }
+                    let avgInc = transactions.filter(t=>t.type==='main_income').slice(-3).reduce((s,t)=>s+t.amount,0)/3;
+                    if(avgInc > 0 && secGoal && secGoal.target > 0) {
+                        let suggestedGoal = Math.round(avgInc * 6 / 1000) * 1000;
+                        if(suggestedGoal > secGoal.target * 1.1) {
+                            showToast(`💡 รายได้เพิ่มแล้ว! แนะนำปรับเป้าเงินสำรองเป็น ฿${suggestedGoal.toLocaleString()} (6 เดือน × ฿${Math.round(avgInc).toLocaleString()})`);
+                        }
+                    }
+                } else if(_jan.getMonth() !== 0) { stats.janPromptShown = false; }
+            }
         } catch(e) {}
-        // Income reminder: แสดงถ้าเลยวัน payday มาแล้ว 1+ วัน และยังไม่มีรายรับในรอบนี้
+        // Income reminder: check once per minute (not every frame)
         try {
-            let _pd = cfg.payday || 25; let _now = new Date();
-            let _cs = new Date(_now.getFullYear(), _now.getMonth(), _pd);
-            if(_now.getDate() < _pd) _cs.setMonth(_cs.getMonth() - 1);
-            let _daysSince = Math.floor((_now - _cs) / 864e5);
-            let _hasIncome = transactions.some(t => t.type === 'main_income' && new Date(t.dateObj) >= _cs);
-            let _banner = document.getElementById('incomeReminderBanner');
-            let _txt = document.getElementById('incomeReminderText');
-            if(_banner && _daysSince >= 1 && !_hasIncome) {
-                _banner.style.display = 'flex';
-                if(_txt) _txt.innerText = `เลยวันที่ ${_pd} มา ${_daysSince} วันแล้ว ยังไม่กรอกรายรับรอบนี้เลยนะบอส!`;
-            } else if(_banner) { _banner.style.display = 'none'; }
+            let _nowMs = Date.now();
+            if(_nowMs - (_doUpdateUI._lastReminderCheck||0) > 60000) {
+                _doUpdateUI._lastReminderCheck = _nowMs;
+                let _pd = cfg.payday || 25; let _now = new Date();
+                let _cs = new Date(_now.getFullYear(), _now.getMonth(), _pd);
+                if(_now.getDate() < _pd) _cs.setMonth(_cs.getMonth() - 1);
+                let _daysSince = Math.floor((_now - _cs) / 864e5);
+                let _hasIncome = transactions.some(t => t.type === 'main_income' && new Date(t.dateObj) >= _cs);
+                let _banner = document.getElementById('incomeReminderBanner');
+                let _txt = document.getElementById('incomeReminderText');
+                if(_banner && _daysSince >= 1 && !_hasIncome) {
+                    _banner.style.display = 'flex';
+                    if(_txt) _txt.innerText = `เลยวันที่ ${_pd} มา ${_daysSince} วันแล้ว ยังไม่กรอกรายรับรอบนี้เลยนะบอส!`;
+                } else if(_banner) { _banner.style.display = 'none'; }
+            }
         } catch(e) {}
         saveStorage();
     }
@@ -1894,7 +2196,10 @@
             userPoints += 500;
             setTimeout(() => showToast('🎉 ยินดีต้อนรับ! รับโบนัส 500 แต้มสำหรับผู้ใช้ใหม่!'), 800);
         }
-        saveStorage(); updateUI();
+        saveStorage();
+        // mark onboarded in IDB immediately (async)
+        _idbSet('wq18_onboarded', 'true').catch(()=>{});
+        updateUI();
     }
     
     function openConfigModal() {
@@ -1908,7 +2213,7 @@
         try {
             userName = document.getElementById('userNameInput').value || userName; cfg.payday = parseInt(document.getElementById('cfgPayday').value) || 25;
             let g = parseInt(document.getElementById('cfgG').value)||0; let s = parseInt(document.getElementById('cfgS').value)||0; let e = parseInt(document.getElementById('cfgE').value)||0; let j = parseInt(document.getElementById('cfgJ').value)||0;
-            if(g+s+e+j !== 100) return alert('สัดส่วนรวมให้ได้ 100% ครับ');
+            if(g+s+e+j !== 100) return showToast('⚠️ สัดส่วนรวมต้องได้ 100% ครับ');
             cfg = {g, s, e, j, payday: cfg.payday}; 
             let totalBase = baseAmounts.growth + baseAmounts.security + baseAmounts.essential + baseAmounts.joy;
             if (totalBase > 0) {
@@ -1933,8 +2238,8 @@
 
     // --- 4. Main Financial Actions ---
     function confirmIncome() {
-        let inc = parseFloat(document.getElementById('mainIncomeInput').value); if(!inc || inc <= 0) return alert('กรอกเงินด้วยครับ!');
-        let cat = document.getElementById('incomeCatSelect').value; if(cat === 'add_new') return alert('กรุณาเลือกหรือสร้างหมวดหมู่ก่อนครับ');
+        let inc = parseFloat(document.getElementById('mainIncomeInput').value); if(!inc || inc <= 0) return showToast('⚠️ กรอกจำนวนเงินด้วยครับ!');
+        let cat = document.getElementById('incomeCatSelect').value; if(cat === 'add_new') return showToast('⚠️ กรุณาเลือกหรือสร้างหมวดหมู่ก่อนครับ');
         let dateVal = document.getElementById('incomeDateInput').value; let dateObj = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString();
         let target = document.getElementById('incomeTargetTank').value;
         if (target === 'auto') {
@@ -1964,6 +2269,10 @@
 
     function toggleEditCat() { isEditCatMode = !isEditCatMode; document.getElementById('editCatBtn').innerText = isEditCatMode ? 'เสร็จสิ้น' : 'แก้ไข'; document.getElementById('editCatBtn').style.color = isEditCatMode ? 'var(--danger)' : 'var(--espresso)'; renderCategories(); }
     function renderCategories() {
+        // Cache: skip rebuild ถ้า customCats และ isEditCatMode ไม่เปลี่ยน
+        let _cacheKey = JSON.stringify(customCats) + '|' + isEditCatMode;
+        if(renderCategories._lastKey === _cacheKey) return;
+        renderCategories._lastKey = _cacheKey;
         let grid = document.getElementById('homeCategories'); grid.innerHTML = '';
         // Group categories by tank for clarity when many categories exist
         if(customCats.length > 12) {
@@ -2054,7 +2363,7 @@
         let reimbursableAmt = isReimbursable ? parseFloat(document.getElementById('exReimbursableAmt').value) || 0 : 0; 
         let lendTo = isReimbursable ? document.getElementById('exLendTo').value || 'เพื่อน' : '';
         
-        if (isReimbursable && reimbursableAmt >= amt) return alert('บอส! ยอดที่จ่ายแทนคนอื่น ต้องน้อยกว่ายอดจ่ายรวมสิครับ!');
+        if (isReimbursable && reimbursableAmt >= amt) return showToast('⚠️ ยอดที่จ่ายแทนต้องน้อยกว่ายอดรวมครับ');
         
         // 🔥 ระบบตะกร้าดึงสติ (แบ่ง Tier ตามราคา)
         if(pt === 'joy' && amt >= 700) {
@@ -2119,7 +2428,7 @@
         let isCross = false; let crossReason = null; let bt = null; let pDeduct = amt; let bDeduct = 0;
         if(amt > currentBalances[pt]) {
             bt = document.getElementById('backupTank') ? document.getElementById('backupTank').value : null;
-            if(!bt) return alert('ลดสเปคด่วนบอส! ไม่มีเงินพอโปะเลยครับ');
+            if(!bt) return showToast('⚠️ ไม่มีเงินพอในกระเป๋าสำรองเลยบอส!');
             crossReason = document.getElementById('crossReason').value;
             pDeduct = currentBalances[pt]; bDeduct = amt - currentBalances[pt]; currentBalances[bt] -= bDeduct; currentBalances[pt] = 0;
             stats.crossTankCount++; showToast(`⚠️ โปะเงินจาก ${bt} (เหตุผล: ${crossReason})`); isCross = true; showGifOverlay('crosstank');
@@ -2185,15 +2494,15 @@
 
     function processTransfer() {
         let f = document.getElementById('tfFrom').value; let t = document.getElementById('tfTo').value; let a = parseFloat(document.getElementById('tfAmt').value);
-        if(f === t) return alert('เลือกกระเป๋าให้ต่างกันสิบอส!'); if(!a || a <= 0) return alert('กรอกจำนวนเงินให้ถูกต้องครับ');
-        if(currentBalances[f] < a) return alert(`เงินใน ${f} ไม่พอโอนนะบอส!`);
+        if(f === t) return showToast('⚠️ เลือกกระเป๋าให้ต่างกันสิบอส!'); if(!a || a <= 0) return showToast('⚠️ กรอกจำนวนเงินให้ถูกต้องครับ');
+        if(currentBalances[f] < a) return showToast(`⚠️ เงินใน ${f} ไม่พอโอนนะบอส!`);
         
         let isFriction = ((f==='growth'||f==='security') && (t==='joy'||t==='essential'));
         
         if(isFriction && !vipTransferActive) {
             // ระบบลงโทษแบบออริจินัล
-            let reason = prompt('⚠️ AI ขอเหตุผลหน่อย ทำไมถึงดึงเงินเก็บมาใช้? (พิมพ์สั้นๆ ให้รู้สึกผิดนะ):');
-            if(!reason) { alert('ไม่ยอมบอกเหตุผล ก็ไม่อนุมัติให้โอนครับ!'); return; }
+            let reason = document.getElementById('crossReasonInput') ? document.getElementById('crossReasonInput').value.trim() : '';
+            if(!reason) { showToast('⚠️ บอกเหตุผลก่อนนะบอส — AI ขอรู้ว่าทำไมถึงดึงเงินเก็บมาใช้'); document.getElementById('crossReasonInput') && document.getElementById('crossReasonInput').focus(); return; }
             
             userPoints = Math.max(0, userPoints - 50); // หัก 50 แต้ม
             stats.crossTankCount++;
@@ -2221,7 +2530,7 @@
         submitBtn.style.color = 'var(--white)'; submitBtn.innerText = 'ยืนยันการโอน';
         vipTransferActive = false;
 
-        saveStorage(); updateUI(); closeModal('transferModal'); 
+        saveStorageDebounced(); updateUI(); closeModal('transferModal'); 
     }
 
     function sweepChange() {
@@ -2231,7 +2540,7 @@
         let sChange = currentBalances.security % 100; 
         let total = eChange + jChange + sChange;
         
-        if(total <= 0) return alert('ไม่มีเศษให้ปัดครับ ลงตัวเป๊ะ!');
+        if(total <= 0) return showToast('✅ ไม่มีเศษให้ปัดครับ ลงตัวเป๊ะ!');
         
         // ถ้ามีเศษกระเป๋าไหน ให้โอนไป Growth พร้อมเก็บประวัติ
         if(eChange > 0) {
@@ -2439,10 +2748,10 @@
     function openEditTx(id) { let t = transactions.find(x => x.id === id); if(!t) return; document.getElementById('editTxId').value = t.id; document.getElementById('editTxAmt').value = t.amount; document.getElementById('editTxCat').value = t.cat; document.getElementById('editTxNote').value = t.note || ''; if(t.dateObj) { let d = new Date(t.dateObj); document.getElementById('editTxDate').value = d.toISOString().split('T')[0]; } openModal('editTxModal'); }
     function saveEditTransaction() {
         let id = parseFloat(document.getElementById('editTxId').value); let t = transactions.find(x => x.id === id); if(!t) return;
-        let newAmt = parseFloat(document.getElementById('editTxAmt').value) || 0; if (newAmt <= 0) return alert('ยอดเงินต้องมากกว่า 0');
-        if (t.type === 'expense') { currentBalances[t.tank] += t.amount; if (currentBalances[t.tank] < newAmt) { currentBalances[t.tank] -= t.amount; return alert('บอส! เงินในกระเป๋าไม่พอสำหรับยอดใหม่ที่แก้ไขครับ'); } currentBalances[t.tank] -= newAmt; } else if (t.type === 'income') { currentBalances[t.tank] = (currentBalances[t.tank] - t.amount) + newAmt; }
+        let newAmt = parseFloat(document.getElementById('editTxAmt').value) || 0; if (newAmt <= 0) return showToast('⚠️ ยอดเงินต้องมากกว่า 0');
+        if (t.type === 'expense') { currentBalances[t.tank] += t.amount; if (currentBalances[t.tank] < newAmt) { currentBalances[t.tank] -= t.amount; return showToast('⚠️ เงินในกระเป๋าไม่พอสำหรับยอดใหม่ที่แก้ไขครับ'); } currentBalances[t.tank] -= newAmt; } else if (t.type === 'income') { currentBalances[t.tank] = (currentBalances[t.tank] - t.amount) + newAmt; }
         t.dateObj = document.getElementById('editTxDate').value ? new Date(document.getElementById('editTxDate').value).toISOString() : t.dateObj; t.cat = document.getElementById('editTxCat').value; t.amount = newAmt; t.note = document.getElementById('editTxNote').value;
-        saveStorage(); updateUI(); closeModal('editTxModal'); openTankHistory(t.tank, document.getElementById('historyTitle').innerText); showToast('✅ แก้ไขเรียบร้อย!');
+        saveStorageDebounced(); updateUI(); closeModal('editTxModal'); openTankHistory(t.tank, document.getElementById('historyTitle').innerText); showToast('✅ แก้ไขเรียบร้อย!');
     }
     function undoTransaction(id) {
         let t = transactions.find(x => x.id === id); if(!t) return; if(!confirm(`ต้องการลบประวัติ "${t.cat}" ใช่ไหม? ระบบจะคืนเงิน/หักเงินให้ทันที`)) return;
@@ -2479,11 +2788,25 @@
     function editGoal() { document.getElementById('goalDisplay').style.display = 'none'; document.getElementById('goalEdit').style.display = 'block'; document.getElementById('goalActionBtn').style.display = 'none'; if(currentActiveGoalTank === 'joy') { document.getElementById('goalNameInput').value = joyGoal.name; document.getElementById('goalTargetInput').value = joyGoal.target; } else { document.getElementById('goalNameInput').value = secGoal.name; document.getElementById('goalTargetInput').value = secGoal.target; } }
     function saveGoal() { let name = document.getElementById('goalNameInput').value; let target = parseFloat(document.getElementById('goalTargetInput').value); if(name && target) { if(currentActiveGoalTank === 'joy') joyGoal = {name, target}; else secGoal = {name, target}; saveStorage(); } document.getElementById('goalEdit').style.display = 'none'; document.getElementById('goalDisplay').style.display = 'block'; updateGoalUI(currentActiveGoalTank); }
     function editGrowthGoal() {
-        let name = prompt('ชื่อเป้าหมายการลงทุน:', growthGoal.name || 'เงินลงทุน 1 ล้าน');
-        if(!name) return;
-        let target = parseFloat(prompt('ยอดเป้าหมาย (฿):', growthGoal.target || 1000000));
-        if(!target || isNaN(target)) return;
+        let display = document.getElementById('growthGoalDisplay');
+        let edit = document.getElementById('growthGoalEdit');
+        let editBtn = document.getElementById('growthGoalEditBtn');
+        if(!display || !edit) return;
+        document.getElementById('growthGoalNameInput').value = growthGoal.name || 'เงินลงทุน 1 ล้าน';
+        document.getElementById('growthGoalTargetInput').value = growthGoal.target || 1000000;
+        display.style.display = 'none';
+        edit.style.display = 'block';
+        if(editBtn) editBtn.style.display = 'none';
+    }
+    function saveGrowthGoal() {
+        let name = document.getElementById('growthGoalNameInput').value.trim();
+        let target = parseFloat(document.getElementById('growthGoalTargetInput').value);
+        if(!name || !target || isNaN(target) || target <= 0) { showToast('⚠️ กรอกชื่อและยอดเป้าหมายให้ถูกต้องด้วยครับ'); return; }
         growthGoal = { name, target };
+        document.getElementById('growthGoalDisplay').style.display = 'block';
+        document.getElementById('growthGoalEdit').style.display = 'none';
+        let editBtn = document.getElementById('growthGoalEditBtn');
+        if(editBtn) editBtn.style.display = '';
         let nameEl = document.getElementById('growthGoalName');
         if(nameEl) nameEl.innerText = name;
         saveStorage(); updateGoalUI('growth'); showToast('✅ อัปเดตเป้าหมายการลงทุนแล้ว!');
@@ -2491,7 +2814,11 @@
     function claimGoal() { let t = currentActiveGoalTank; let g = t === 'joy' ? joyGoal : secGoal; if(confirm(`ยินดีด้วยบอส! จะเบิกเงิน ฿${g.target.toLocaleString()} ไปใช้สำหรับ "${g.name}" ใช่ไหม?`)) { currentBalances[t] -= g.target; userPoints += 500; transactions.push({ id: Date.now(), type:'expense', dateObj: new Date().toISOString(), tank: t, amount: g.target, cat: 'พิชิตเป้าหมาย!', note: g.name, creditPaid: false }); showToast('เบิกเงินเรียบร้อย! รับโบนัส 500 แต้ม 🎉'); updateUI(); openTankHistory(t, t === 'joy' ? 'Joy (รางวัลชีวิต)' : 'Security (สำรอง)'); } }
 
     function buyReward(itemName, cost) { if(userPoints < cost) return alert(`แต้มไม่พอครับ ขาดอีก ${cost - userPoints} แต้ม`); if(confirm(`ยืนยันใช้ ${cost} แต้ม เพื่อแลก "${itemName}" ใช่ไหม?`)) { userPoints -= cost; inventory.push({id: Date.now(), name: itemName}); updateUI(); showToast(`🎉 แลกรางวัลสำเร็จ! คูปองอยู่ในคลังแล้ว`); } }
-    function renderInventory() { let inv = document.getElementById('inventoryList'); inv.innerHTML = ''; if(!inventory || inventory.length === 0) { inv.innerHTML = '<p style="text-align:center; font-size:12px;">ยังไม่มีคูปอง</p>'; return; } inventory.forEach(i => { inv.innerHTML += `<div style="background:var(--nuage-de-lait); border:1px solid var(--eau-trouble); padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><span style="color:var(--espresso); font-weight:bold; font-size:11px;">🎟️ ${i.name}</span><button class="btn-main" style="width:auto; padding:4px 12px; margin:0; background:var(--eau-trouble); font-size:11px;" onclick="useReward(${i.id}, '${i.name}')">ใช้สิทธิ์</button></div>`; }); }
+    function renderInventory() {
+        let _invKey = JSON.stringify(inventory);
+        if(renderInventory._lastKey === _invKey) return;
+        renderInventory._lastKey = _invKey;
+        let inv = document.getElementById('inventoryList'); inv.innerHTML = ''; if(!inventory || inventory.length === 0) { inv.innerHTML = '<p style="text-align:center; font-size:12px;">ยังไม่มีคูปอง</p>'; return; } inventory.forEach(i => { inv.innerHTML += `<div style="background:var(--nuage-de-lait); border:1px solid var(--eau-trouble); padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><span style="color:var(--espresso); font-weight:bold; font-size:11px;">🎟️ ${i.name}</span><button class="btn-main" style="width:auto; padding:4px 12px; margin:0; background:var(--eau-trouble); font-size:11px;" onclick="useReward(${i.id}, '${i.name}')">ใช้สิทธิ์</button></div>`; }); }
     function useReward(id, name) { 
         if(confirm(`คุณต้องการใช้คูปอง "${name}" ตอนนี้เลยใช่ไหม? (ใช้แล้วจะหายไปนะ)`)) { 
             
@@ -2511,13 +2838,13 @@
                 return; // ยังไม่ลบบัตร ให้ไปลบตอนกดยืนยันโอนเสร็จ
             }
             else if(name === '🧼 น้ำยาล้างบาปลบประวัติ') { if(stats.crossTankCount <= 0) return alert('ประวัติบอสขาวสะอาดอยู่แล้วครับ! เก็บน้ำยาไว้ใช้ตอนพลาดเถอะนะ'); stats.crossTankCount -= 1; alert('✨ ล้างบาปสำเร็จ! AI ลืมไปแล้วว่าบอสเคยดึงเงินข้ามถัง 1 ครั้ง สบายใจได้!'); }
-            else if(name === '🤝 บังคับเพื่อนเปย์มื้อนี้' || name === '🚗 กลับบ้านฟรี 1 วัน (มีคนเปย์)' || name === '🍲 สิทธิ์ขาดเลือกร้านข้าว (ห้ามเถียง)' || name === '🛋️ ละเว้นงานบ้าน 1 วัน') { alert(`🎉 ยินดีด้วยบอส!! รีบเปิดหน้าจอนี้ค้างไว้ แล้วเอาไปยื่นใส่หน้าเป้าหมาย เพื่อทวงสิทธิ์คูปอง:\n\n👉 "${name}"\n\n(ไม่ต้องจดลงแอป เพราะมีคนรับจบให้แล้ว 🤣)`); }
+            else if(name === '🤝 บังคับเพื่อนเปย์มื้อนี้' || name === '🚗 กลับบ้านฟรี 1 วัน (มีคนเปย์)' || name === '🍲 สิทธิ์ขาดเลือกร้านข้าว (ห้ามเถียง)' || name === '🛋️ ละเว้นงานบ้าน 1 วัน') { showToast(`🎉 เปิดหน้าจอค้างไว้ แล้วยื่นสิทธิ์: "${name}" ให้เป้าหมายรับจบเลย!`); }
             else if(name === '🍰 อนุมัติของไร้สาระ 1 ชิ้น') {
-                let cost = prompt(`ใช้สิทธิ์ VIP! บอสซื้อรายการนี้ไปกี่บาท? (เดี๋ยวระบบแอบหักเงินให้ยอดตรงกับธนาคารแบบเงียบๆ AI จะไม่ว่าครับ)`); let amt = parseFloat(cost); if(isNaN(amt) || amt <= 0) return alert('ใส่ตัวเลขไม่ถูกต้อง คูปองยังไม่ถูกใช้นะบอส!'); if(currentBalances.essential < amt) return alert('บอส! เงินใน Essential ไม่พอหักนะ!'); currentBalances.essential -= amt;
+                let cost = prompt(`ใช้สิทธิ์ VIP! บอสซื้อรายการนี้ไปกี่บาท? (เดี๋ยวระบบแอบหักเงินให้ยอดตรงกับธนาคารแบบเงียบๆ AI จะไม่ว่าครับ)`); let amt = parseFloat(cost); if(isNaN(amt) || amt <= 0) return alert('ใส่ตัวเลขไม่ถูกต้อง คูปองยังไม่ถูกใช้นะบอส!'); if(currentBalances.essential < amt) return showToast('⚠️ เงินใน Essential ไม่พอหักนะบอส!'); currentBalances.essential -= amt;
                 transactions.push({ id: Date.now(), type:'expense', dateObj: new Date().toISOString(), tank: 'essential', amount: amt, cat: `🎁 VIP: ใช้คูปองแต้มแลกมา`, note: name, payMethod: 'สแกนจ่าย/โอน', emotion: '🤩 อยากให้รางวัลตัวเอง', needRating: 5, creditPaid: false, isCross: false }); alert(`หักเงิน ฿${amt} ออกจากกระเป๋าเรียบร้อย ยอดตรงเป๊ะ บอสกินให้อร่อยไม่ต้องรู้สึกผิด!`);
             }
             
-            inventory = inventory.filter(x => x.id !== id); saveStorage(); updateUI(); showToast(`✅ ใช้สิทธิ์ "${name}" เรียบร้อยแล้ว!`); 
+            inventory = inventory.filter(x => x.id !== id); saveStorageDebounced(); updateUI(); showToast(`✅ ใช้สิทธิ์ "${name}" เรียบร้อยแล้ว!`); 
         } 
     }
 
@@ -2525,8 +2852,11 @@
     function renderWishlist() { 
         let c = document.getElementById('wishlistContainer'); 
         let countBadge = document.getElementById('wishlistCount');
-        if(countBadge) countBadge.innerText = wishlist.length; 
-
+        if(countBadge) countBadge.innerText = wishlist.length;
+        // Cache: skip rebuild ถ้า wishlist ไม่เปลี่ยน
+        let _wKey = JSON.stringify(wishlist) + '|' + inventory.length;
+        if(renderWishlist._lastKey === _wKey && c.children.length > 0) return;
+        renderWishlist._lastKey = _wKey;
         c.innerHTML = ''; 
         if(wishlist.length === 0) {
             c.innerHTML = '<p style="text-align:center; color:var(--gray-text); font-size:12px; margin-top:20px;">ไม่มีของดอง เก่งมากบอส!</p>'; 
@@ -2576,7 +2906,7 @@
     // 🌟 ฟังก์ชันใหม่: จัดการตอนกดใช้ VIP ในตะกร้า
     function useVipOnWishlist(id) {
         let vipIndex = inventory.findIndex(i => i.name === '👑 VIP ข้ามตะกร้าดึงสติ');
-        if (vipIndex === -1) return alert('อ้าว! บัตร VIP หายไปไหนแล้ว?');
+        if (vipIndex === -1) return showToast('⚠️ อ้าว! บัตร VIP หายไปไหนแล้ว?');
         
         if(confirm('👑 ยืนยันใช้บัตร VIP 1 ใบ เพื่อปลดล็อคและซื้อของชิ้นนี้ทันทีใช่ไหม?')) {
             inventory.splice(vipIndex, 1); // หักบัตรทิ้ง 1 ใบ
@@ -2588,7 +2918,7 @@
     }
 
     function buyWishlist(id) { let w = wishlist.find(x=>x.id===id); if(!w) return; wishlist = wishlist.filter(x=>x.id!==id); stats.temptationYieldedCount++; executePayment(w.amount, w.tank, w.note, w.cat, w.payMethod, w.emotion, w.needRating); renderWishlist(); closeModal('wishlistModal'); }
-    function deleteWishlist(id, amt) { wishlist = wishlist.filter(x=>x.id!==id); stats.savedFromTemptation += amt; stats.temptationAbandonedCount++; if(!stats.wishlistDeletedThisCycle) stats.wishlistDeletedThisCycle = 0; stats.wishlistDeletedThisCycle += amt; userPoints += 50; updateUI(); showToast('🎉 ชนะกิเลสตัวเองได้แล้ว! รับโบนัส 50 แต้ม'); saveStorage(); showGifOverlay('wishlist_delete'); }
+    function deleteWishlist(id, amt) { wishlist = wishlist.filter(x=>x.id!==id); stats.savedFromTemptation += amt; stats.temptationAbandonedCount++; if(!stats.wishlistDeletedThisCycle) stats.wishlistDeletedThisCycle = 0; stats.wishlistDeletedThisCycle += amt; userPoints += 50; updateUI(); showToast('🎉 ชนะกิเลสตัวเองได้แล้ว! รับโบนัส 50 แต้ม'); saveStorageDebounced(); showGifOverlay('wishlist_delete'); }
 
     // --- 7. AUTO QUEST SYSTEM ---
     // กำหนดภารกิจทั้งหมด (ระบบตรวจสอบและให้แต้มอัตโนมัติ)
@@ -2809,6 +3139,10 @@
     }
 
     function autoCheckAndClaimQuests() {
+        // Throttle: run at most once per 60 seconds (quests don't change that fast)
+        let _now = Date.now();
+        if(_now - (autoCheckAndClaimQuests._lastRun||0) < 60000) return;
+        autoCheckAndClaimQuests._lastRun = _now;
         initQuestStats();
         let claimed = [];
         QUEST_DEFS.forEach(q => {
@@ -2859,7 +3193,7 @@
     function addCustomQuest() {
         let name = (document.getElementById('cqName')||{}).value || '';
         let pts  = parseInt((document.getElementById('cqDiff')||{}).value) || 30;
-        if(!name.trim()) return alert('กรอกชื่อภารกิจด้วยนะบอส!');
+        if(!name.trim()) return showToast('⚠️ กรอกชื่อภารกิจด้วยนะบอส!');
         // Add as a one-time personal quest stored in stats
         if(!stats.customQuests) stats.customQuests = [];
         let qid = 'custom_' + Date.now();
@@ -2975,6 +3309,14 @@
 
     // --- 8. Fixed Costs, Credit Bills & Yearly ---
     function renderFixedCosts() {
+        // Cache: skip full DOM rebuild when fixedCosts data unchanged
+        let _fcKey = JSON.stringify(fixedCosts) + '|' + JSON.stringify(creditCards);
+        if(renderFixedCosts._lastKey === _fcKey) {
+            // Still update summary numbers (cheap)
+            _updateFixedSummary();
+            return;
+        }
+        renderFixedCosts._lastKey = _fcKey;
         // Auto-archive completed installments older than 30 days
         let now30 = Date.now() - 30*24*3600*1000;
         fixedCosts.forEach(f => {
@@ -3056,6 +3398,16 @@
         if(document.getElementById('fixedTotalAmt')) document.getElementById('fixedTotalAmt').innerText = `฿${totalFixed.toLocaleString()}`;
         if(pctEl) { pctEl.innerText = pct.toFixed(1) + '%'; pctEl.style.color = pct > 15 ? 'var(--danger)' : 'var(--success)'; }
         document.getElementById('fixedPctBar').style.width = Math.min(100, pct) + '%'; document.getElementById('fixedPctBar').style.background = pct > 15 ? 'var(--danger)' : 'var(--eau-trouble)';
+        renderFixedCosts._totalFixed = totalFixed; // cache for _updateFixedSummary
+    }
+    function _updateFixedSummary() {
+        // Lightweight: just refresh the header summary numbers without rebuilding the list
+        let totalFixed = renderFixedCosts._totalFixed || 0;
+        let pct = totalIncomeThisMonth > 0 ? (totalFixed / totalIncomeThisMonth) * 100 : 0;
+        let pctEl = document.getElementById('fixedPctTxt');
+        if(document.getElementById('fixedTotalAmt')) document.getElementById('fixedTotalAmt').innerText = `฿${totalFixed.toLocaleString()}`;
+        if(pctEl) { pctEl.innerText = pct.toFixed(1) + '%'; pctEl.style.color = pct > 15 ? 'var(--danger)' : 'var(--success)'; }
+        document.getElementById('fixedPctBar').style.width = Math.min(100, pct) + '%'; document.getElementById('fixedPctBar').style.background = pct > 15 ? 'var(--danger)' : 'var(--eau-trouble)';
     }
     function openAddFixedModal() { document.getElementById('fcName').value = ''; document.getElementById('fcAmount').value = ''; document.getElementById('fcIcon').value = ''; document.getElementById('fcTank').value = 'essential'; document.getElementById('fcIsInst').checked = false; document.getElementById('fcInstDiv').style.display = 'none'; document.getElementById('fcTotalM').value = ''; document.getElementById('fcPaidM').value = ''; openModal('addFixedModal'); }
     function openManageCCModal() { renderCCList(); renderCCSummary(); openModal('manageCCModal'); }
@@ -3063,7 +3415,7 @@
         let name = document.getElementById('ccNewName').value.trim();
         let limit = parseFloat(document.getElementById('ccNewLimit').value) || 0;
         let color = document.getElementById('ccNewColor').value || '#3b82f6';
-        if(!name) return alert('กรอกชื่อบัตรด้วยครับ');
+        if(!name) return showToast('⚠️ กรอกชื่อบัตรด้วยครับ');
         creditCards.push({ id: Date.now(), name, limit, color });
         saveStorage(); renderCCList(); renderCCSummary();
         document.getElementById('ccNewName').value = '';
@@ -3135,6 +3487,9 @@
     function saveEditFixedCost() { let id = parseInt(document.getElementById('efcId').value); let f = fixedCosts.find(x => x.id === id); if(!f) return; f.name = document.getElementById('efcName').value; f.amount = parseFloat(document.getElementById('efcAmount').value) || 0; f.icon = document.getElementById('efcIcon').value || '🧾'; f.tank = document.getElementById('efcTank').value; f.isInst = document.getElementById('efcIsInst').checked; f.totalM = parseInt(document.getElementById('efcTotalM').value) || 0; f.paidM = parseInt(document.getElementById('efcPaidM').value) || 0; saveStorage(); updateUI(); closeModal('editFixedModal'); showToast('✅ แก้ไขบิลสำเร็จ!'); }
 
     function renderYearlyFunds() {
+        let _yfKey = JSON.stringify(yearlyFunds);
+        if(renderYearlyFunds._lastKey === _yfKey) return;
+        renderYearlyFunds._lastKey = _yfKey;
         let list = document.getElementById('yearlyFundList'); list.innerHTML = '';
         yearlyFunds.forEach(y => {
             if(y.paidMonths === undefined) y.paidMonths = 0; if(y.monthlyVal === undefined) y.monthlyVal = Math.round(y.amount / 12);
@@ -3146,7 +3501,7 @@
         });
     }
     function updateYMonthVal(id, val) { let y = yearlyFunds.find(x=>x.id===id); if(y && val>=0) { y.monthlyVal = parseFloat(val); saveStorage(); } }
-    function addToYearly(id) { let y = yearlyFunds.find(x=>x.id===id); let sourceTank = document.getElementById(`ySource-${y.id}`).value; if(currentBalances[sourceTank] < y.monthlyVal) return alert(`เงินในกระเป๋า ${sourceTank} ไม่พอหยอดครับ ดึงมาใส่ก่อนนะ!`); currentBalances[sourceTank] -= y.monthlyVal; currentBalances.security += y.monthlyVal; y.current += y.monthlyVal; y.paidMonths += 1; updateUI(); showToast(`หยอดเงินงวดที่ ${y.paidMonths} สำเร็จ (ดึงจาก ${sourceTank})!`); }
+    function addToYearly(id) { let y = yearlyFunds.find(x=>x.id===id); let sourceTank = document.getElementById(`ySource-${y.id}`).value; if(currentBalances[sourceTank] < y.monthlyVal) return showToast(`⚠️ เงินในกระเป๋า ${sourceTank} ไม่พอหยอดครับ ดึงมาใส่ก่อนนะ!`); currentBalances[sourceTank] -= y.monthlyVal; currentBalances.security += y.monthlyVal; y.current += y.monthlyVal; y.paidMonths += 1; updateUI(); showToast(`หยอดเงินงวดที่ ${y.paidMonths} สำเร็จ (ดึงจาก ${sourceTank})!`); }
     function saveYearlyFund() { let n=document.getElementById('yName').value; let a=parseFloat(document.getElementById('yAmount').value); if(n&&a){yearlyFunds.push({id:Date.now(), name:n, amount:a, current:0, paidMonths:0, monthlyVal: Math.round(a/12)}); updateUI(); closeModal('addYearlyModal');} }
 
     function renderCreditBills() {
@@ -3203,12 +3558,12 @@
         showToast('✅ จ่ายบิลและหักเงินจาก Security เรียบร้อย!');
     }
     function openLegacyDebtModal() { document.getElementById('ldName').value = ''; document.getElementById('ldAmt').value = ''; document.getElementById('ldMonths').value = '1'; openModal('addLegacyDebtModal'); }
-    function saveLegacyDebt() { let name = document.getElementById('ldName').value; let amt = parseFloat(document.getElementById('ldAmt').value); let months = parseInt(document.getElementById('ldMonths').value) || 1; if(!name || !amt || amt <= 0) return alert('กรอกข้อมูลยอดเงินให้ถูกต้องด้วยครับบอส!'); let installments = []; for(let i=1; i<=months; i++) { installments.push({monthNo: i, amount: amt, paid: false}); } transactions.push({ id: Date.now(), type: 'legacy_debt', dateObj: new Date().toISOString(), cat: 'ยอดค้างเก่า: ' + name, note: 'ยกยอดมา', amount: amt * months, installments: installments }); saveStorage(); updateUI(); closeModal('addLegacyDebtModal'); showToast('✅ นำเข้าบิลเก่าสำเร็จ!'); }
+    function saveLegacyDebt() { let name = document.getElementById('ldName').value; let amt = parseFloat(document.getElementById('ldAmt').value); let months = parseInt(document.getElementById('ldMonths').value) || 1; if(!name || !amt || amt <= 0) return showToast('⚠️ กรอกข้อมูลยอดเงินให้ถูกต้องด้วยครับ'); let installments = []; for(let i=1; i<=months; i++) { installments.push({monthNo: i, amount: amt, paid: false}); } transactions.push({ id: Date.now(), type: 'legacy_debt', dateObj: new Date().toISOString(), cat: 'ยอดค้างเก่า: ' + name, note: 'ยกยอดมา', amount: amt * months, installments: installments }); saveStorage(); updateUI(); closeModal('addLegacyDebtModal'); showToast('✅ นำเข้าบิลเก่าสำเร็จ!'); }
     function openEditLegacyDebt(id) { let t = transactions.find(x => x.id === id); if(!t || t.type !== 'legacy_debt') return; document.getElementById('eldId').value = t.id; document.getElementById('eldName').value = t.cat.replace('ยอดค้างเก่า: ', ''); let unpaid = t.installments.filter(i => !i.paid); let amt = unpaid.length > 0 ? unpaid[0].amount : 0; document.getElementById('eldAmt').value = amt; document.getElementById('eldMonths').value = unpaid.length; openModal('editLegacyDebtModal'); }
-    function saveEditLegacyDebt() { let id = parseFloat(document.getElementById('eldId').value); let t = transactions.find(x => x.id === id); if(!t) return; let name = document.getElementById('eldName').value; let amt = parseFloat(document.getElementById('eldAmt').value); let remainMonths = parseInt(document.getElementById('eldMonths').value) || 1; if(!name || !amt || amt <= 0) return alert('กรอกข้อมูลให้ถูกต้องด้วยครับ!'); t.cat = 'ยอดค้างเก่า: ' + name; let paidInsts = t.installments.filter(i => i.paid); let newInsts = [...paidInsts]; let startMonthNo = paidInsts.length > 0 ? paidInsts[paidInsts.length - 1].monthNo + 1 : 1; for(let i=0; i<remainMonths; i++) { newInsts.push({ monthNo: startMonthNo + i, amount: amt, paid: false }); } t.installments = newInsts; t.amount = newInsts.reduce((sum, i) => sum + i.amount, 0); saveStorage(); updateUI(); closeModal('editLegacyDebtModal'); showToast('✅ แก้ไขยอดค้างเก่าสำเร็จ!'); }
+    function saveEditLegacyDebt() { let id = parseFloat(document.getElementById('eldId').value); let t = transactions.find(x => x.id === id); if(!t) return; let name = document.getElementById('eldName').value; let amt = parseFloat(document.getElementById('eldAmt').value); let remainMonths = parseInt(document.getElementById('eldMonths').value) || 1; if(!name || !amt || amt <= 0) return showToast('⚠️ กรอกข้อมูลให้ถูกต้องด้วยครับ'); t.cat = 'ยอดค้างเก่า: ' + name; let paidInsts = t.installments.filter(i => i.paid); let newInsts = [...paidInsts]; let startMonthNo = paidInsts.length > 0 ? paidInsts[paidInsts.length - 1].monthNo + 1 : 1; for(let i=0; i<remainMonths; i++) { newInsts.push({ monthNo: startMonthNo + i, amount: amt, paid: false }); } t.installments = newInsts; t.amount = newInsts.reduce((sum, i) => sum + i.amount, 0); saveStorage(); updateUI(); closeModal('editLegacyDebtModal'); showToast('✅ แก้ไขยอดค้างเก่าสำเร็จ!'); }
 
     function processBorrow() { let a = parseFloat(document.getElementById('borrowAmt').value); let n = document.getElementById('borrowNote').value || 'ยืมทั่วไป'; if(!a) return; totalLiability += a; currentBalances.essential += a; transactions.push({ id: Date.now(), type: 'debt_in', tank: 'essential', amount: a, cat: 'ยืมเงินมาโปะ', note: n, dateObj: new Date().toISOString() }); updateUI(); renderDebtChart(); closeModal('addDebtModal'); showToast(`📥 ยืมเงิน ${n} เข้ากระเป๋า Essential แล้ว!`); }
-    function processPayback() { let a = parseFloat(document.getElementById('paybackAmt').value); let l = document.getElementById('paybackLender').value; if(!a) return; if(a > currentBalances.security) { alert(`เงินใน Security ไม่พอคืนหนี้นะบอส!`); return; } currentBalances.security -= a; totalLiability = Math.max(0, totalLiability - a); transactions.push({ id: Date.now(), type: 'debt_out', tank: 'security', amount: a, cat: 'จ่ายคืนหนี้', note: l, dateObj: new Date().toISOString() }); updateUI(); renderDebtChart(); closeModal('payDebtModal'); showToast(`📤 จ่ายคืนหนี้สำเร็จ หักจาก Security แล้ว!`); }
+    function processPayback() { let a = parseFloat(document.getElementById('paybackAmt').value); let l = document.getElementById('paybackLender').value; if(!a) return; if(a > currentBalances.security) { showToast('⚠️ เงินใน Security ไม่พอคืนหนี้นะบอส!'); return; } currentBalances.security -= a; totalLiability = Math.max(0, totalLiability - a); transactions.push({ id: Date.now(), type: 'debt_out', tank: 'security', amount: a, cat: 'จ่ายคืนหนี้', note: l, dateObj: new Date().toISOString() }); updateUI(); renderDebtChart(); closeModal('payDebtModal'); showToast(`📤 จ่ายคืนหนี้สำเร็จ หักจาก Security แล้ว!`); }
     function clearZeroDebt() {
         if(!confirm('ลบประวัติหนี้ที่ชำระครบแล้ว (ยอดสุทธิ ฿0)?')) return;
         let debtTx = transactions.filter(t => t.type==='debt_in'||t.type==='legacy_debt_in'||t.type==='debt_out');
@@ -3223,6 +3578,9 @@
         saveStorage(); updateUI(); showToast(`🧹 ลบประวัติหนี้ชำระครบ ${cleared.length} รายการแล้ว`);
     }
     function renderDebtLog() {
+        let _dKey = transactions.filter(t=>t.type==='debt_in'||t.type==='legacy_debt_in'||t.type==='debt_out').length + '|' + totalLiability;
+        if(renderDebtLog._lastKey === _dKey) return;
+        renderDebtLog._lastKey = _dKey;
         let list = document.getElementById('debtLogList'); list.innerHTML = ''; let debtTx = transactions.filter(t => t.type === 'debt_in' || t.type === 'legacy_debt_in' || t.type === 'debt_out'); let lenders = new Set();
         [...debtTx].reverse().forEach(t => { let color = (t.type === 'debt_in' || t.type === 'legacy_debt_in') ? 'color:var(--danger)' : 'color:var(--success)'; let sign = (t.type === 'debt_in' || t.type === 'legacy_debt_in') ? '+' : '-'; let d = new Date(t.dateObj).toLocaleDateString('th-TH'); list.innerHTML += `<li class="list-item"><div class="list-info"><h4 style="color:var(--espresso); margin:0; font-size:13px;">${t.cat}</h4><p style="font-size:10px; color:var(--gray-text); margin:0;">${d} | ${t.note}</p></div><div style="display:flex; align-items:center; gap:5px;"><span class="list-amount" style="${color}; font-weight:bold; font-size:13px;">${sign}฿${t.amount.toLocaleString()}</span> <button onclick="undoTransaction(${t.id})" style="border:none; background:transparent; color:var(--gray-text); font-size:11px; cursor:pointer;">[ลบ]</button></div></li>`; if(t.type === 'debt_in' || t.type === 'legacy_debt_in') lenders.add(t.note); });
         let pbSelect = document.getElementById('paybackLender'); if(pbSelect) { pbSelect.innerHTML = ''; if(lenders.size === 0) pbSelect.innerHTML = '<option value="ทั่วไป">ทั่วไป</option>'; else lenders.forEach(l => pbSelect.innerHTML += `<option value="${l}">${l}</option>`); }
@@ -3235,9 +3593,12 @@
         if(Object.keys(lenderBalances).length === 0) { document.getElementById('debtChart').parentElement.style.display = 'none'; } else { document.getElementById('debtChart').parentElement.style.display = 'flex'; debtChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(lenderBalances), datasets: [{ data: Object.values(lenderBalances), backgroundColor: ['#a13a1e','#a79058','#f1c166','#8babca'] }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '50%', plugins:{ legend:{position:'right', labels:{color:'#4b2613', font:{family:'Kanit', size:11}}} } } }); }
     }
     function openLegacyBorrowedModal() { document.getElementById('lbAmt').value = ''; document.getElementById('lbNote').value = ''; openModal('addLegacyBorrowedModal'); }
-    function saveLegacyBorrowed() { let amt = parseFloat(document.getElementById('lbAmt').value); let note = document.getElementById('lbNote').value || 'ยืมเก่าทั่วไป'; if(!amt || amt <= 0) return alert('กรอกจำนวนเงินให้ถูกต้องครับ'); totalLiability += amt; transactions.push({ id: Date.now(), type: 'legacy_debt_in', tank: 'none', amount: amt, cat: 'หนี้ยืมค้างเก่า', note: note, dateObj: new Date().toISOString() }); saveStorage(); updateUI(); if(typeof renderDebtChart === 'function') renderDebtChart(); closeModal('addLegacyBorrowedModal'); showToast(`📜 บันทึกหนี้ค้างเก่าเรียบร้อย!`); }
+    function saveLegacyBorrowed() { let amt = parseFloat(document.getElementById('lbAmt').value); let note = document.getElementById('lbNote').value || 'ยืมเก่าทั่วไป'; if(!amt || amt <= 0) return showToast('⚠️ กรอกจำนวนเงินให้ถูกต้องครับ'); totalLiability += amt; transactions.push({ id: Date.now(), type: 'legacy_debt_in', tank: 'none', amount: amt, cat: 'หนี้ยืมค้างเก่า', note: note, dateObj: new Date().toISOString() }); saveStorage(); updateUI(); if(typeof renderDebtChart === 'function') renderDebtChart(); closeModal('addLegacyBorrowedModal'); showToast(`📜 บันทึกหนี้ค้างเก่าเรียบร้อย!`); }
 
     function renderReceivables() {
+        let _rxKey = transactions.filter(t=>t.type==='receivable').map(t=>t.id+'|'+t.paid).join(',');
+        if(renderReceivables._lastKey === _rxKey) return;
+        renderReceivables._lastKey = _rxKey;
         let list = document.getElementById('receivableList'); if(!list) return; list.innerHTML = ''; let pendingRx = transactions.filter(t => t.type === 'receivable' && !t.paid);
         if(pendingRx.length === 0) { list.innerHTML = '<li style="font-size:11px; color:var(--gray-text);">ไม่มีบิลค้างเคลียร์ (สบายใจได้บอส!)</li>'; return; }
         pendingRx.forEach(r => {
@@ -3268,7 +3629,6 @@
         hBadge.innerText = bTxt; hBadge.style.background = bCol; hDesc.innerText = text;
     }
 
-    let currentAnalyticPeriod = 'month';
     function changeMonth(dir) { 
         viewingMonthOffset += dir; 
         if(viewingMonthOffset > 0) viewingMonthOffset = 0; 
@@ -3288,6 +3648,11 @@
             viewingMonthOffset = 0; 
         }
         currentAnalyticPeriod = period;
+        // Cache: skip full rebuild if period/offset/data unchanged
+        let _acKey = period + '|' + viewingMonthOffset + '|' + transactions.length + '|' + 
+                     (transactions[transactions.length-1]||{}).id + '|' + customRangeStart + '|' + customRangeEnd;
+        if(renderAnalyticsChart._lastKey === _acKey) return;
+        renderAnalyticsChart._lastKey = _acKey;
         evaluateHealth();
         
         // อัปเดตสีปุ่มทั้งหมดรวมถึงปุ่มกำหนดเอง
@@ -3354,13 +3719,16 @@
             let eDate = document.getElementById('customEndDate').value;
             if(!sDate || !eDate) {
                 cycleEnd = new Date(now);
-                cycleStart = new Date(now); cycleStart.setDate(now.getDate() - 7); // Default ย้อนหลัง 7 วัน
+                cycleStart = new Date(now); cycleStart.setDate(now.getDate() - 7);
                 document.getElementById('customStartDate').value = cycleStart.toISOString().split('T')[0];
                 document.getElementById('customEndDate').value = cycleEnd.toISOString().split('T')[0];
+                sDate = document.getElementById('customStartDate').value;
+                eDate = document.getElementById('customEndDate').value;
             } else {
                 cycleStart = new Date(sDate);
                 cycleEnd = new Date(eDate);
             }
+            customRangeStart = sDate; customRangeEnd = eDate;
             periodLabel = 'ช่วงเวลาที่เลือก';
         }
 
@@ -3376,7 +3744,9 @@
         }
         document.getElementById('currentMonthDisplay').innerText = dateText;
 
-        let cycleTx = transactions.filter(t => { let d = new Date(t.dateObj); return d >= cycleStart && d <= cycleEnd; });
+        // ใช้ pre-sorted array + filter range (เร็วกว่า full scan เมื่อ tx เยอะ)
+        let src = _txSortedByDate.length === transactions.length ? _txSortedByDate : transactions;
+        let cycleTx = src.filter(t => { let d = new Date(t.dateObj); return d >= cycleStart && d <= cycleEnd; });
         // เฉพาะ main_income เท่านั้น ไม่รวมเงินยืม/หนี้เก่า
         let exTx = cycleTx.filter(t=>t.type==='expense'); let inTx = cycleTx.filter(t=>t.type==='main_income');
         
@@ -3741,11 +4111,11 @@
     function withdrawYearly() {
         let id = parseInt(document.getElementById('eyId').value); let y = yearlyFunds.find(x=>x.id===id); if(!y) return;
         let savedAmt = y.current || (y.paidMonths * y.monthlyVal);
-        if(savedAmt <= 0) return alert('ยังไม่มียอดสะสมให้เบิก');
+        if(savedAmt <= 0) return showToast('⚠️ ยังไม่มียอดสะสมให้เบิกครับ');
         let target = prompt(`เบิกใช้เงินกองทุน "${y.name}" (สะสมไว้ ฿${savedAmt.toLocaleString()})\nจะเบิกกี่บาท?`, savedAmt);
         let amt = parseFloat(target);
         if(isNaN(amt) || amt <= 0) return;
-        if(amt > savedAmt) return alert('เบิกเกินยอดที่สะสมไม่ได้');
+        if(amt > savedAmt) return showToast('⚠️ เบิกเกินยอดที่สะสมไม่ได้ครับ');
         currentBalances.security -= amt;
         y.current = (y.current || savedAmt) - amt;
         y.paidMonths = Math.max(0, Math.floor(y.current / y.monthlyVal));
@@ -3993,7 +4363,22 @@
         }
     }
 
-    window.onload = () => { loadStorage(); };
+    // ── App Init (async เพราะ IndexedDB) ─────────────────────
+    window.onload = async () => {
+        // แสดง loading state ระหว่าง IDB กำลัง open + load
+        const appEl = document.querySelector('.app');
+        const loader = document.createElement('div');
+        loader.id = 'idb-loader';
+        loader.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:var(--nuage-de-lait);z-index:9999999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;';
+        loader.innerHTML = '<div style="font-size:32px;">🌱</div><p style="font-size:13px;color:var(--espresso);font-weight:bold;">กำลังโหลดข้อมูล...</p>';
+        document.body.appendChild(loader);
+        try {
+            await loadStorage();
+        } catch(e) {
+            console.error('Load failed:', e);
+        }
+        loader.remove();
+    };
 
     // ── TAX HELPER ─────────────────────────────────────────────────
     function openTaxHelper() {
@@ -4071,7 +4456,7 @@
     function addWHT() {
         let amt  = parseFloat(document.getElementById('whtAddAmt')?.value);
         let note = document.getElementById('whtAddNote')?.value || 'WHT';
-        if(!amt || amt <= 0) return alert('กรอกยอด WHT ด้วยนะบอส');
+        if(!amt || amt <= 0) return showToast('⚠️ กรอกยอด WHT ด้วยนะบอส');
         if(!stats.whtRecords) stats.whtRecords = [];
         stats.whtRecords.push({ amt, note, date: new Date().toISOString() });
         saveStorage();
