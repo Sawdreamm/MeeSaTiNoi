@@ -2050,27 +2050,31 @@
             if(!_txByType[t.type]) _txByType[t.type] = [];
             _txByType[t.type].push(t);
         });
-        // Also compute currentBalances here once (not per-render)
-        let bal = {growth:0, security:0, essential:0, joy:0};
+        // Rebuild currentBalances AND baseAmounts from scratch every time
+        // baseAmounts = total income received per tank (used for % bar)
+        // currentBalances = income - expenses
+        // This ensures undo/delete always gives correct % — no stale state
+        let bal  = {growth:0, security:0, essential:0, joy:0};
+        let base = {growth:0, security:0, essential:0, joy:0};
         transactions.forEach(t => {
             let amt = parseFloat(t.amount)||0;
             if(t.type === 'main_income') {
                 if(t.splitType === 'auto' || !t.splitType) {
-                    // กระจายตาม % ที่ตั้งไว้
-                    bal.growth   += amt*(cfg.g/100);
-                    bal.security += amt*(cfg.s/100);
-                    bal.essential+= amt*(cfg.e/100);
-                    bal.joy      += amt*(cfg.j/100);
+                    bal.growth   += amt*(cfg.g/100);  base.growth   += amt*(cfg.g/100);
+                    bal.security += amt*(cfg.s/100);  base.security += amt*(cfg.s/100);
+                    bal.essential+= amt*(cfg.e/100);  base.essential+= amt*(cfg.e/100);
+                    bal.joy      += amt*(cfg.j/100);  base.joy      += amt*(cfg.j/100);
                 } else {
-                    // เข้า tank เดียว 100%
-                    if(bal[t.splitType] !== undefined) bal[t.splitType] += amt;
+                    // 100% เข้า tank เดียว
+                    if(bal[t.splitType]  !== undefined) bal[t.splitType]  += amt;
+                    if(base[t.splitType] !== undefined) base[t.splitType] += amt;
                 }
             } else if(t.type === 'income') {
-                if(t.tank && bal[t.tank] !== undefined) bal[t.tank] += amt;
+                if(t.tank && bal[t.tank] !== undefined) { bal[t.tank] += amt; base[t.tank] += amt; }
             } else if(t.type === 'expense') {
                 if(t.tank && bal[t.tank] !== undefined) bal[t.tank] -= amt;
             } else if(t.type === 'transfer') {
-                if(t.tank && bal[t.tank] !== undefined) bal[t.tank] -= amt;
+                if(t.tank  && bal[t.tank]   !== undefined) bal[t.tank]   -= amt;
                 if(t.toTank && bal[t.toTank] !== undefined) bal[t.toTank] += amt;
             } else if(t.type === 'debt_in') {
                 bal.essential += amt;
@@ -2078,7 +2082,8 @@
                 bal.security -= amt;
             }
         });
-        Object.keys(bal).forEach(k => { currentBalances[k] = Math.round(bal[k]*100)/100; });
+        Object.keys(bal).forEach(k  => { currentBalances[k] = Math.round(bal[k]*100)/100;  });
+        Object.keys(base).forEach(k => { baseAmounts[k]     = Math.round(base[k]*100)/100; });
         _cachedBalances = {...currentBalances};
         // Pre-sort transactions by date once (ใช้ใน analytics filter)
         _txSortedByDate = transactions.slice().sort((a,b) => new Date(a.dateObj) - new Date(b.dateObj));
@@ -2771,7 +2776,10 @@
                 currentBalances[t.tank] += Math.max(0, refundMain);
                 if(t.isCross && t.backupTank && t.bDeduct) { currentBalances[t.backupTank] += t.bDeduct; stats.crossTankCount = Math.max(0, stats.crossTankCount - 1); }
             } else if (t.type === 'income') { currentBalances[t.tank] -= t.amount; }
-            else if (t.type === 'main_income') { if (t.splitType === 'auto' || !t.splitType) { currentBalances.growth -= t.amount*(cfg.g/100); currentBalances.security -= t.amount*(cfg.s/100); currentBalances.essential -= t.amount*(cfg.e/100); currentBalances.joy -= t.amount*(cfg.j/100); } else { currentBalances[t.splitType] -= t.amount; } totalIncomeThisMonth -= t.amount; }
+            else if (t.type === 'main_income') {
+                // ไม่ต้องปรับ currentBalances manual — _rebuildTxCache คำนวณ from scratch หลัง tx ถูกลบ
+                totalIncomeThisMonth = Math.max(0, totalIncomeThisMonth - t.amount);
+            }
             else if (t.type === 'transfer') { currentBalances[t.tank] += t.amount; currentBalances[t.toTank] -= t.amount; }
             else if (t.type === 'debt_in') { currentBalances.essential -= t.amount; totalLiability -= t.amount; } 
             else if (t.type === 'legacy_debt_in') { totalLiability -= t.amount; } 
