@@ -2055,10 +2055,16 @@
         transactions.forEach(t => {
             let amt = parseFloat(t.amount)||0;
             if(t.type === 'main_income') {
-                bal.growth   += amt*(cfg.g/100);
-                bal.security += amt*(cfg.s/100);
-                bal.essential+= amt*(cfg.e/100);
-                bal.joy      += amt*(cfg.j/100);
+                if(t.splitType === 'auto' || !t.splitType) {
+                    // กระจายตาม % ที่ตั้งไว้
+                    bal.growth   += amt*(cfg.g/100);
+                    bal.security += amt*(cfg.s/100);
+                    bal.essential+= amt*(cfg.e/100);
+                    bal.joy      += amt*(cfg.j/100);
+                } else {
+                    // เข้า tank เดียว 100%
+                    if(bal[t.splitType] !== undefined) bal[t.splitType] += amt;
+                }
             } else if(t.type === 'income') {
                 if(t.tank && bal[t.tank] !== undefined) bal[t.tank] += amt;
             } else if(t.type === 'expense') {
@@ -2691,7 +2697,10 @@
             list.innerHTML = '<li style="text-align:center;padding:20px;color:#888;">ไม่มีรายการเดือนนี้</li>';
         } else {
             // Monthly summary row
-            let totalIn  = filteredTx.filter(t=>t.type==='main_income'||t.type==='income').reduce((s,t)=>s+t.amount,0);
+            let totalIn  = filteredTx.filter(t=>t.type==='main_income'||t.type==='income').reduce((s,t)=>{
+                if(t.type==='main_income' && t.splitType==='auto') return s + t.amount*(cfg[tankId.charAt(0)]/100);
+                return s + t.amount;
+            },0);
             let totalOut = filteredTx.filter(t=>t.type==='expense'||t.type==='transfer').reduce((s,t)=>s+t.amount,0);
             list.innerHTML = `<li style="background:#f8fafc;border-radius:10px;padding:8px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;list-style:none;">
                 <span style="font-size:11px;color:var(--gray-text);">รวมเดือนนี้</span>
@@ -3946,7 +3955,18 @@
         let data = new google.visualization.DataTable(); data.addColumn('string', 'From'); data.addColumn('string', 'To'); data.addColumn('number', 'Amount (฿)');
         let rows = []; let pd = cfg.payday || 25; let now = new Date(); let currentCycleStart = new Date(now.getFullYear(), now.getMonth(), pd); if(now.getDate() < pd) currentCycleStart.setMonth(currentCycleStart.getMonth() - 1); let cycleStart = new Date(currentCycleStart); cycleStart.setMonth(cycleStart.getMonth() + viewingMonthOffset); let cycleEnd = new Date(cycleStart); cycleEnd.setMonth(cycleEnd.getMonth() + 1); cycleEnd.setDate(cycleEnd.getDate() - 1); cycleStart.setHours(0,0,0,0); cycleEnd.setHours(23,59,59,999);
         let mTx = transactions.filter(t => { let d = new Date(t.dateObj); return d >= cycleStart && d <= cycleEnd; });
-        let inG=0, inS=0, inE=0, inJ=0; mTx.filter(t=>t.type==='main_income').forEach(t=>{inG+=t.amount*(cfg.g/100);inS+=t.amount*(cfg.s/100);inE+=t.amount*(cfg.e/100);inJ+=t.amount*(cfg.j/100);});
+        let inG=0, inS=0, inE=0, inJ=0;
+        mTx.filter(t=>t.type==='main_income').forEach(t=>{
+            if(t.splitType==='auto'||!t.splitType) {
+                inG+=t.amount*(cfg.g/100); inS+=t.amount*(cfg.s/100);
+                inE+=t.amount*(cfg.e/100); inJ+=t.amount*(cfg.j/100);
+            } else {
+                if(t.splitType==='growth')   inG+=t.amount;
+                else if(t.splitType==='security') inS+=t.amount;
+                else if(t.splitType==='essential') inE+=t.amount;
+                else if(t.splitType==='joy') inJ+=t.amount;
+            }
+        });
         if(inE>0)rows.push(['รายรับ','🛒 Essential',inE]); if(inJ>0)rows.push(['รายรับ','🎉 Joy',inJ]); if(inS>0)rows.push(['รายรับ','🛡️ Security',inS]); if(inG>0)rows.push(['รายรับ','🌱 Growth',inG]);
         let exp={essential:{}, joy:{}, security:{}, growth:{}}; mTx.filter(t=>t.type==='expense').forEach(t=>{if(!exp[t.tank])return; exp[t.tank][t.cat] = (exp[t.tank][t.cat]||0)+t.amount;});
         const nameMap = { 'essential': '🛒 Essential', 'joy': '🎉 Joy', 'security': '🛡️ Security', 'growth': '🌱 Growth' };
