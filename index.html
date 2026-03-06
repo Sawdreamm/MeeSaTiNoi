@@ -1995,7 +1995,10 @@
         document.getElementById(tabId).classList.add('active'); document.getElementById(`btn-${tabId}`).classList.add('active');
     }
 
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+        if(id === 'wishlistModal') renderWishlist();
+    }
     function closeModal(id) {
         document.getElementById(id).classList.remove('active');
         // Clear activeFixedId if user cancels expense modal (prevents ghost-marking bills as paid)
@@ -2946,57 +2949,53 @@
     }
 
     // --- 7. Quests & Wishlist ---
-    function renderWishlist() { 
+    function renderWishlist() {
         let c = document.getElementById('wishlistContainer'); 
         let countBadge = document.getElementById('wishlistCount');
         if(countBadge) countBadge.innerText = wishlist.length;
-        // Cache: skip rebuild ถ้า wishlist ไม่เปลี่ยน
         let _wKey = JSON.stringify(wishlist) + '|' + inventory.length;
         if(renderWishlist._lastKey === _wKey && c.children.length > 0) return;
         renderWishlist._lastKey = _wKey;
         c.innerHTML = ''; 
         if(wishlist.length === 0) {
-            c.innerHTML = '<p style="text-align:center; color:var(--gray-text); font-size:12px; margin-top:20px;">ไม่มีของดอง เก่งมากบอส!</p>'; 
+            c.innerHTML = '<p style="text-align:center; color:var(--gray-text); font-size:12px; margin-top:20px;">ไม่มีของดอง เก่งมากบอส! 🎉</p>'; 
+            return;
         }
-        
         let now = new Date().getTime(); 
-        
-        // 🔍 เช็คว่ามีบัตร VIP ในคลังไหม?
         let hasVip = inventory.some(i => i.name === '👑 VIP ข้ามตะกร้าดึงสติ');
-
-        // Auto-archive wishlist items older than 90 days (not yet unlocked = user forgot)
-        let ninetyDaysAgo = now - 90*24*3600*1000;
         wishlist.forEach(w => {
             let remain = Math.max(0, Math.ceil((w.unlockAt - now)/(1000*60*60*24))); 
-            let addedAt = w.addedAt || w.unlockAt - (7*24*3600*1000);
+            let addedAt = w.addedAt || (w.unlockAt - 7*24*3600*1000);
             let agedays = Math.floor((now - addedAt)/(24*3600*1000));
+            let ageBadge = agedays > 30
+                ? '<span style="font-size:9px; background:' + (agedays>60?'#fee2e2':'#fef3c7') + '; color:' + (agedays>60?'#991b1b':'#92400e') + '; padding:1px 5px; border-radius:4px;">' + agedays + ' วันแล้ว</span>'
+                : '';
             let btn = '';
-            
             if (remain <= 0) {
-                // ครบกำหนดแล้ว ซื้อได้ปกติ
-                btn = `<button class="btn-main" style="padding:6px 10px; margin:0; background:var(--success); font-size:11px; width:auto;" onclick="buyWishlist(${w.id})">ซื้อเลย!</button>`;
+                btn = '<button class="btn-main" style="padding:6px 10px; margin:0; background:var(--success); font-size:11px; width:auto;" onclick="buyWishlist(' + w.id + ')">✅ ซื้อเลย!</button>';
             } else if (hasVip) {
-                // ยังไม่ครบกำหนด แต่มีบัตร VIP!
-                btn = `<button class="btn-main" style="padding:6px 10px; margin:0; background:var(--espresso); color:var(--miel-dore); border:1px solid var(--miel-dore); font-size:11px; width:auto;" onclick="useVipOnWishlist(${w.id})">👑 ใช้ VIP ซื้อเลย</button>`;
+                btn = '<button class="btn-main" style="padding:6px 10px; margin:0; background:var(--espresso); color:var(--miel-dore); border:1px solid var(--miel-dore); font-size:11px; width:auto;" onclick="useVipOnWishlist(' + w.id + ')">👑 ใช้ VIP ซื้อเลย</button>';
             } else {
-                // ติดดอง และไม่มีบัตร
-                btn = `<button class="btn-main" style="padding:6px 10px; margin:0; background:#e2e8f0; color:var(--gray-text); font-size:11px; width:auto;" disabled>รอ ${remain} วัน</button>`;
+                btn = '<button class="btn-main" style="padding:6px 10px; margin:0; background:#e2e8f0; color:var(--gray-text); font-size:11px; width:auto;" disabled>⏳ รอ ' + remain + ' วัน</button>';
             }
-            
-            c.innerHTML += `
-            <div class="list-item" style="border-left: 4px solid var(--eau-trouble); padding: 12px; border-radius: 10px; margin-top: 10px; background:var(--nuage-de-lait); border-top:1px solid #cbd5e1; border-right:1px solid #cbd5e1; border-bottom:1px solid #cbd5e1;">
-                <div style="flex:1;">
-                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">
-                        <h4 style="color:var(--espresso); margin:0; font-size:13px;">\${w.cat}</h4>
-                        \${agedays > 30 ? \`<span style="font-size:9px; background:\${agedays>60?'#fee2e2':'#fef3c7'}; color:\${agedays>60?'#991b1b':'#92400e'}; padding:1px 5px; border-radius:4px;">\${agedays} วันแล้ว</span>\` : ''}
-                    </div>
-                    <span style="font-weight:bold; color:var(--danger); font-size:15px;">฿\${w.amount.toLocaleString()}</span>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
-                    ${btn}
-                    <button style="background:transparent; border:none; padding:0; color:var(--gray-text); text-decoration:underline; font-size:10px; cursor:pointer;" onclick="deleteWishlist(${w.id}, ${w.amount})">ลบทิ้ง (+50 แต้ม)</button>
-                </div>
-            </div>`; 
+            let noteText = w.note ? ' · ' + w.note : '';
+            let div = document.createElement('div');
+            div.className = 'list-item';
+            div.style.cssText = 'border-left:4px solid var(--eau-trouble); padding:12px; border-radius:10px; margin-top:10px; background:var(--nuage-de-lait); border-top:1px solid #cbd5e1; border-right:1px solid #cbd5e1; border-bottom:1px solid #cbd5e1;';
+            div.innerHTML =
+                '<div style="flex:1;">' +
+                    '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:3px;">' +
+                        '<h4 style="color:var(--espresso); margin:0; font-size:13px;">' + (w.cat||'') + '</h4>' +
+                        ageBadge +
+                    '</div>' +
+                    '<p style="margin:2px 0 0; font-size:10px; color:var(--gray-text);">' + (w.tank||'') + noteText + '</p>' +
+                    '<span style="font-weight:bold; color:var(--danger); font-size:15px;">฿' + w.amount.toLocaleString() + '</span>' +
+                '</div>' +
+                '<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">' +
+                    btn +
+                    '<button style="background:transparent; border:none; padding:0; color:var(--gray-text); text-decoration:underline; font-size:10px; cursor:pointer;" onclick="deleteWishlist(' + w.id + ', ' + w.amount + ')">ลบทิ้ง (+50 แต้ม)</button>' +
+                '</div>';
+            c.appendChild(div);
         }); 
     }
 
