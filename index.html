@@ -341,7 +341,7 @@
             <h2 style="margin:10px 0 0 0; font-size:32px; color:var(--danger);" id="totalLiabilityDisplay">฿0</h2>
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn-main" style="flex:1; background: var(--danger); margin-top:0;" onclick="openModal('addDebtModal')">📥 ยืมใหม่</button>
+            <button class="btn-main" style="flex:1; background: var(--danger); margin-top:0;" onclick="openBorrowModal()">📥 ยืมใหม่</button>
             <button class="btn-main" style="flex:1; background: var(--success); margin-top:0;" onclick="openModal('payDebtModal')">📤 คืนหนี้</button>
             <button class="btn-main" style="width:100%; background: var(--terre-cuite); margin-top:0;" onclick="openModal('addLegacyBorrowedModal')">📜 + หนี้ยืมเก่า (ก่อนใช้แอป)</button>
         </div>
@@ -1230,9 +1230,56 @@
 </div>
 
 <div class="modal-overlay center-popup" id="addDebtModal" onclick="if(event.target===this) closeModal('addDebtModal')">
-    <div class="modal-content center-popup"><div class="modal-header"><h2>📥 ยืมเงินมา</h2><button class="close-btn" onclick="closeModal('addDebtModal')">✕</button></div>
-    <div class="form-group"><label>จำนวนเงิน (฿)</label><input type="number" id="borrowAmt"></div>
-    <div class="form-group"><label>ยืมใครมา (เข้า Essential)</label><input type="text" id="borrowNote" placeholder="เช่น แม่, เพื่อน"></div><button class="btn-main" onclick="processBorrow()">ยืนยัน</button></div>
+    <div class="modal-content center-popup">
+        <div class="modal-header"><h2>📥 ยืมเงินมา</h2><button class="close-btn" onclick="closeModal('addDebtModal')">✕</button></div>
+        <div class="form-group">
+            <label>จำนวนเงิน (฿)</label>
+            <input type="number" id="borrowAmt" placeholder="0">
+        </div>
+        <div class="form-group">
+            <label>ยืมจากใคร</label>
+            <select id="borrowNote" style="width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1; font-family:'Kanit'; font-size:13px; outline:none;"></select>
+            <input type="text" id="borrowNoteNew" placeholder="หรือพิมพ์ชื่อใหม่..." style="margin-top:6px; width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1; font-family:'Kanit'; font-size:13px; outline:none; box-sizing:border-box;">
+        </div>
+        <div class="form-group">
+            <label>ประเภทการยืม</label>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; padding:10px; background:#f8f5f1; border-radius:10px; border:2px solid var(--espresso);" id="borrowType_cash_label">
+                    <input type="radio" name="borrowType" id="borrowType_cash" value="cash" checked onchange="updateBorrowTypeUI()" style="margin-top:3px; width:auto;">
+                    <div>
+                        <div style="font-size:13px; font-weight:bold;">💵 ยืมเงินสดมา</div>
+                        <div style="font-size:10px; color:var(--gray-text);">ได้รับเงินจริง เช่น ยืมแม่มาใช้ — เลือกว่าจะเข้ากระเป๋าไหน</div>
+                    </div>
+                </label>
+                <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; padding:10px; background:#f8f5f1; border-radius:10px; border:2px solid transparent;" id="borrowType_favor_label">
+                    <input type="radio" name="borrowType" id="borrowType_favor" value="favor" onchange="updateBorrowTypeUI()" style="margin-top:3px; width:auto;">
+                    <div>
+                        <div style="font-size:13px; font-weight:bold;">🍜 คนอื่นออกค่าใช้จ่ายให้</div>
+                        <div style="font-size:10px; color:var(--gray-text);">ไม่ได้รับเงินสด เช่น เพื่อนออกค่าข้าวให้ — แค่บันทึกหนี้</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- 💵 เงินสด: เลือกกระเป๋าที่จะรับเงิน -->
+        <div id="borrowCashTankDiv" class="form-group">
+            <label>เงินเข้ากระเป๋าไหน</label>
+            <select id="borrowCashTank" style="width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1; font-family:'Kanit'; font-size:13px; outline:none;">
+                <option value="essential">Essential (จำเป็น)</option>
+                <option value="security">Security (สำรอง)</option>
+                <option value="growth">Growth (ลงทุน)</option>
+                <option value="joy">Joy (รางวัลชีวิต)</option>
+            </select>
+        </div>
+
+        <!-- 🍜 ออกให้: กรอกรายละเอียดว่าใช้จ่ายอะไร -->
+        <div id="borrowFavorDetailDiv" style="display:none;" class="form-group">
+            <label>รายละเอียด (ใช้จ่ายอะไร)</label>
+            <input type="text" id="borrowFavorDetail" placeholder="เช่น ค่าข้าว, ค่าตั๋วหนัง" style="width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1; font-family:'Kanit'; font-size:13px; outline:none; box-sizing:border-box;">
+        </div>
+
+        <button class="btn-main" onclick="processBorrow()">✅ ยืนยันบันทึก</button>
+    </div>
 </div>
 
 <div class="modal-overlay center-popup" id="payDebtModal" onclick="if(event.target===this) closeModal('payDebtModal')">
@@ -2153,12 +2200,24 @@
             } else if(t.type === 'income') {
                 if(t.tank && bal[t.tank] !== undefined) { bal[t.tank] += amt; base[t.tank] += amt; }
             } else if(t.type === 'expense') {
-                if(t.tank && bal[t.tank] !== undefined) bal[t.tank] -= amt;
+                // หัก primary tank เฉพาะส่วน pDeduct (ถ้าไม่มี pDeduct = จ่ายเต็ม)
+                let pDed = (t.pDeduct !== undefined) ? t.pDeduct : amt;
+                let bDed = (t.bDeduct !== undefined) ? t.bDeduct : 0;
+                if(t.tank && bal[t.tank] !== undefined) bal[t.tank] -= pDed;
+                // หัก backup tank ด้วยถ้ามี cross
+                if(t.isCross && t.backupTank && bDed > 0 && bal[t.backupTank] !== undefined) {
+                    bal[t.backupTank] -= bDed;
+                }
             } else if(t.type === 'transfer') {
                 if(t.tank  && bal[t.tank]   !== undefined) bal[t.tank]   -= amt;
                 if(t.toTank && bal[t.toTank] !== undefined) bal[t.toTank] += amt;
             } else if(t.type === 'debt_in') {
-                bal.essential += amt;
+                if(t.isFavor) {
+                    // คนอื่นออกให้ → ไม่แตะกระเป๋าเลย (tank='none') บันทึกหนี้อย่างเดียว
+                    // (ไม่มีอะไรทำ — หนี้ถูกบันทึกใน totalLiability แยกต่างหาก)
+                } else if(!t.isFavor && t.tank && t.tank !== 'none' && bal[t.tank] !== undefined) {
+                    bal[t.tank] += amt; // ได้เงินสด → เข้า tank ที่เลือก
+                }
             } else if(t.type === 'debt_out') {
                 bal.security -= amt;
             }
@@ -2348,14 +2407,23 @@
         stats.monthlyGrowthTouched = false; stats.wishlistDeletedThisCycle = 0;
         stats.savingsAtCycleStart = (currentBalances.growth||0) + (currentBalances.security||0);
         // 🔄 Reset fixed bills for new billing cycle
-        fixedCosts.forEach(f => { f.paidThisMonth = false; });
-        // 🔄 Sync behavior quest cycle to this payday
-        let _pd2 = cfg.payday||25; let _now2 = new Date();
-        let _cs2 = new Date(_now2.getFullYear(), _now2.getMonth(), _pd2);
-        if(_now2.getDate() < _pd2) _cs2.setMonth(_cs2.getMonth()-1);
-        let _ck2 = _cs2.toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
-        if(stats.claimedQuests && stats.claimedQuests.behavior) stats.claimedQuests.behavior = { cycleKey: _ck2, ids: [] };
-        updateUI(); showGifOverlay('income'); showToast('🔄 รีเซ็ตบิลประจำสำหรับรอบบิลใหม่แล้ว!'); saveStorage();
+        // 🔄 ถามก่อน reset บิล
+        let _unpaid = fixedCosts.filter(f => !f.paidThisMonth && !f.archived).length;
+        let _paid   = fixedCosts.filter(f =>  f.paidThisMonth && !f.archived).length;
+        let _doReset = false;
+        if(_paid > 0) {
+            _doReset = confirm('เริ่มรอบบิลใหม่ด้วยไหมบอส?\n\n✅ จ่ายแล้ว ' + _paid + ' รายการ\n⏳ ยังไม่จ่าย ' + _unpaid + ' รายการ\n\n→ OK = Reset รอบบิลใหม่\n→ Cancel = เก็บสถานะเดิม');
+        }
+        if(_doReset) {
+            fixedCosts.forEach(f => { f.paidThisMonth = false; });
+            let _pd2 = cfg.payday||25; let _now2 = new Date();
+            let _cs2 = new Date(_now2.getFullYear(), _now2.getMonth(), _pd2);
+            if(_now2.getDate() < _pd2) _cs2.setMonth(_cs2.getMonth()-1);
+            let _ck2 = _cs2.toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
+            if(stats.claimedQuests && stats.claimedQuests.behavior) stats.claimedQuests.behavior = { cycleKey: _ck2, ids: [] };
+            showToast('🔄 Reset รอบบิลใหม่เรียบร้อย!');
+        }
+        updateUI(); showGifOverlay('income'); saveStorage();
     }
 
     function renderIncomeCats() { let sel = document.getElementById('incomeCatSelect'); if(!sel) return; sel.innerHTML = ''; incomeCats.forEach(c => { sel.innerHTML += `<option value="${c.name}">${c.icon} ${c.name}</option>`; }); sel.innerHTML += `<option value="add_new">+ สร้างหมวดใหม่</option>`; }
@@ -2438,7 +2506,17 @@
         if(amt > currentBalances[pt]) { 
             document.getElementById('crossTankBox').style.display = 'block'; document.getElementById('shortfallText').innerText = `฿${(amt-currentBalances[pt]).toLocaleString()}`;
             let sel = document.getElementById('backupTank'); sel.innerHTML = '';
-            ['growth', 'security', 'essential', 'joy'].forEach(k => { if(k!==pt && currentBalances[k] >= (amt-currentBalances[pt])) sel.innerHTML += `<option value="${k}">ดึงจาก ${k} (มี ฿${currentBalances[k]})</option>`; });
+            let shortfall = amt - currentBalances[pt];
+            ['growth', 'security', 'essential', 'joy'].forEach(k => {
+                if(k !== pt) {
+                    let bal = currentBalances[k];
+                    let canCover = bal >= shortfall;
+                    let label = canCover
+                        ? `ดึงจาก ${k} (มี ฿${bal.toLocaleString()}) ✅`
+                        : `ดึงจาก ${k} (มี ฿${bal.toLocaleString()} — ขาดอีก ฿${(shortfall-bal).toLocaleString()})`;
+                    sel.innerHTML += `<option value="${k}">${label}</option>`;
+                }
+            });
         } else document.getElementById('crossTankBox').style.display = 'none';
     }
     
@@ -2522,10 +2600,22 @@
         let isCross = false; let crossReason = null; let bt = null; let pDeduct = amt; let bDeduct = 0;
         if(amt > currentBalances[pt]) {
             bt = document.getElementById('backupTank') ? document.getElementById('backupTank').value : null;
-            if(!bt) return showToast('⚠️ ไม่มีเงินพอในกระเป๋าสำรองเลยบอส!');
+            if(!bt) return showToast('⚠️ เลือกกระเป๋าสำรองก่อนนะบอส!');
             crossReason = document.getElementById('crossReason').value;
-            pDeduct = currentBalances[pt]; bDeduct = amt - currentBalances[pt]; currentBalances[bt] -= bDeduct; currentBalances[pt] = 0;
-            stats.crossTankCount++; showToast(`⚠️ โปะเงินจาก ${bt} (เหตุผล: ${crossReason})`); isCross = true; showGifOverlay('crosstank');
+            let shortfallAmt = amt - currentBalances[pt];
+            let backupHas = currentBalances[bt] || 0;
+            if(backupHas <= 0) return showToast('⚠️ กระเป๋า ' + bt + ' ไม่มีเงินเลยบอส!');
+            // โปะเท่าที่ backup มี (partial cross allowed)
+            bDeduct = Math.min(shortfallAmt, backupHas);
+            pDeduct = amt - bDeduct;
+            currentBalances[bt] -= bDeduct;
+            currentBalances[pt] = Math.max(0, currentBalances[pt]) - pDeduct;
+            if(bDeduct < shortfallAmt) {
+                showToast(`⚠️ โปะจาก ${bt} ได้แค่ ฿${bDeduct.toLocaleString()} (ยังขาด ฿${(shortfallAmt-bDeduct).toLocaleString()})`);
+            } else {
+                showToast(`⚠️ โปะเงินจาก ${bt} ครบแล้ว (เหตุผล: ${crossReason})`);
+            }
+            stats.crossTankCount++; isCross = true; showGifOverlay('crosstank');
         } else { currentBalances[pt] -= amt; showToast('✅ บันทึกรายจ่ายอยู่ในงบ!'); showGifOverlay('expense_saved'); }
         if (pt === 'growth') stats.monthlyGrowthTouched = true; let joyType = pt === 'joy' ? document.getElementById('exJoyType').value : null;
         let installments = null;
@@ -2864,7 +2954,16 @@
                 totalIncomeThisMonth = Math.max(0, totalIncomeThisMonth - t.amount);
             }
             else if (t.type === 'transfer') { currentBalances[t.tank] += t.amount; currentBalances[t.toTank] -= t.amount; }
-            else if (t.type === 'debt_in') { currentBalances.essential -= t.amount; totalLiability -= t.amount; } 
+            else if (t.type === 'debt_in') {
+                totalLiability -= t.amount;
+                if(t.isFavor) {
+                    // คนอื่นออกให้ — ไม่ได้แตะกระเป๋า ไม่ต้องคืนอะไร
+                } else {
+                    // ยืมเงินสด — หักกระเป๋าที่รับเงินมาคืน
+                    if(t.tank && t.tank !== 'none' && currentBalances[t.tank] !== undefined)
+                        currentBalances[t.tank] -= t.amount;
+                }
+            } 
             else if (t.type === 'legacy_debt_in') { totalLiability -= t.amount; } 
             else if (t.type === 'debt_out') { currentBalances.security += t.amount; totalLiability += t.amount; }
             transactions = transactions.filter(x => x.id !== id); updateUI(); closeModal('historyModal'); renderDebtLog(); showToast('🗑️ ลบรายการและปรับยอดเงินสำเร็จ!');
@@ -3658,7 +3757,52 @@
     function openEditLegacyDebt(id) { let t = transactions.find(x => x.id === id); if(!t || t.type !== 'legacy_debt') return; document.getElementById('eldId').value = t.id; document.getElementById('eldName').value = t.cat.replace('ยอดค้างเก่า: ', ''); let unpaid = t.installments.filter(i => !i.paid); let amt = unpaid.length > 0 ? unpaid[0].amount : 0; document.getElementById('eldAmt').value = amt; document.getElementById('eldMonths').value = unpaid.length; openModal('editLegacyDebtModal'); }
     function saveEditLegacyDebt() { let id = parseFloat(document.getElementById('eldId').value); let t = transactions.find(x => x.id === id); if(!t) return; let name = document.getElementById('eldName').value; let amt = parseFloat(document.getElementById('eldAmt').value); let remainMonths = parseInt(document.getElementById('eldMonths').value) || 1; if(!name || !amt || amt <= 0) return showToast('⚠️ กรอกข้อมูลให้ถูกต้องด้วยครับ'); t.cat = 'ยอดค้างเก่า: ' + name; let paidInsts = t.installments.filter(i => i.paid); let newInsts = [...paidInsts]; let startMonthNo = paidInsts.length > 0 ? paidInsts[paidInsts.length - 1].monthNo + 1 : 1; for(let i=0; i<remainMonths; i++) { newInsts.push({ monthNo: startMonthNo + i, amount: amt, paid: false }); } t.installments = newInsts; t.amount = newInsts.reduce((sum, i) => sum + i.amount, 0); saveStorage(); updateUI(); closeModal('editLegacyDebtModal'); showToast('✅ แก้ไขยอดค้างเก่าสำเร็จ!'); }
 
-    function processBorrow() { let a = parseFloat(document.getElementById('borrowAmt').value); let n = document.getElementById('borrowNote').value || 'ยืมทั่วไป'; if(!a) return; totalLiability += a; currentBalances.essential += a; transactions.push({ id: Date.now(), type: 'debt_in', tank: 'essential', amount: a, cat: 'ยืมเงินมาโปะ', note: n, dateObj: new Date().toISOString() }); updateUI(); renderDebtChart(); closeModal('addDebtModal'); showToast(`📥 ยืมเงิน ${n} เข้ากระเป๋า Essential แล้ว!`); }
+    function updateBorrowTypeUI() {
+        let isFavor = document.getElementById('borrowType_favor').checked;
+        // เงินสด: แสดงเลือกกระเป๋า | ออกให้: แสดงกรอกรายละเอียด
+        document.getElementById('borrowCashTankDiv').style.display    = isFavor ? 'none'  : 'block';
+        document.getElementById('borrowFavorDetailDiv').style.display = isFavor ? 'block' : 'none';
+        document.getElementById('borrowType_cash_label').style.borderColor  = isFavor ? 'transparent'        : 'var(--espresso)';
+        document.getElementById('borrowType_favor_label').style.borderColor = isFavor ? 'var(--espresso)'    : 'transparent';
+    }
+    function openBorrowModal() {
+        let sel = document.getElementById('borrowNote');
+        let existing = new Set();
+        transactions.filter(t => t.type === 'debt_in' || t.type === 'legacy_debt_in')
+            .forEach(t => { if(t.note && t.note !== 'ยืมทั่วไป') existing.add(t.note); });
+        sel.innerHTML = '<option value="">-- เลือกชื่อที่เคยยืม --</option>';
+        existing.forEach(name => { sel.innerHTML += `<option value="${name}">${name}</option>`; });
+        document.getElementById('borrowAmt').value = '';
+        document.getElementById('borrowNoteNew').value = '';
+        document.getElementById('borrowFavorDetail').value = '';
+        document.getElementById('borrowType_cash').checked = true;
+        updateBorrowTypeUI();
+        openModal('addDebtModal');
+    }
+    function processBorrow() {
+        let a = parseFloat(document.getElementById('borrowAmt').value);
+        if(!a || a <= 0) return showToast('⚠️ กรอกจำนวนเงินด้วยครับ');
+        let nNew = (document.getElementById('borrowNoteNew').value || '').trim();
+        let nSel = document.getElementById('borrowNote').value;
+        let n = nNew || nSel || 'ยืมทั่วไป';
+        let isFavor = document.getElementById('borrowType_favor').checked;
+        totalLiability += a;
+        if(!isFavor) {
+            // 💵 ได้เงินสด → เข้ากระเป๋าที่เลือก
+            let destTank = document.getElementById('borrowCashTank').value;
+            currentBalances[destTank] += a;
+            transactions.push({ id: Date.now(), type: 'debt_in', tank: destTank, amount: a,
+                cat: 'ยืมเงินสดมา', note: n, dateObj: new Date().toISOString(), isFavor: false });
+            showToast('📥 ยืมเงินสด ' + n + ' เข้า ' + destTank + ' ฿' + a.toLocaleString() + ' แล้ว!');
+        } else {
+            // 🍜 คนอื่นออกให้ → บันทึกหนี้ + รายละเอียด ไม่แตะกระเป๋าเลย
+            let detail = (document.getElementById('borrowFavorDetail').value || '').trim() || 'ไม่ระบุ';
+            transactions.push({ id: Date.now(), type: 'debt_in', tank: 'none', amount: a,
+                cat: detail, note: n, dateObj: new Date().toISOString(), isFavor: true });
+            showToast('🍜 ' + n + ' ออกค่าใช้จ่าย "' + detail + '" ให้ ฿' + a.toLocaleString() + ' บันทึกแล้ว!');
+        }
+        updateUI(); renderDebtChart(); closeModal('addDebtModal'); saveStorage();
+    }
     function processPayback() { let a = parseFloat(document.getElementById('paybackAmt').value); let l = document.getElementById('paybackLender').value; if(!a) return; if(a > currentBalances.security) { showToast('⚠️ เงินใน Security ไม่พอคืนหนี้นะบอส!'); return; } currentBalances.security -= a; totalLiability = Math.max(0, totalLiability - a); transactions.push({ id: Date.now(), type: 'debt_out', tank: 'security', amount: a, cat: 'จ่ายคืนหนี้', note: l, dateObj: new Date().toISOString() }); updateUI(); renderDebtChart(); closeModal('payDebtModal'); showToast(`📤 จ่ายคืนหนี้สำเร็จ หักจาก Security แล้ว!`); }
     function clearZeroDebt() {
         if(!confirm('ลบประวัติหนี้ที่ชำระครบแล้ว (ยอดสุทธิ ฿0)?')) return;
