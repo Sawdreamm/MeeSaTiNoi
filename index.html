@@ -48,6 +48,31 @@
         .btn-main { background: var(--espresso); color: var(--white); border: none; width: 100%; padding: 10px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: 0.2s;}
         .btn-main:active { transform: scale(0.96); }
         .btn-outline { background: transparent; border: 1px solid var(--espresso); color: var(--espresso); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+        /* Quick Add */
+        .quick-add-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--terre-cuite),var(--espresso)); color:white; border:none; border-radius:14px; font-size:15px; font-weight:bold; font-family:'Kanit'; cursor:pointer; margin-bottom:10px; transition:0.2s; box-shadow:0 4px 12px rgba(84,41,22,0.25); }
+        .quick-add-btn:active { transform:scale(0.97); }
+        .tank-chip { padding:8px 16px; border-radius:20px; border:2px solid #e5e7eb; background:white; font-family:'Kanit'; font-size:12px; cursor:pointer; transition:all 0.15s; color:var(--espresso); font-weight:bold; }
+        .tank-chip[data-tank="essential"].active { border-color:var(--terre-cuite); background:var(--terre-cuite); color:white; }
+        .tank-chip[data-tank="joy"].active { border-color:var(--eau-trouble); background:var(--eau-trouble); color:white; }
+        .tank-chip[data-tank="security"].active { border-color:var(--miel-dore); background:var(--miel-dore); color:var(--espresso); }
+        .tank-chip[data-tank="growth"].active { border-color:var(--bleu-porcelaine); background:var(--bleu-porcelaine); color:white; }
+        .recent-chip { display:flex;flex-direction:column;align-items:center;background:white;border:1.5px solid #e5e7eb;border-radius:12px;padding:8px 10px;cursor:pointer;font-family:'Kanit';gap:2px;transition:border-color 0.15s;flex-shrink:0; }
+        .recent-chip:active { border-color:var(--espresso); background:#faf5f0; }
+        /* ── Compact Tanks 2x2 ── */
+        .tank-compact-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:4px; }
+        .tank-compact-card { background:white; border:1px solid #f0ece8; border-radius:12px; padding:10px 12px; cursor:pointer; transition:all 0.15s; }
+        .tank-compact-card:active { transform:scale(0.97); background:#faf5f0; }
+        .tank-compact-card.sec-danger { border-color:#dc2626!important; box-shadow:0 0 0 2px rgba(220,38,38,0.2); }
+        /* ── Cycle Pulse ── */
+        .pulse-card { background:linear-gradient(135deg,#faf5f0,#fff8f5); border:1px solid #f0ece8; border-radius:16px; padding:16px 18px; margin-bottom:10px; }
+        .pulse-spent-bar { height:8px; background:#ede8e3; border-radius:4px; overflow:hidden; margin:10px 0 6px; }
+        .pulse-bar-fill { height:100%; border-radius:4px; transition:width 0.8s ease-out; background:linear-gradient(90deg,var(--terre-cuite),var(--espresso)); }
+        /* ── Floating Action Button ── */
+        .fab-btn { position:fixed; bottom:72px; right:16px; width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,var(--terre-cuite),var(--espresso)); color:white; border:none; font-size:24px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 16px rgba(84,41,22,0.35); z-index:99; transition:all 0.2s; font-family:'Kanit'; }
+        .fab-btn:active { transform:scale(0.92); }
+        .last-tx-row { display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f3f4f6;cursor:pointer; }
+        .last-tx-row:last-child { border-bottom:none; }
+        .last-tx-row:active { background:#faf5f0; border-radius:8px; padding:6px 6px; }
 
         /* Tanks */
         .tanks-container { display: flex; justify-content: space-between; height: 160px; align-items: flex-end; }
@@ -164,101 +189,191 @@
 
 <div class="app">
     <div id="view-home" class="view-section active">
-        <div class="header">
-            <div class="header-left">
-                <h1 id="userGreeting">มีสติหน่อยคุณ Dream!!!</h1>
-                <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-                    <button onclick="openGlobalSearch()" style="background:transparent; border:none; padding:4px 8px; cursor:pointer; font-size:18px;" title="ค้นหา">🔍</button>
-                    <button onclick="startTutorial()" style="background:rgba(84,41,22,0.08); border:none; padding:3px 9px; cursor:pointer; font-size:11px; font-weight:bold; color:var(--espresso); border-radius:20px; font-family:'Kanit';" title="คู่มือการใช้งาน">? คู่มือ</button>
-                    <div class="point-badge" id="pointsBadge" onclick="openModal('rewardShopModal')" style="gap:4px;">
-                        <span id="userPointsDisplay">🪙 0 แต้ม</span>
-                        <span style="font-size:9px; opacity:0.7;">🛒</span>
-                    </div>
-                    <div class="point-badge" onclick="openQuestPage()" style="background: linear-gradient(135deg, #d6e8ff, #bfdbfe); color: #1e40af; gap:4px;">
-                        <span>📜 ภารกิจ</span>
-                    </div>
-                    <div class="streak-badge" id="streakBadge">🔥 <span id="streakDisplay">1 วัน</span></div>
+        <div class="header" style="flex-direction:column; gap:8px; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1 id="userGreeting" style="margin:0;">มีสติหน่อยคุณ Dream!!!</h1>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button onclick="openGlobalSearch()" style="background:transparent; border:none; padding:4px 6px; cursor:pointer; font-size:18px; line-height:1;" title="ค้นหา">🔍</button>
+                    <button class="settings-btn" onclick="openConfigModal()" style="font-size:16px; background:transparent; padding:4px 6px;">⚙️</button>
+                    <div class="profile-pic" id="profilePicDisplay" onclick="document.getElementById('profilePicInput').click()">D</div>
+                    <input type="file" id="profilePicInput" style="display:none;" accept="image/*" onchange="uploadProfilePic(event)">
                 </div>
             </div>
-            <div style="display:flex; gap:8px; align-items:center;">
-                <button onclick="openPaydayBriefingManual()" style="font-size:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;border-radius:8px;padding:4px 8px;cursor:pointer;" title="สรุปต้นเดือน">📅</button>
-                <button class="settings-btn" onclick="openConfigModal()" style="font-size:16px; background:transparent; padding:4px 8px;">⚙️</button>
-                <div class="profile-pic" id="profilePicDisplay" onclick="document.getElementById('profilePicInput').click()">D</div>
-                <input type="file" id="profilePicInput" style="display:none;" accept="image/*" onchange="uploadProfilePic(event)">
+            <!-- Unified Action Bar -->
+            <div style="display:flex; border:1px solid #e8e0da; border-radius:12px; overflow:hidden; margin-top:4px; box-shadow:0 1px 3px rgba(84,41,22,0.07);">
+                <!-- Streak → quests -->
+                <div onclick="openQuestPage()" style="flex:1; padding:8px 6px; text-align:center; cursor:pointer; background:#fffaf7; border-right:1px solid #ede8e3; transition:opacity 0.15s;" ontouchstart="this.style.opacity='0.65'" ontouchend="this.style.opacity='1'">
+                    <div style="font-size:16px; line-height:1.1;">🔥</div>
+                    <div style="font-size:12px; font-weight:bold; color:var(--espresso);" id="streakDisplay">1 วัน</div>
+                </div>
+                <!-- Points + Shop (merged) → rewardShopModal -->
+                <div onclick="openModal('rewardShopModal')" style="flex:2; padding:8px 10px; text-align:center; cursor:pointer; background:#fffdf5; border-right:1px solid #ede8e3; transition:opacity 0.15s;" ontouchstart="this.style.opacity='0.65'" ontouchend="this.style.opacity='1'">
+                    <div style="font-size:11px; font-weight:bold; color:#92400e;" id="userPointsDisplay">🪙 0 แต้ม</div>
+                    <div style="font-size:9px; color:#a16207; margin-top:2px;">🛒 ร้านค้าแต้ม</div>
+                </div>
+                <!-- Quest progress → quests -->
+                <div onclick="openQuestPage()" style="flex:2; padding:8px 10px; cursor:pointer; background:#f0f7ff; border-right:1px solid #ede8e3; display:flex; flex-direction:column; justify-content:center; transition:opacity 0.15s;" ontouchstart="this.style.opacity='0.65'" ontouchend="this.style.opacity='1'">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                        <span style="font-size:9px; color:var(--gray-text);">📜 ภารกิจ</span>
+                        <span style="font-size:9px; font-weight:bold; color:#1e40af;" id="barQuestPct">0/0</span>
+                    </div>
+                    <div style="height:4px; background:#dbeafe; border-radius:2px; overflow:hidden;">
+                        <div id="barQuestBar" style="height:100%; width:0%; background:linear-gradient(90deg,#3b82f6,#6366f1); border-radius:2px; transition:width 0.5s ease-out;"></div>
+                    </div>
+                </div>
+                <!-- Payday briefing -->
+                <div onclick="openPaydayBriefingManual()" style="flex:1; padding:8px 6px; text-align:center; cursor:pointer; background:#f5f3ff; transition:opacity 0.15s;" ontouchstart="this.style.opacity='0.65'" ontouchend="this.style.opacity='1'">
+                    <div style="font-size:16px; line-height:1.1;">📅</div>
+                    <div style="font-size:9px; font-weight:bold; color:#6d28d9;">รอบบิล</div>
+                </div>
             </div>
         </div>
 
-        <div class="card" style="padding: 25px 20px;">
-            <div class="card-header" style="margin-bottom:20px;">
-                <h2 class="card-title">ภาพรวมกระเป๋าเงิน (Tanks)</h2>
+        <!-- ① Cycle Pulse Hero Card -->
+        <div class="pulse-card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <p style="margin:0; font-size:10px; color:var(--gray-text);" id="pulseRoundLabel">รอบบิลนี้</p>
+                    <p style="margin:3px 0 0; font-size:26px; font-weight:bold; color:var(--espresso); line-height:1;" id="pulseSpentAmt">฿0</p>
+                    <p style="margin:2px 0 0; font-size:11px; color:var(--gray-text);">ใช้ไปแล้ว</p>
+                </div>
+                <div style="text-align:right;">
+                    <p style="margin:0; font-size:10px; color:var(--gray-text);">เหลือใช้ได้</p>
+                    <p style="margin:3px 0 0; font-size:26px; font-weight:bold; color:var(--eau-trouble); line-height:1;" id="pulseLeftAmt">฿0</p>
+                    <p style="margin:2px 0 0; font-size:11px; color:var(--gray-text);" id="pulseDaysLeft">เหลือ -- วัน</p>
+                </div>
+            </div>
+            <div class="pulse-spent-bar">
+                <div class="pulse-bar-fill" id="pulseProgressBar" style="width:0%;"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--gray-text);">
+                <span id="pulseEssential">Essential ฿0</span>
+                <span id="pulseJoy">Joy ฿0</span>
+                <span id="pulseSaveRate" style="font-weight:bold; color:var(--eau-trouble);">ออม --%</span>
+            </div>
+        </div>
+
+        <!-- ② Smart Insight Card -->
+        <div id="smartInsightCard" style="display:none; margin-bottom:10px;"></div>
+
+        <!-- ③ Compact 2×2 Tanks -->
+        <div class="card" style="padding:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h2 class="card-title" style="font-size:12px; color:var(--gray-text); font-weight:600;">กระเป๋าเงิน (Tanks)</h2>
                 <div style="display:flex; gap:5px;">
                     <button class="btn-outline" id="btnTransfer" style="border-color:var(--bleu-porcelaine); color:var(--bleu-porcelaine); font-size:10px; padding:3px 8px;" onclick="openTransferModal()">↔️ โอน</button>
-                    <button class="btn-outline" id="btnSweep" style="font-size:10px; padding:3px 8px;" onclick="sweepChange()">🧹 ปัดเศษ</button>
+                    <button class="btn-outline" id="btnSweep" style="font-size:10px; padding:3px 8px;" onclick="sweepChange()">🧹 เศษ</button>
                 </div>
             </div>
-            <div class="tanks-container" id="tanksContainer">
-                <div class="tank-wrapper" onclick="openTankHistory('growth', 'Growth (ลงทุน)')">
-                    <div class="tank-bg"><div class="tank-fill fill-growth" id="bar-growth">0%</div></div>
-                    <div class="tank-label">Growth</div><div class="tank-sub" id="sub-growth">ลงทุน (25%)</div><div class="tank-amount" id="val-growth">฿0</div>
+            <div class="tank-compact-grid">
+                <!-- Growth -->
+                <div class="tank-compact-card" onclick="openTankHistory('growth','Growth (ลงทุน)')">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <div>
+                            <div style="font-size:10px;color:var(--gray-text);" id="sub-growth">Growth (25%)</div>
+                            <div style="font-size:16px;font-weight:bold;color:var(--espresso);" id="val-growth">฿0</div>
+                        </div>
+                        <span style="font-size:11px;color:var(--bleu-porcelaine);font-weight:bold;" id="pct-growth">0%</span>
+                    </div>
+                    <div style="height:5px;background:#e5e7eb;border-radius:3px;margin-top:7px;overflow:hidden;">
+                        <div class="fill-growth" id="bar-growth" style="height:100%;width:0%;border-radius:3px;transition:width 0.8s ease-out;"></div>
+                    </div>
                 </div>
-                <div class="tank-wrapper" onclick="openTankHistory('security', 'Security (สำรอง)')" id="securityTankWrapper">
-                    <div class="tank-bg"><div class="tank-fill fill-security" id="bar-security">0%</div></div>
-                    <div class="tank-label">Security</div><div class="tank-sub" id="sub-security">สำรอง (50%)</div>
-                    <div class="tank-amount" id="val-security">฿0</div>
+                <!-- Security -->
+                <div class="tank-compact-card" id="securityTankWrapper" onclick="openTankHistory('security','Security (สำรอง)')">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <div>
+                            <div style="font-size:10px;color:var(--gray-text);" id="sub-security">Security (50%)</div>
+                            <div style="font-size:16px;font-weight:bold;color:var(--espresso);" id="val-security">฿0</div>
+                        </div>
+                        <span style="font-size:11px;color:var(--miel-dore);font-weight:bold;" id="pct-security">0%</span>
+                    </div>
+                    <div style="height:5px;background:#e5e7eb;border-radius:3px;margin-top:7px;overflow:hidden;">
+                        <div class="fill-security" id="bar-security" style="height:100%;width:0%;border-radius:3px;transition:width 0.8s ease-out;"></div>
+                    </div>
                 </div>
-                <div class="tank-wrapper" onclick="openTankHistory('essential', 'Essential (จำเป็น)')">
-                    <div class="tank-bg"><div class="tank-fill fill-essential" id="bar-essential">0%</div></div>
-                    <div class="tank-label">Essential</div><div class="tank-sub" id="sub-essential">จำเป็น (15%)</div><div class="tank-amount" id="val-essential">฿0</div>
+                <!-- Essential -->
+                <div class="tank-compact-card" onclick="openTankHistory('essential','Essential (จำเป็น)')">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <div>
+                            <div style="font-size:10px;color:var(--gray-text);" id="sub-essential">Essential (15%)</div>
+                            <div style="font-size:16px;font-weight:bold;color:var(--espresso);" id="val-essential">฿0</div>
+                        </div>
+                        <span style="font-size:11px;color:var(--terre-cuite);font-weight:bold;" id="pct-essential">0%</span>
+                    </div>
+                    <div style="height:5px;background:#e5e7eb;border-radius:3px;margin-top:7px;overflow:hidden;">
+                        <div class="fill-essential" id="bar-essential" style="height:100%;width:0%;border-radius:3px;transition:width 0.8s ease-out;"></div>
+                    </div>
                 </div>
-                <div class="tank-wrapper" onclick="openTankHistory('joy', 'Joy (รางวัลชีวิต)')">
-                    <div class="tank-bg"><div class="tank-fill fill-joy" id="bar-joy">0%</div></div>
-                    <div class="tank-label">Joy</div><div class="tank-sub" id="sub-joy">รางวัล (10%)</div><div class="tank-amount" id="val-joy">฿0</div>
+                <!-- Joy -->
+                <div class="tank-compact-card" onclick="openTankHistory('joy','Joy (รางวัลชีวิต)')">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                        <div>
+                            <div style="font-size:10px;color:var(--gray-text);" id="sub-joy">Joy (10%)</div>
+                            <div style="font-size:16px;font-weight:bold;color:var(--espresso);" id="val-joy">฿0</div>
+                        </div>
+                        <span style="font-size:11px;color:var(--eau-trouble);font-weight:bold;" id="pct-joy">0%</span>
+                    </div>
+                    <div style="height:5px;background:#e5e7eb;border-radius:3px;margin-top:7px;overflow:hidden;">
+                        <div class="fill-joy" id="bar-joy" style="height:100%;width:0%;border-radius:3px;transition:width 0.8s ease-out;"></div>
+                    </div>
                 </div>
             </div>
-            <button class="btn-outline" id="btnWishlist" style="width:100%; border-style:dashed; margin-top:25px; padding:10px; color:var(--eau-trouble); border-color:var(--eau-trouble);" onclick="openModal('wishlistModal')">
-    🛒 ตะกร้าดึงสติ (<span id="wishlistCount" style="color:var(--danger);">0</span>)
-</button>
+            <!-- Primary expense button -->
+            <button class="quick-add-btn" onclick="openQuickExpenseModal()" style="width:100%; margin-top:10px; font-size:13px; padding:11px;">✏️ จดรายจ่าย</button>
+            <!-- Wishlist link -->
+            <button class="btn-outline" id="btnWishlist" style="width:100%; border-style:dashed; margin-top:8px; padding:8px; color:var(--eau-trouble); border-color:var(--eau-trouble); font-size:11px;" onclick="openModal('wishlistModal')">
+                🛒 ตะกร้าดึงสติ (<span id="wishlistCount" style="color:var(--danger);">0</span>)
+            </button>
         </div>
 
-        <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2 class="card-title">📤 จ่ายเงิน</h2>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn-outline" style="border-color:var(--terre-cuite); color:var(--terre-cuite); font-size:10px; padding:3px 8px;" onclick="openBulkEntry()">📝 รวบยอด</button>
-                    <button class="btn-outline" style="font-size:10px; padding:3px 8px; color:var(--bleu-porcelaine); border-color:var(--bleu-porcelaine);" onclick="openManageCatsModal()">⚙️ จัดการหมวด</button>
+        <!-- ④ Categories (collapsible) -->
+        <div class="card" style="padding:14px 16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleCategoriesSection()">
+                <h2 class="card-title" style="font-size:13px; color:var(--gray-text); margin:0;">📂 หมวดหมู่</h2>
+                <div style="display:flex; gap:6px; align-items:center;">
+                    <button class="btn-outline" style="border-color:var(--terre-cuite); color:var(--terre-cuite); font-size:10px; padding:2px 7px;" onclick="event.stopPropagation(); openBulkEntry()">📝 รวบ</button>
+                    <button class="btn-outline" style="font-size:10px; padding:2px 7px; color:var(--bleu-porcelaine); border-color:var(--bleu-porcelaine);" onclick="event.stopPropagation(); openManageCatsModal()">⚙️</button>
+                    <span id="catToggleIcon" style="font-size:12px; color:var(--gray-text);">▼</span>
                 </div>
             </div>
-            <div class="categories-grid" id="homeCategories"></div>
+            <div id="categoriesSectionBody" style="margin-top:12px;">
+                <div class="categories-grid" id="homeCategories"></div>
+            </div>
         </div>
 
         <div class="card" style="padding: 15px; margin-bottom: 20px; background: var(--white); border:1px solid #e5e7eb;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:6px;">
-                <p id="incomeCardTitle" style="margin:0; font-size:12px; color:var(--espresso); font-weight:bold; flex:1; min-width:0;">📥 บันทึกรายรับ</p>
-                <button class="btn-outline" onclick="openIncomeHistoryModal()"
-                    style="padding:4px 10px; border-color:var(--bleu-porcelaine); color:var(--bleu-porcelaine); font-size:10px; white-space:nowrap; flex-shrink:0;">📋 ประวัติ</button>
-                <button class="btn-outline" onclick="openTaxHelper()"
-                    style="padding:4px 10px; border-color:#92400e; color:#92400e; font-size:10px; white-space:nowrap; flex-shrink:0;">🧾 ภาษี</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <p id="incomeCardTitle" style="margin:0; font-size:13px; color:var(--espresso); font-weight:bold;">📥 บันทึกรายรับ</p>
+                <div style="display:flex;gap:6px;">
+                    <button class="btn-outline" onclick="openIncomeHistoryModal()" style="padding:3px 8px; border-color:var(--bleu-porcelaine); color:var(--bleu-porcelaine); font-size:10px;">📋 ประวัติ</button>
+                    <button class="btn-outline" onclick="openTaxHelper()" style="padding:3px 8px; border-color:#92400e; color:#92400e; font-size:10px;">🧾 ภาษี</button>
+                </div>
             </div>
-            <div style="display: flex; gap: 6px; margin-bottom: 10px; width: 100%;">
-                <input type="number" id="mainIncomeInput" placeholder="ยอดเงิน" style="width: 100px; flex-shrink: 0; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; font-size:14px; box-sizing: border-box;">
-                <select id="incomeCatSelect" style="flex-grow: 1; min-width: 0; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; background: white; font-size:13px; box-sizing: border-box;" onchange="if(this.value==='add_new') openModal('addIncomeCatModal')"></select>
+            <!-- Quick row: amount + submit -->
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+                <input type="number" id="mainIncomeInput" placeholder="฿ ยอดรายรับ" inputmode="decimal"
+                    style="flex:1; border:1px solid #cbd5e1; padding:10px 12px; border-radius:10px; outline:none; font-size:15px; font-weight:bold; color:var(--bleu-porcelaine); box-sizing:border-box;">
+                <button style="background:var(--bleu-porcelaine);color:white;border:none;border-radius:10px;padding:0 16px;font-size:13px;font-weight:bold;font-family:'Kanit';cursor:pointer;white-space:nowrap;" onclick="confirmIncome()">+ รับเงิน</button>
             </div>
-            
-            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-                <select id="incomeTargetTank" style="flex: 1; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; background: var(--nuage-de-lait); color: var(--espresso); font-size:13px; box-sizing: border-box; font-weight:bold;">
-                    <option value="auto">🪄 กระจายออโต้ตาม %</option>
-                    <option value="essential">🛒 เข้า Essential 100%</option>
-                    <option value="joy">🎉 เข้า Joy 100%</option>
-                    <option value="security">🛡️ เข้า Security 100%</option>
-                    <option value="growth">🌱 เข้า Growth 100%</option>
-                </select>
-                <input type="date" id="incomeDateInput" style="flex: 1; border: 1px solid #cbd5e1; padding: 10px; border-radius: 10px; outline: none; color:var(--espresso); font-size:13px; box-sizing: border-box;">
+            <!-- Income details — always visible -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+                <select id="incomeCatSelect" style="border:1px solid #cbd5e1; padding:8px; border-radius:10px; outline:none; background:white; font-size:12px; box-sizing:border-box;" onchange="if(this.value==='add_new') openModal('addIncomeCatModal')"></select>
+                <input type="date" id="incomeDateInput" style="border:1px solid #cbd5e1; padding:8px; border-radius:10px; outline:none; color:var(--espresso); font-size:12px; box-sizing:border-box;">
             </div>
-            
-            <button class="btn-main" style="margin-top: 0; background:var(--bleu-porcelaine);" onclick="confirmIncome()">บันทึกรายรับ</button>
-            <p id="incomeCreditWarning" style="margin:8px 0 0 0; font-size:11px; color:var(--danger); display:none; font-weight:bold;">🚨 อย่าลืมนะบอส! มีบิลบัตร/ผ่อน รอจ่ายอยู่ ฿<span id="warnCreditAmt">0</span></p>
+            <select id="incomeTargetTank" style="width:100%; border:1px solid #cbd5e1; padding:8px; border-radius:10px; outline:none; background:var(--nuage-de-lait); color:var(--espresso); font-size:12px; box-sizing:border-box; font-weight:bold; margin-bottom:8px;">
+                <option value="auto">🪄 กระจายออโต้ตาม %</option>
+                <option value="essential">🛒 เข้า Essential 100%</option>
+                <option value="joy">🎉 เข้า Joy 100%</option>
+                <option value="security">🛡️ เข้า Security 100%</option>
+                <option value="growth">🌱 เข้า Growth 100%</option>
+            </select>
+            <p id="incomeCreditWarning" style="margin:4px 0 0 0; font-size:11px; color:var(--danger); display:none; font-weight:bold;">🚨 อย่าลืมนะบอส! มีบิลบัตร/ผ่อน รอจ่ายอยู่ ฿<span id="warnCreditAmt">0</span></p>
         </div>
     </div>
+
+    <!-- Floating Action Button (all views) -->
+    <button class="fab-btn" id="fabBtn" onclick="openQuickExpenseModal()" title="+ จดรายจ่าย">+</button>
 
     <div id="view-fixed" class="view-section">
         <div class="header"><h1>📅 ภาระ & บิล</h1></div>
@@ -763,16 +878,59 @@
 <div class="modal-overlay bottom-sheet" id="expenseModal" onclick="if(event.target===this) closeModal('expenseModal')">
     <div class="modal-content bottom-sheet">
         <div class="drag-handle"></div>
-        <div class="modal-header"><h2 id="expenseTitle">จ่ายเงิน</h2><button class="close-btn" onclick="closeModal('expenseModal')">✕</button></div>
-        <div class="form-group"><label>จำนวนเงิน (฿)</label><input type="number" id="exAmount" placeholder="0" style="font-size:20px; font-weight:bold; color:var(--danger);" oninput="checkExpenseLogic()"></div>
-        <div class="form-group"><label>กระเป๋าที่ใช้</label>
-            <select id="exTank" onchange="checkExpenseLogic()">
-                <option value="essential">🛒 Essential (จำเป็น)</option>
-                <option value="joy">🎉 Joy (กิเลส)</option>
-                <option value="security">🛡️ Security (สำรอง)</option>
+        <div class="modal-header"><h2 id="expenseTitle">🧾 จดรายจ่าย</h2><button class="close-btn" onclick="closeModal('expenseModal')">✕</button></div>
+
+        <!-- Recent / Quick-fill chips -->
+        <div id="recentExpensesSection" style="margin-bottom:14px; display:none;">
+            <div style="font-size:11px; color:var(--gray-text); margin-bottom:8px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">จ่ายซ้ำ ⚡</div>
+            <div id="recentExpenseChips" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;"></div>
+        </div>
+
+        <!-- Category Picker — แสดงเฉพาะตอนเปิดแบบ Quick (ไม่มี preset cat) -->
+        <div id="expenseCatPickerRow" style="display:none; margin-bottom:14px;">
+            <div style="font-size:11px; color:var(--gray-text); margin-bottom:8px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">เลือกหมวดหมู่ <span id="expCatPickedLabel" style="font-size:12px; color:var(--terre-cuite); font-weight:bold; text-transform:none; letter-spacing:0;"></span></div>
+            <div id="expenseCatChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- Amount — ใหญ่ชัด -->
+        <div style="text-align:center; padding:4px 0 18px;">
+            <div style="font-size:12px; color:var(--gray-text); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;">จำนวนเงิน</div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
+                <span style="font-size:24px; font-weight:bold; color:var(--danger);">฿</span>
+                <input type="number" id="exAmount" placeholder="0" inputmode="decimal"
+                    style="font-size:36px; font-weight:bold; color:var(--danger); width:180px; border:none; border-bottom:2px solid var(--danger); text-align:center; outline:none; background:transparent; padding:4px 0;"
+                    oninput="checkExpenseLogic()">
+            </div>
+            <div id="exBalanceHint" style="font-size:12px; color:var(--gray-text); margin-top:8px; min-height:18px;"></div>
+            <div id="catSpendContext" style="font-size:11px; color:var(--gray-text); min-height:15px; margin-top:2px;"></div>
+        </div>
+
+        <!-- Tank Chips — visual selection -->
+        <div style="margin-bottom:16px;">
+            <div style="font-size:11px; color:var(--gray-text); margin-bottom:8px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">จ่ายจากกระเป๋า</div>
+            <div id="tankChips" style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="tank-chip" data-tank="essential" onclick="selectExpTank('essential')">🛒 Essential</button>
+                <button type="button" class="tank-chip" data-tank="joy" onclick="selectExpTank('joy')">🎉 Joy</button>
+                <button type="button" class="tank-chip" data-tank="security" onclick="selectExpTank('security')">🛡️ Security</button>
+                <button type="button" class="tank-chip" data-tank="growth" onclick="selectExpTank('growth')">🌱 Growth</button>
+            </div>
+            <select id="exTank" style="display:none;" onchange="checkExpenseLogic()">
+                <option value="essential">Essential</option>
+                <option value="joy">Joy</option>
+                <option value="security">Security</option>
+                <option value="growth">Growth</option>
             </select>
         </div>
-        <div class="form-group"><label>💳 ช่องทางจ่ายเงิน</label>
+
+        <!-- Cross-tank warning -->
+        <div class="cross-tank-box" id="crossTankBox" style="background:#fee2e2; border:1px solid var(--danger); display:none; padding:10px; border-radius:10px; margin-bottom:12px;">
+            <p style="color:var(--danger); font-weight:bold; margin-top:0;">⚠️ เงินไม่พอ! ขาดอีก <span id="shortfallText">฿0</span></p>
+            <div class="form-group"><label>ดึงกระเป๋าสำรองมาโปะ:</label><select id="backupTank"></select></div>
+            <div class="form-group" style="margin-bottom:0;"><label style="color:var(--espresso);">เหตุผลที่แหกกฎ?</label><select id="crossReason"><option value="ฉุกเฉินจริงๆ">🚨 ฉุกเฉิน</option><option value="แพ้กิเลส">😈 แพ้กิเลส</option><option value="ลืมวางแผน">😅 ลืมคิด</option></select></div>
+        </div>
+
+        <!-- ช่องทางจ่ายเงิน — เสมอ -->
+        <div class="form-group" style="margin-bottom:10px;"><label>💳 ช่องทางจ่ายเงิน</label>
             <select id="exPayMethod" onchange="toggleInstallmentInput()">
                 <option value="สแกนจ่าย/โอน">📱 สแกนจ่าย / โอน</option>
                 <option value="เงินสด">💵 เงินสด</option>
@@ -780,10 +938,10 @@
                 <option value="ผ่อน (BNPL)">🛍️ ผ่อนชำระ/Spaylater</option>
             </select>
         </div>
-        <div class="form-group" id="installmentDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px; border: 1px dashed var(--bleu-porcelaine);">
+        <div class="form-group" id="installmentDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px; border: 1px dashed var(--bleu-porcelaine); margin-bottom:10px;">
             <label style="color:var(--bleu-porcelaine);">จำนวนเดือนที่ผ่อน</label><input type="number" id="exInstallmentMonths" placeholder="เช่น 3">
         </div>
-        <div class="form-group" id="creditCardSelectDiv" style="display:none; background:#eff6ff; padding:10px; border-radius:10px; border:1px dashed var(--bleu-porcelaine);">
+        <div class="form-group" id="creditCardSelectDiv" style="display:none; background:#eff6ff; padding:10px; border-radius:10px; border:1px dashed var(--bleu-porcelaine); margin-bottom:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                 <label style="color:var(--bleu-porcelaine); margin:0;">💳 เลือกบัตรเครดิต</label>
                 <button type="button" onclick="openManageCCModal()" style="background:transparent; border:none; color:var(--bleu-porcelaine); font-size:10px; cursor:pointer; text-decoration:underline;">จัดการบัตร</button>
@@ -792,28 +950,10 @@
                 <option value="">-- ไม่ระบุบัตร --</option>
             </select>
         </div>
-        <div class="form-group" id="joyTypeDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px;">
-            <label style="color:var(--eau-trouble);">รูปแบบของรางวัล</label>
-            <select id="exJoyType" style="margin-bottom:10px;"><option value="small">✨ Small Win (กินเที่ยว)</option><option value="big">🎯 Big Win (ของชิ้นใหญ่)</option></select>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <label style="color:var(--espresso); margin-bottom:0;">🎭 อารมณ์ตอนซื้อ</label>
-                <label style="font-size:10px; color:var(--gray-text); cursor:pointer; display:flex; align-items:center; gap:4px;">
-                    <input type="checkbox" id="skipEmotion" style="width:auto;" onchange="document.getElementById('exEmotion').disabled=this.checked; document.getElementById('exEmotion').style.opacity=this.checked?'0.4':'1'"> ข้าม
-                </label>
-            </div>
-            <select id="exEmotion"><option value="🤩 อยากให้รางวัลตัวเอง">🤩 ให้รางวัลตัวเอง</option><option value="😩 เครียดเลยช้อป">😩 เครียดเลยช้อป</option><option value="🧟‍♂️ โดนป้ายยา">🧟‍♂️ โดนป้ายยา</option><option value="🍻 เข้าสังคม">🍻 เข้าสังคม (เปย์เพื่อน)</option></select>
-        </div>
-        <div class="form-group" id="needDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px; border: 1px dashed var(--terre-cuite);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <label style="color:var(--terre-cuite); margin-bottom:0;">⚖️ ความจำเป็น</label>
-                <label style="font-size:10px; color:var(--gray-text); cursor:pointer; display:flex; align-items:center; gap:4px;">
-                    <input type="checkbox" id="skipNeed" style="width:auto;" onchange="document.getElementById('exNeedRating').disabled=this.checked; document.getElementById('exNeedRating').style.opacity=this.checked?'0.4':'1'"> ข้าม
-                </label>
-            </div>
-            <select id="exNeedRating"><option value="5">⭐⭐⭐⭐⭐ (ขาดไม่ได้)</option><option value="4">⭐⭐⭐⭐ (จำเป็นมาก)</option><option value="3">⭐⭐⭐ (กึ่งจำเป็น กึ่งอยากได้)</option><option value="2">⭐⭐ (ซื้อความสะดวก)</option><option value="1">⭐ (รู้อยู่แก่ใจว่าแค่อยากได้ 🤣)</option></select>
-        </div>
-        <div class="form-group" style="background:var(--nuage-de-lait); padding:10px; border-radius:10px; border:1px dashed var(--miel-dore);">
-            <label style="color:var(--espresso); display:flex; align-items:center; gap:5px; margin-bottom:0; cursor:pointer;">
+
+        <!-- จ่ายแทนคนอื่น — เสมอ -->
+        <div style="background:var(--nuage-de-lait); padding:10px; border-radius:10px; border:1px dashed var(--miel-dore); margin-bottom:12px;">
+            <label style="color:var(--espresso); display:flex; align-items:center; gap:5px; margin-bottom:0; cursor:pointer; font-size:13px;">
                 <input type="checkbox" id="isReimbursable" onchange="toggleReimbursable(this.checked)" style="width:auto; accent-color:var(--miel-dore);"> จ่ายแทนคนอื่น (รอหาร/รอเคลียร์)
             </label>
             <datalist id="exContactsList"></datalist>
@@ -828,16 +968,40 @@
                     <span id="exOthersTotal" style="font-weight:bold;color:var(--espresso);">฿0</span>
                 </div>
             </div>
-   
         </div>
-        <div class="form-group"><label>บันทึกช่วยจำ (ถ้ามี)</label><input type="text" id="exNote" placeholder="รายละเอียด..."></div>
-        
-        <div class="cross-tank-box" id="crossTankBox" style="background:#fee2e2; border:1px solid var(--danger); display:none; padding:10px; border-radius:10px; margin-bottom:15px;">
-            <p style="color:var(--danger); font-weight:bold; margin-top:0;">⚠️ เงินไม่พอ! ขาดอีก <span id="shortfallText">฿0</span></p>
-            <div class="form-group"><label>ดึงกระเป๋าสำรองมาโปะ:</label><select id="backupTank"></select></div>
-            <div class="form-group" style="margin-bottom:0;"><label style="color:var(--espresso);">เหตุผลที่แหกกฎ?</label><select id="crossReason"><option value="ฉุกเฉินจริงๆ">🚨 ฉุกเฉิน</option><option value="แพ้กิเลส">😈 แพ้กิเลส</option><option value="ลืมวางแผน">😅 ลืมคิด</option></select></div>
+
+        <!-- Advanced Toggle (เหลือแค่ joy/need/note) -->
+        <button type="button" id="advancedToggleBtn" onclick="toggleAdvancedExpense()"
+            style="width:100%; background:transparent; border:1px dashed #d1d5db; border-radius:10px; padding:9px; font-size:12px; color:var(--gray-text); cursor:pointer; font-family:'Kanit'; margin-bottom:12px; text-align:left;">
+            ➕ รายละเอียดเพิ่มเติม <span id="advCatPreview" style="color:var(--espresso); font-weight:bold;"></span>
+        </button>
+
+        <!-- Advanced Section — joy/need/note -->
+        <div id="advancedExpenseSection" style="display:none;">
+            <div class="form-group" id="joyTypeDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px;">
+                <label style="color:var(--eau-trouble);">รูปแบบของรางวัล</label>
+                <select id="exJoyType" style="margin-bottom:10px;"><option value="small">✨ Small Win (กินเที่ยว)</option><option value="big">🎯 Big Win (ของชิ้นใหญ่)</option></select>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <label style="color:var(--espresso); margin-bottom:0;">🎭 อารมณ์ตอนซื้อ</label>
+                    <label style="font-size:10px; color:var(--gray-text); cursor:pointer; display:flex; align-items:center; gap:4px;">
+                        <input type="checkbox" id="skipEmotion" style="width:auto;" onchange="document.getElementById('exEmotion').disabled=this.checked; document.getElementById('exEmotion').style.opacity=this.checked?'0.4':'1'"> ข้าม
+                    </label>
+                </div>
+                <select id="exEmotion"><option value="🤩 อยากให้รางวัลตัวเอง">🤩 ให้รางวัลตัวเอง</option><option value="😩 เครียดเลยช้อป">😩 เครียดเลยช้อป</option><option value="🧟‍♂️ โดนป้ายยา">🧟‍♂️ โดนป้ายยา</option><option value="🍻 เข้าสังคม">🍻 เข้าสังคม (เปย์เพื่อน)</option></select>
+            </div>
+            <div class="form-group" id="needDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px; border: 1px dashed var(--terre-cuite);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <label style="color:var(--terre-cuite); margin-bottom:0;">⚖️ ความจำเป็น</label>
+                    <label style="font-size:10px; color:var(--gray-text); cursor:pointer; display:flex; align-items:center; gap:4px;">
+                        <input type="checkbox" id="skipNeed" style="width:auto;" onchange="document.getElementById('exNeedRating').disabled=this.checked; document.getElementById('exNeedRating').style.opacity=this.checked?'0.4':'1'"> ข้าม
+                    </label>
+                </div>
+                <select id="exNeedRating"><option value="5">⭐⭐⭐⭐⭐ (ขาดไม่ได้)</option><option value="4">⭐⭐⭐⭐ (จำเป็นมาก)</option><option value="3">⭐⭐⭐ (กึ่งจำเป็น กึ่งอยากได้)</option><option value="2">⭐⭐ (ซื้อความสะดวก)</option><option value="1">⭐ (รู้อยู่แก่ใจว่าแค่อยากได้ 🤣)</option></select>
+            </div>
+            <div class="form-group"><label>📝 บันทึกช่วยจำ</label><input type="text" id="exNote" placeholder="รายละเอียด..."></div>
         </div>
-        <button class="btn-main" onclick="submitExpense()">ยืนยันจ่าย</button>
+
+        <button class="btn-main" onclick="submitExpense()" style="margin-top:4px; font-size:15px; padding:14px;">✅ บันทึก</button>
     </div>
 </div>
 
@@ -1183,68 +1347,160 @@
 
 <!-- TAX HELPER MODAL -->
 <div class="modal-overlay center-popup" id="taxHelperModal" onclick="if(event.target===this) closeModal('taxHelperModal')">
-    <div class="modal-content center-popup" style="max-height:85vh;overflow-y:auto;padding:20px;">
+    <div class="modal-content center-popup" style="max-height:90vh;overflow-y:auto;padding:20px;">
         <div class="modal-header">
             <h2 style="font-size:15px;">🧾 ผู้ช่วยคำนวณภาษี</h2>
             <button class="close-btn" onclick="closeModal('taxHelperModal')">✕</button>
         </div>
 
-        <!-- Income input -->
+        <!-- Section 1: Income -->
         <div style="background:#f8fafc;border-radius:12px;padding:12px;margin-bottom:10px;">
-            <p style="margin:0 0 8px;font-size:12px;font-weight:bold;color:var(--espresso);">📊 รายรับทั้งปี</p>
-            <div style="display:flex;gap:8px;align-items:center;">
-                <div style="flex:1;">
-                    <label style="font-size:10px;color:var(--gray-text);">รายรับรวม (บาท)</label>
-                    <input type="number" id="taxIncomeInput" placeholder="ดึงจากประวัติอัตโนมัติ"
-                        style="width:100%;padding:8px;border-radius:8px;border:1px solid #e5e7eb;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <p style="margin:0;font-size:12px;font-weight:bold;color:var(--espresso);">📊 รายรับทั้งปี</p>
+                <div style="display:flex;gap:4px;">
+                    <button id="taxModeAutoBtn" onclick="setTaxMode('auto')"
+                        style="font-size:10px;padding:3px 10px;border-radius:20px;border:1.5px solid var(--bleu-porcelaine);background:var(--bleu-porcelaine);color:white;font-family:'Kanit';cursor:pointer;">🔄 ดึงจากระบบ</button>
+                    <button id="taxModeManualBtn" onclick="setTaxMode('manual')"
+                        style="font-size:10px;padding:3px 10px;border-radius:20px;border:1.5px solid #d1d5db;background:white;color:var(--gray-text);font-family:'Kanit';cursor:pointer;">✍️ กรอกเอง</button>
                 </div>
-                <button onclick="autoFillTaxIncome()" style="background:var(--bleu-porcelaine);color:white;border:none;padding:8px 10px;border-radius:8px;font-family:'Kanit';font-size:11px;cursor:pointer;white-space:nowrap;margin-top:14px;">ดึงข้อมูล</button>
+            </div>
+            <!-- Auto mode -->
+            <div id="taxAutoSection">
+                <div id="taxAutoInfo" style="font-size:11px;color:var(--gray-text);margin-bottom:6px;"></div>
+                <div style="display:flex;gap:8px;">
+                    <div style="flex:1;">
+                        <label style="font-size:10px;color:var(--gray-text);">รายรับที่บันทึกในระบบ</label>
+                        <input type="number" id="taxIncomeInput" placeholder="0"
+                            style="width:100%;padding:8px;border-radius:8px;border:1px solid #cbd5e1;font-family:'Kanit';font-size:14px;font-weight:bold;box-sizing:border-box;background:#f0f9ff;" readonly>
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:10px;color:var(--gray-text);">+ รายรับที่ยังไม่ได้บันทึก</label>
+                        <input type="number" id="taxIncomeExtra" placeholder="0" oninput="calcTax()"
+                            style="width:100%;padding:8px;border-radius:8px;border:1px solid #e5e7eb;font-family:'Kanit';font-size:14px;font-weight:bold;box-sizing:border-box;">
+                    </div>
+                </div>
+                <div id="taxProjection" style="margin-top:6px;font-size:10px;color:#6366f1;"></div>
+            </div>
+            <!-- Manual mode -->
+            <div id="taxManualSection" style="display:none;">
+                <label style="font-size:10px;color:var(--gray-text);">รายรับรวมทั้งปี (บาท) — ก่อนหักภาษีหรือค่าใช้จ่ายใดๆ</label>
+                <input type="number" id="taxIncomeManual" placeholder="เช่น 480000" oninput="calcTax()"
+                    style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--bleu-porcelaine);font-family:'Kanit';font-size:16px;font-weight:bold;box-sizing:border-box;margin-top:4px;">
             </div>
         </div>
 
-        <!-- Deductions -->
+        <!-- Section 2: Social Security (remembered) -->
+        <div style="background:#faf5ff;border-radius:12px;padding:12px;margin-bottom:10px;border:1px solid #e9d5ff;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <p style="margin:0;font-size:12px;font-weight:bold;color:#6d28d9;">🏛️ ประกันสังคม</p>
+                <span style="font-size:9px;color:#6d28d9;background:#ede9fe;padding:2px 7px;border-radius:10px;">ลดหย่อนได้สูงสุด ฿9,000/ปี</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-end;">
+                <div style="flex:1;">
+                    <label style="font-size:10px;color:var(--gray-text);">จ่าย/เดือน (บาท)</label>
+                    <input type="number" id="taxSocialSecMonthly" placeholder="750" oninput="calcTax()"
+                        style="width:100%;padding:7px;border-radius:8px;border:1px solid #e9d5ff;font-family:'Kanit';font-size:13px;font-weight:bold;box-sizing:border-box;">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:10px;color:var(--gray-text);">จ่ายกี่เดือนปีนี้</label>
+                    <input type="number" id="taxSocialSecMonths" placeholder="12" min="1" max="12" oninput="calcTax()"
+                        style="width:100%;padding:7px;border-radius:8px;border:1px solid #e9d5ff;font-family:'Kanit';font-size:13px;font-weight:bold;box-sizing:border-box;">
+                </div>
+                <button onclick="saveSocialSec()"
+                    style="font-size:10px;padding:7px 12px;border-radius:8px;background:#6d28d9;color:white;border:none;font-family:'Kanit';cursor:pointer;white-space:nowrap;font-weight:bold;">💾 จำ</button>
+            </div>
+            <div id="taxSocialSecNote" style="margin-top:5px;font-size:10px;color:#6d28d9;"></div>
+        </div>
+
+        <!-- Section 3: Deductions -->
         <div style="background:#f0fdf4;border-radius:12px;padding:12px;margin-bottom:10px;">
-            <p style="margin:0 0 8px;font-size:12px;font-weight:bold;color:#166534;">✂️ ค่าลดหย่อน</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <p style="margin:0;font-size:12px;font-weight:bold;color:#166534;">✂️ ค่าลดหย่อน</p>
+                <button onclick="saveTaxDeductions()"
+                    style="font-size:10px;padding:3px 10px;border-radius:20px;background:#166534;color:white;border:none;font-family:'Kanit';cursor:pointer;">💾 บันทึกทั้งหมด</button>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
                 <div>
-                    <label style="font-size:10px;color:var(--gray-text);">ค่าใช้จ่าย 50% (สูงสุด 100,000)</label>
-                    <input type="number" id="taxDeductExpense" value="100000"
-                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;" oninput="calcTax()">
+                    <label style="font-size:10px;color:var(--gray-text);">ค่าใช้จ่าย 50% <span style="color:#ef4444;font-size:9px;">(สูงสุด 100k)</span></label>
+                    <input type="number" id="taxDeductExpense" placeholder="คำนวณอัตโนมัติ" oninput="calcTax()"
+                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;background:#f0fdf4;" readonly>
                 </div>
                 <div>
-                    <label style="font-size:10px;color:var(--gray-text);">ลดหย่อนส่วนตัว</label>
-                    <input type="number" id="taxDeductPersonal" value="60000"
-                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;" oninput="calcTax()">
+                    <label style="font-size:10px;color:var(--gray-text);">ส่วนตัว (คงที่)</label>
+                    <input type="number" value="60000" readonly
+                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;background:#f0fdf4;color:var(--gray-text);">
                 </div>
                 <div>
-                    <label style="font-size:10px;color:var(--gray-text);">ประกันชีวิต (สูงสุด 100,000)</label>
-                    <input type="number" id="taxDeductLife" value="0"
-                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;" oninput="calcTax()">
+                    <label style="font-size:10px;color:var(--gray-text);">ประกันชีวิต <span style="color:#ef4444;font-size:9px;">(รวมสุขภาพ ≤100k)</span></label>
+                    <input type="number" id="taxDeductLife" value="0" oninput="calcTax()"
+                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
                 </div>
                 <div>
-                    <label style="font-size:10px;color:var(--gray-text);">กองทุน RMF/SSF/PVD</label>
-                    <input type="number" id="taxDeductFund" value="0"
-                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;" oninput="calcTax()">
+                    <label style="font-size:10px;color:var(--gray-text);">ประกันสุขภาพ <span style="color:#ef4444;font-size:9px;">(≤25k ในกลุ่ม ≤100k)</span></label>
+                    <input type="number" id="taxDeductHealth" value="0" oninput="calcTax()"
+                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
                 </div>
                 <div>
-                    <label style="font-size:10px;color:var(--gray-text);">ดอกเบี้ยบ้าน (สูงสุด 100,000)</label>
-                    <input type="number" id="taxDeductHome" value="0"
-                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;" oninput="calcTax()">
+                    <label style="font-size:10px;color:var(--gray-text);">RMF <span style="color:#ef4444;font-size:9px;">(≤30% รายรับ, สูงสุด 500k)</span></label>
+                    <input type="number" id="taxDeductRMF" value="0" oninput="calcTax()"
+                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
                 </div>
                 <div>
-                    <label style="font-size:10px;color:var(--gray-text);">อื่นๆ (บิดามารดา/บุตร)</label>
-                    <input type="number" id="taxDeductOther" value="0"
-                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;" oninput="calcTax()">
+                    <label style="font-size:10px;color:var(--gray-text);">SSF <span style="color:#ef4444;font-size:9px;">(≤30% รายรับ, สูงสุด 200k)</span></label>
+                    <input type="number" id="taxDeductSSF" value="0" oninput="calcTax()"
+                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
                 </div>
+                <div>
+                    <label style="font-size:10px;color:var(--gray-text);">ดอกเบี้ยบ้าน <span style="color:#ef4444;font-size:9px;">(สูงสุด 100k)</span></label>
+                    <input type="number" id="taxDeductHome" value="0" oninput="calcTax()"
+                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="font-size:10px;color:var(--gray-text);">Easy E-receipt 2568 <span style="color:#ef4444;font-size:9px;">(สูงสุด 50k)</span></label>
+                    <input type="number" id="taxDeductEReceipt" value="0" oninput="calcTax()"
+                        style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
+                </div>
+            </div>
+            <!-- Family -->
+            <div style="margin-top:8px;padding-top:8px;border-top:1px dashed #bbf7d0;">
+                <p style="margin:0 0 6px;font-size:10px;font-weight:bold;color:#166534;">👨‍👩‍👧 ครอบครัว</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+                    <div>
+                        <label style="font-size:9px;color:var(--gray-text);">บิดามารดา (คน)</label>
+                        <input type="number" id="taxDeductParentsCount" value="0" min="0" max="4" oninput="calcTax()"
+                            style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
+                        <p style="margin:2px 0 0;font-size:9px;color:var(--gray-text);">× ฿30,000/คน</p>
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:var(--gray-text);">คู่สมรส (ไม่มีรายได้)</label>
+                        <select id="taxDeductSpouse" onchange="calcTax()"
+                            style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:11px;box-sizing:border-box;background:white;">
+                            <option value="0">ไม่มี</option>
+                            <option value="60000">มี (฿60,000)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:9px;color:var(--gray-text);">บุตร (คน)</label>
+                        <input type="number" id="taxDeductChildrenCount" value="0" min="0" oninput="calcTax()"
+                            style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;">
+                        <p style="margin:2px 0 0;font-size:9px;color:var(--gray-text);">× ฿30,000/คน</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Donation -->
+            <div style="margin-top:8px;">
+                <label style="font-size:10px;color:var(--gray-text);">เงินบริจาค <span style="color:#ef4444;font-size:9px;">(≤10% ของเงินได้สุทธิก่อนบริจาค)</span></label>
+                <input type="number" id="taxDeductDonation" value="0" oninput="calcTax()"
+                    style="width:100%;padding:6px;border-radius:8px;border:1px solid #bbf7d0;font-family:'Kanit';font-size:12px;box-sizing:border-box;margin-top:4px;">
             </div>
         </div>
 
-        <!-- Result -->
+        <!-- Section 4: Result -->
         <div id="taxResultBox" style="background:linear-gradient(135deg,#1e3a5f,#2563eb);border-radius:14px;padding:14px;color:white;margin-bottom:10px;">
             <p style="margin:0 0 4px;font-size:11px;opacity:0.75;">กรุณากรอกรายรับเพื่อคำนวณ</p>
         </div>
 
-        <!-- WHT tracking -->
+        <!-- Section 5: WHT -->
         <div style="background:#fefce8;border-radius:12px;padding:12px;border:1px solid #fde68a;">
             <p style="margin:0 0 6px;font-size:12px;font-weight:bold;color:#713f12;">💼 ภาษีหัก ณ ที่จ่ายสะสม (WHT)</p>
             <div id="whtSummary" style="font-size:12px;color:var(--espresso);"></div>
@@ -1561,6 +1817,15 @@
     let userPoints = 0; let inventory = []; let streakCount = 1; let lastActiveDate = ''; let viewingMonthOffset = 0;
     let currentAnalyticPeriod = 'month';
     let customRangeStart = ''; let customRangeEnd = '';
+
+    // Helper: คำนวณวันเริ่มต้นรอบบิล — รองรับเดือนที่สั้นกว่า payday (29/30/31)
+    function getCycleStart(now, pd) {
+        let y = now.getFullYear(), m = now.getMonth();
+        if (now.getDate() < pd) { m--; if (m < 0) { m = 11; y--; } }
+        let lastDay = new Date(y, m + 1, 0).getDate();
+        return new Date(y, m, Math.min(pd, lastDay));
+    }
+
     let incomeCats = [ {id: 1, name: 'เงินเดือน', icon: '💰'}, {id: 2, name: 'งานเสริม/ฟรีแลนซ์', icon: '💻'}, {id: 3, name: 'ปันผล/ดอกเบี้ย', icon: '📈'} ];
     const questPool = [
         {id: 1, title: '🍱 ห่อข้าวมาทำงาน 3 วัน', pts: 50}, {id: 2, title: '☕ งดสั่งกาแฟแบรนด์ 5 วัน', pts: 80},
@@ -1983,8 +2248,7 @@
     function suggestBudgetCaps() {
         // Calculate avg spend per category over last 3 cycles
         let pd = cfg.payday||25; let now = new Date();
-        let cs = new Date(now.getFullYear(), now.getMonth(), pd);
-        if(now.getDate() < pd) cs.setMonth(cs.getMonth()-1);
+        let cs = getCycleStart(now, pd);
         let cs3m = new Date(cs); cs3m.setMonth(cs3m.getMonth()-3);
         let recent3m = transactions.filter(t => t.type==='expense' && new Date(t.dateObj) >= cs3m);
         let catAvg = {};
@@ -2174,7 +2438,9 @@
         if(budgetCaps.length === 0) { list.innerHTML = '<p style="font-size:12px; color:var(--gray-text); text-align:center; padding:15px 0;">ยังไม่ได้ตั้งเพดานงบไว้</p>'; }
         else {
             list.innerHTML = budgetCaps.map(cap => {
-                let spent = transactions.filter(t => t.type === 'expense' && t.cat && t.cat.toLowerCase().includes(cap.cat.toLowerCase())).reduce((s,t) => s + t.amount, 0);
+                let _pd = cfg.payday || 25; let _now = new Date();
+                let _cs = getCycleStart(_now, _pd);
+                let spent = transactions.filter(t => t.type === 'expense' && t.cat && t.cat.toLowerCase().includes(cap.cat.toLowerCase()) && new Date(t.dateObj) >= _cs).reduce((s,t) => s + t.amount, 0);
                 let pct = cap.limit > 0 ? (spent / cap.limit) * 100 : 0;
                 let color = pct >= 100 ? 'var(--danger)' : pct >= 80 ? 'var(--terre-cuite)' : 'var(--success)';
                 let warn = pct >= 100 ? '🚨 เกินแล้ว!' : pct >= 80 ? '⚠️ ใกล้เกิน!' : '✅ ปกติ';
@@ -2201,8 +2467,7 @@
         let fc = document.getElementById('forecastContent'); if(!fc) return;
         let now = new Date();
         let pd = cfg.payday || 25;
-        let cycleStart = new Date(now.getFullYear(), now.getMonth(), pd);
-        if(now.getDate() < pd) cycleStart.setMonth(cycleStart.getMonth() - 1);
+        let cycleStart = getCycleStart(now, pd);
         let daysInCycle = 30; let daysPassed = Math.max(1, Math.floor((now - cycleStart) / (1000*3600*24)));
         let daysLeft = daysInCycle - daysPassed;
         let spentSoCycle = transactions.filter(t => { let d = new Date(t.dateObj); return t.type === 'expense' && d >= cycleStart; }).reduce((s,t) => s + t.amount, 0);
@@ -2232,8 +2497,7 @@
         let el = document.getElementById('behaviorInsightsBox');
         if(!el) return;
         let pd = cfg.payday||25; let now = new Date();
-        let cs3 = new Date(now.getFullYear(), now.getMonth(), pd);
-        if(now.getDate() < pd) cs3.setMonth(cs3.getMonth()-1);
+        let cs3 = getCycleStart(now, pd);
         let cs6 = new Date(cs3); cs6.setMonth(cs6.getMonth()-6);
         let recent = transactions.filter(t => t.type==='expense' && new Date(t.dateObj) >= cs6);
 
@@ -2270,8 +2534,7 @@
     function renderReportCard() {
         let score = 0; let details = []; let tips = [];
         let now = new Date(); let pd = cfg.payday || 25;
-        let cycleStart = new Date(now.getFullYear(), now.getMonth(), pd);
-        if(now.getDate() < pd) cycleStart.setMonth(cycleStart.getMonth() - 1);
+        let cycleStart = getCycleStart(now, pd);
         let cycleTx = transactions.filter(t => { let d = new Date(t.dateObj); return d >= cycleStart; });
         let expenses = cycleTx.filter(t => t.type === 'expense');
         let totalExp = expenses.reduce((s,t) => s+t.amount, 0);
@@ -2629,33 +2892,31 @@
             return;
         }
         _doUpdateUI._lastFp = _fp;
-        document.getElementById('sub-growth').innerText = `ลงทุน (${cfg.g}%)`; document.getElementById('sub-security').innerText = `สำรอง (${cfg.s}%)`;
-        document.getElementById('sub-essential').innerText = `จำเป็น (${cfg.e}%)`; document.getElementById('sub-joy').innerText = `รางวัล (${cfg.j}%)`;
-        
+        document.getElementById('sub-growth').innerText = `Growth (${cfg.g}%)`; document.getElementById('sub-security').innerText = `Security (${cfg.s}%)`;
+        document.getElementById('sub-essential').innerText = `Essential (${cfg.e}%)`; document.getElementById('sub-joy').innerText = `Joy (${cfg.j}%)`;
+
         // Realtime points update — อัพทุก element ที่แสดง points ในหน้า
         let pts = userPoints.toLocaleString();
         ['userPointsDisplay','questPagePoints'].forEach(id => { let el = document.getElementById(id); if(el) el.innerText = `🪙 ${pts} แต้ม`; });
         let spEl = document.getElementById('shopPointsDisplay'); if(spEl) spEl.innerText = pts;
         document.getElementById('streakDisplay').innerText = `${streakCount} วัน`;
 
+        // Compact tank bars (horizontal width)
         ['growth', 'security', 'essential', 'joy'].forEach(tank => {
             let valEl = document.getElementById(`val-${tank}`); if(valEl) valEl.innerText = '฿' + currentBalances[tank].toLocaleString();
             let pct = baseAmounts[tank] > 0 ? (currentBalances[tank] / baseAmounts[tank]) * 100 : 0;
-            let bar = document.getElementById(`bar-${tank}`); if(bar) { bar.style.height = `${Math.min(100, Math.max(0, pct))}%`; bar.innerText = pct > 5 ? Math.round(pct) + '%' : ''; }
+            let bar = document.getElementById(`bar-${tank}`); if(bar) { bar.style.width = `${Math.min(100, Math.max(0, pct))}%`; }
+            let pctEl = document.getElementById(`pct-${tank}`); if(pctEl) pctEl.textContent = Math.round(pct) + '%';
         });
-        // 🔴 Security danger — เฉพาะตอน usable = 0 → กรอบแดงที่ tank-bg
+        // 🔴 Security danger — กรอบแดงที่ compact card
         let _secWrapper = document.getElementById('securityTankWrapper');
-        let _secBg = _secWrapper ? _secWrapper.querySelector('.tank-bg') : null;
-        if(_secWrapper && _secBg) {
+        if(_secWrapper) {
             let _secUsable = currentBalances.security - creditLockedAmt;
             if(creditLockedAmt > 0 && _secUsable <= 0) {
-                // เงินหมด — กรอบแดงรอบหลอด tank
-                _secBg.style.outline = '2.5px solid #dc2626';
-                _secBg.style.boxShadow = '0 0 8px rgba(220,38,38,0.5)';
+                _secWrapper.classList.add('sec-danger');
                 _secWrapper.title = '⚠️ Security กันไว้จ่ายบัตรทั้งหมด — ไม่มีสำรองฉุกเฉินเลย!';
             } else {
-                _secBg.style.outline = '';
-                _secBg.style.boxShadow = '';
+                _secWrapper.classList.remove('sec-danger');
                 _secWrapper.title = '';
             }
         }
@@ -2665,7 +2926,12 @@
         let totalWealth = Object.values(currentBalances).reduce((s,v) => s+v, 0);
         let twEl = document.getElementById('totalWealthText'); if(twEl) twEl.innerText = '฿' + totalWealth.toLocaleString();
 
-        renderCategories(); renderWishlist(); renderInventory();
+        // Bills badge count on home action row
+        let _unpaidCount = fixedCosts.filter(f => !f.paidThisMonth && !f.archived).length;
+        let _badgeEl = document.getElementById('billsBadgeCount');
+        if(_badgeEl) { _badgeEl.textContent = _unpaidCount; _badgeEl.style.display = _unpaidCount > 0 ? 'block' : 'none'; }
+
+        renderCategories(); renderWishlist(); renderInventory(); renderSmartInsight(); renderCyclePulse(); renderGamificationStrip();
         // Smart render: only re-render fixed/debt if those tabs are visible
         let activeView = document.querySelector('.view-section.active');
         let viewId = activeView ? activeView.id : '';
@@ -2691,7 +2957,8 @@
                         stats.janPromptShown = true;
                         showToast(`🎊 ปีใหม่! กองทุนรายปี ${doneYF.length} รายการครบแล้ว กด "เริ่มปีใหม่" ในหน้าบิล/เป้า`);
                     }
-                    let avgInc = transactions.filter(t=>t.type==='main_income').slice(-3).reduce((s,t)=>s+t.amount,0)/3;
+                    let _recentInc = transactions.filter(t=>t.type==='main_income').slice(-3);
+                    let avgInc = _recentInc.length > 0 ? _recentInc.reduce((s,t)=>s+t.amount,0) / _recentInc.length : 0;
                     if(avgInc > 0 && secGoal && secGoal.target > 0) {
                         let suggestedGoal = Math.round(avgInc * 6 / 1000) * 1000;
                         if(suggestedGoal > secGoal.target * 1.1) {
@@ -2707,8 +2974,7 @@
             if(_nowMs - (_doUpdateUI._lastReminderCheck||0) > 60000) {
                 _doUpdateUI._lastReminderCheck = _nowMs;
                 let _pd = cfg.payday || 25; let _now = new Date();
-                let _cs = new Date(_now.getFullYear(), _now.getMonth(), _pd);
-                if(_now.getDate() < _pd) _cs.setMonth(_cs.getMonth() - 1);
+                let _cs = getCycleStart(_now, _pd);
                 let _daysSince = Math.floor((_now - _cs) / 864e5);
                 let _hasIncome = transactions.some(t => t.type === 'main_income' && new Date(t.dateObj) >= _cs);
                 let _banner = document.getElementById('incomeReminderBanner');
@@ -2809,15 +3075,16 @@
         if(_doReset) {
             fixedCosts.forEach(f => { f.paidThisMonth = false; });
             let _pd2 = cfg.payday||25; let _now2 = new Date();
-            let _cs2 = new Date(_now2.getFullYear(), _now2.getMonth(), _pd2);
-            if(_now2.getDate() < _pd2) _cs2.setMonth(_cs2.getMonth()-1);
+            let _cs2 = getCycleStart(_now2, _pd2);
             let _ck2 = _cs2.toLocaleDateString('en-CA',{timeZone:'Asia/Bangkok'});
             if(stats.claimedQuests && stats.claimedQuests.behavior) stats.claimedQuests.behavior = { cycleKey: _ck2, ids: [] };
             showToast('🔄 Reset รอบบิลใหม่เรียบร้อย!');
         }
         updateUI(); showGifOverlay('income'); saveStorage();
+        // 💰 Income Allocation Summary — แสดงทุกประเภทรายรับ
+        setTimeout(() => showIncomeAllocSummary(inc, cat), 600);
         // 📅 Payday Briefing — เฉพาะ 'เงินเดือน' เท่านั้น ไม่ใช่โบนัส/ฟรีแลนซ์
-        if(cat === 'เงินเดือน') setTimeout(() => showPaydayBriefing(inc), 800);
+        if(cat === 'เงินเดือน') setTimeout(() => showPaydayBriefing(inc), 4000);
     }
 
     function renderIncomeCats() { let sel = document.getElementById('incomeCatSelect'); if(!sel) return; sel.innerHTML = ''; incomeCats.forEach(c => { sel.innerHTML += `<option value="${c.name}">${c.icon} ${c.name}</option>`; }); sel.innerHTML += `<option value="add_new">+ สร้างหมวดใหม่</option>`; }
@@ -2866,23 +3133,207 @@
     function saveNewCategory() { let n=document.getElementById('newCatName').value; let i=document.getElementById('newCatIcon').value||'📌'; let t=document.getElementById('newCatTank').value; if(n){customCats.push({id:Date.now(),name:n,icon:i,tank:t}); updateUI(); closeModal('addCatModal');} }
     function deleteCategory(id) { customCats = customCats.filter(c => c.id !== id); updateUI(); }
 
+    function openQuickExpenseModal() {
+        // หาหมวดล่าสุดที่ใช้ (ข้ามบิลประจำ) เพื่อ pre-select
+        let fixedCatNames = new Set(fixedCosts.map(f => f.name));
+        let lastTx = transactions.filter(t => t.type === 'expense' && !fixedCatNames.has(t.cat) && !t.installments).slice(-1)[0];
+        let defaultTank = (lastTx && lastTx.tank) ? lastTx.tank : 'essential';
+        openExpenseModal(null, defaultTank);
+        // pre-select ใน picker หลัง modal render
+        if(lastTx) {
+            let c = customCats.find(x => x.name === lastTx.cat);
+            if(c) setTimeout(() => selectExpCat(c.name, c.tank), 60);
+        }
+    }
+
+    // คืนค่า icon ของ category จาก name
+    function getCatIcon(catName) {
+        let c = customCats.find(x => x.name === catName);
+        return c ? c.icon : '💸';
+    }
+
+    // Render recent expense chips ใน modal
+    function renderRecentExpenseChips() {
+        let sec = document.getElementById('recentExpensesSection');
+        let el = document.getElementById('recentExpenseChips');
+        if(!sec || !el) return;
+        // ดึง 50 รายการล่าสุด — กรอง expense ประจำวันเท่านั้น (ไม่รวมบิลประจำ / ผ่อน)
+        let fixedCatNames = new Set(fixedCosts.map(f => f.name));
+        let seen = new Set();
+        let deduped = [];
+        let recent = transactions.filter(t =>
+            t.type === 'expense' &&
+            !fixedCatNames.has(t.cat) &&
+            !t.installments             // ไม่รวมรายการผ่อน
+        ).slice(-80).reverse();
+        for(let t of recent) {
+            let key = `${t.cat}|${t.tank}`;
+            if(!seen.has(key)) {
+                seen.add(key);
+                deduped.push(t);
+                if(deduped.length >= 6) break;
+            }
+        }
+        if(deduped.length === 0) { sec.style.display = 'none'; return; }
+        sec.style.display = 'block';
+        const tankColor = { essential:'var(--terre-cuite)', joy:'var(--eau-trouble)', security:'var(--miel-dore)', growth:'var(--bleu-porcelaine)' };
+        el.innerHTML = deduped.map(t => {
+            let icon = getCatIcon(t.cat);
+            let dot = `<span style="width:6px;height:6px;border-radius:50%;background:${tankColor[t.tank]||'#ccc'};display:inline-block;flex-shrink:0;"></span>`;
+            return `<button type="button" class="recent-chip" onclick="fillFromRecent('${t.cat.replace(/'/g,"\\'")}','${t.tank}',${t.amount})" title="${t.cat} — ฿${t.amount.toLocaleString()}">
+                <span style="font-size:20px;">${icon}</span>
+                <span style="font-size:10px;color:var(--espresso);font-weight:bold;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.cat}</span>
+                <span style="display:flex;align-items:center;gap:3px;font-size:11px;color:var(--danger);">${dot}฿${t.amount.toLocaleString()}</span>
+            </button>`;
+        }).join('');
+    }
+
+    // เติมข้อมูลจาก recent chip
+    function fillFromRecent(cat, tank, amount) {
+        activeExpenseCat = cat;
+        document.getElementById('expenseTitle').innerText = `🧾 จ่าย: ${cat}`;
+        document.getElementById('exAmount').value = amount;
+        selectExpTank(tank);
+        let preview = document.getElementById('advCatPreview');
+        if(preview) preview.textContent = `· ${cat}`;
+        checkExpenseLogic();
+        document.getElementById('exAmount').focus();
+        document.getElementById('exAmount').select();
+    }
+
+    // Render cycle summary bar บน home
+    function renderCycleSummary() {
+        let now = new Date();
+        let pd = cfg.payday || 25;
+        let cs = getCycleStart(now, pd);
+        // หาวันสิ้นสุดรอบ (= วัน payday ของรอบถัดไป - 1)
+        let nextM = cs.getMonth() + 1, nextY = cs.getFullYear();
+        if(nextM > 11) { nextM = 0; nextY++; }
+        let lastDayNext = new Date(nextY, nextM + 1, 0).getDate();
+        let ceDate = new Date(nextY, nextM, Math.min(pd, lastDayNext));
+        let daysLeft = Math.max(0, Math.ceil((ceDate - now) / 864e5));
+        let totalDays = Math.max(1, Math.ceil((ceDate - cs) / 864e5));
+        let daysPassed = totalDays - daysLeft;
+
+        // ยอดใช้จ่ายรอบนี้ (Essential + Joy)
+        let spent = transactions.filter(t =>
+            t.type === 'expense' && (t.tank === 'essential' || t.tank === 'joy') && new Date(t.dateObj) >= cs
+        ).reduce((s,t) => s + t.amount, 0);
+
+        // งบที่ควรมี = (e% + j%) ของรายได้รอบนี้ หรือใช้ balance ปัจจุบัน + spent ถ้าไม่มีรายได้
+        let spendablePct = ((cfg.e || 15) + (cfg.j || 10)) / 100;
+        let budget = totalIncomeThisMonth > 0
+            ? totalIncomeThisMonth * spendablePct
+            : (currentBalances.essential + currentBalances.joy + spent);
+        budget = Math.max(budget, spent);
+
+        let pct = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0;
+        let barColor = pct >= 90 ? '#dc2626' : pct >= 70 ? 'var(--terre-cuite)' : '#16a34a';
+        let statusText = pct >= 100 ? '🚨 เกินงบ!' : pct >= 90 ? '⚠️ ใกล้เต็ม' : pct >= 70 ? '📊 ระวังหน่อย' : '✅ ดีอยู่';
+
+        let el = id => document.getElementById(id);
+        if(!el('cycleSpentAmt')) return;
+        el('cycleSpentAmt').textContent = '฿' + Math.round(spent).toLocaleString();
+        el('cycleBudgetLabel').textContent = `/ ฿${Math.round(budget).toLocaleString()}`;
+        el('cycleDaysLeft').textContent = `${daysLeft} วัน`;
+        el('cycleProgressBar').style.width = pct + '%';
+        el('cycleProgressBar').style.background = barColor;
+        el('cycleStartLabel').textContent = `เริ่ม ${cs.toLocaleDateString('th-TH',{month:'short',day:'numeric'})}`;
+        el('cycleStatusLabel').textContent = statusText;
+        el('cycleStatusLabel').style.color = pct >= 90 ? '#dc2626' : pct >= 70 ? 'var(--terre-cuite)' : '#16a34a';
+    }
+
+    // Render last 3 tx บน home screen
+    function renderLastTxPreview() {
+        let card = document.getElementById('lastTxPreviewCard');
+        let list = document.getElementById('lastTxPreviewList');
+        if(!card || !list) return;
+        let last = transactions.filter(t => t.type === 'expense' || t.type === 'main_income').slice(-5).reverse();
+        if(last.length === 0) { card.style.display = 'none'; return; }
+        card.style.display = 'block';
+        const tankLabel = { essential:'🛒', joy:'🎉', security:'🛡️', growth:'🌱', income:'💰' };
+        const typeColor = { expense:'var(--danger)', main_income:'#16a34a' };
+        list.innerHTML = last.map(t => {
+            let icon = t.type === 'main_income' ? '💰' : getCatIcon(t.cat);
+            let label = t.type === 'main_income' ? `รับเงิน` : (t.cat || 'รายจ่าย');
+            let sign = t.type === 'main_income' ? '+' : '-';
+            let color = typeColor[t.type] || 'var(--espresso)';
+            let d = new Date(t.dateObj);
+            let timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+            let dateStr = d.toLocaleDateString('th-TH',{month:'short',day:'numeric'});
+            let dupBtn = t.type === 'expense'
+                ? `<button onclick="openQuickExpenseModal(); fillFromRecent('${(t.cat||'').replace(/'/g,"\\'")}','${t.tank}',${t.amount});" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid #d1d5db;background:white;color:var(--espresso);cursor:pointer;font-family:'Kanit';">↩ ซ้ำ</button>`
+                : '';
+            return `<div class="last-tx-row">
+                <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
+                    <span style="font-size:18px;">${icon}</span>
+                    <div style="min-width:0;">
+                        <div style="font-size:12px;font-weight:bold;color:var(--espresso);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${label}</div>
+                        <div style="font-size:10px;color:var(--gray-text);">${dateStr} ${timeStr}</div>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                    ${dupBtn}
+                    <span style="font-size:13px;font-weight:bold;color:${color};">${sign}฿${t.amount.toLocaleString()}</span>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function selectExpTank(tank) {
+        document.getElementById('exTank').value = tank;
+        document.querySelectorAll('#tankChips .tank-chip').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tank === tank);
+        });
+        checkExpenseLogic();
+    }
+
+    function toggleAdvancedExpense() {
+        let sec = document.getElementById('advancedExpenseSection');
+        let btn = document.getElementById('advancedToggleBtn');
+        let isHidden = sec.style.display === 'none';
+        sec.style.display = isHidden ? 'block' : 'none';
+        let cat = document.getElementById('advCatPreview').textContent;
+        btn.innerHTML = isHidden
+            ? `➖ ซ่อนรายละเอียด <span id="advCatPreview" style="color:var(--espresso);font-weight:bold;">${cat}</span>`
+            : `➕ รายละเอียด <span id="advCatPreview" style="color:var(--espresso);font-weight:bold;">${cat}</span>`;
+        if(isHidden) { toggleInstallmentInput(); checkExpenseLogic(); }
+    }
+
+    function toggleIncomeAdv() { /* fields are now always visible — no-op */ }
+
     function openExpenseModal(cat, tank, presetAmount = null) {
         if(isEditCatMode) return;
-        activeExpenseCat = cat;
+        activeExpenseCat = cat || '';
+        // ── Category picker: แสดงเมื่อไม่มี preset cat ──
+        let pickerRow = document.getElementById('expenseCatPickerRow');
+        if(pickerRow) {
+            if(!cat) {
+                pickerRow.style.display = 'block';
+                renderExpenseCatPicker('');  // render all chips, none selected
+            } else {
+                pickerRow.style.display = 'none';
+            }
+        }
         // ── Reset ทุก field เป็น default เสมอ ──
-        document.getElementById('expenseTitle').innerText = `จ่าย: ${cat}`;
-        document.getElementById('exTank').value = tank;
+        document.getElementById('expenseTitle').innerText = cat ? `🧾 จ่าย: ${cat}` : '🧾 จดรายจ่าย';
+        let catPreview = cat ? `· ${cat}` : '';
+        let _adv = document.getElementById('advancedExpenseSection');
+        let _btn = document.getElementById('advancedToggleBtn');
+        if(_adv) _adv.style.display = 'none';
+        if(_btn) _btn.innerHTML = `➕ รายละเอียด <span id="advCatPreview" style="color:var(--espresso);font-weight:bold;">${catPreview}</span>`;
+        document.getElementById('exTank').value = tank || 'essential';
+        selectExpTank(tank || 'essential');
         document.getElementById('exAmount').value = presetAmount || '';
         document.getElementById('exNote').value = '';
         document.getElementById('exPayMethod').value = 'สแกนจ่าย/โอน';
-        let _em = document.getElementById('exEmotion'); if(_em) _em.value = '😊';
+        let _em = document.getElementById('exEmotion'); if(_em) _em.value = '🤩 อยากให้รางวัลตัวเอง';
         let _jt = document.getElementById('exJoyType'); if(_jt) _jt.value = _jt.options[0]?.value || '';
         let _nr = document.getElementById('exNeedRating'); if(_nr) _nr.value = '3';
         let _im = document.getElementById('exInstallmentMonths'); if(_im) _im.value = '1';
         let _bt = document.getElementById('backupTank'); if(_bt) _bt.value = _bt.options[0]?.value || 'security';
         let _cr = document.getElementById('crossReason'); if(_cr) _cr.value = '';
         let _cc = document.getElementById('exCreditCard'); if(_cc) _cc.value = _cc.options[0]?.value || '';
-        // reset จ่ายแทนคนอื่น
         let cb = document.getElementById('isReimbursable');
         if (cb) {
             cb.checked = false;
@@ -2893,9 +3344,63 @@
             let tot = document.getElementById('exOthersTotal');
             if (tot) tot.innerText = '฿0';
         }
-        toggleInstallmentInput(); checkExpenseLogic(); openModal('expenseModal');
+        toggleInstallmentInput(); checkExpenseLogic();
+        renderRecentExpenseChips();
+        openModal('expenseModal');
     }
-    
+
+    // ── Category picker helpers ──────────────────────────────────────
+    function renderExpenseCatPicker(selectedCat) {
+        let container = document.getElementById('expenseCatChips');
+        if(!container) return;
+        container.innerHTML = '';
+        // Sort: most-recently-used first
+        let fixedCatNames = new Set(fixedCosts.map(f => f.name));
+        let recentOrder = [];
+        let _seen = new Set();
+        transactions.filter(t => t.type === 'expense' && !fixedCatNames.has(t.cat))
+            .slice(-80).reverse()
+            .forEach(t => { if(!_seen.has(t.cat)) { _seen.add(t.cat); recentOrder.push(t.cat); } });
+        let sorted = [
+            ...customCats.filter(c => recentOrder.includes(c.name))
+                         .sort((a,b) => recentOrder.indexOf(a.name) - recentOrder.indexOf(b.name)),
+            ...customCats.filter(c => !recentOrder.includes(c.name))
+        ];
+        const tankColor = { essential:'var(--terre-cuite)', joy:'var(--eau-trouble)', security:'var(--miel-dore)', growth:'var(--bleu-porcelaine)' };
+        sorted.forEach(c => {
+            let isActive = c.name === selectedCat;
+            let color = tankColor[c.tank] || 'var(--espresso)';
+            let btn = document.createElement('button');
+            btn.type = 'button';
+            btn.style.cssText = `display:inline-flex; align-items:center; gap:5px; padding:7px 13px; border-radius:20px; border:1.5px solid ${isActive ? color : '#e5e7eb'}; background:${isActive ? color : 'white'}; color:${isActive ? 'white' : 'var(--espresso)'}; font-family:'Kanit'; font-size:12px; cursor:pointer; white-space:nowrap; flex-shrink:0; transition:all 0.15s; font-weight:${isActive ? 'bold' : 'normal'};`;
+            btn.innerHTML = `${c.icon} ${c.name}`;
+            btn.onclick = () => selectExpCat(c.name, c.tank);
+            container.appendChild(btn);
+        });
+    }
+
+    function selectExpCat(name, tank) {
+        activeExpenseCat = name;
+        // Update title
+        let titleEl = document.getElementById('expenseTitle');
+        if(titleEl) titleEl.innerText = `🧾 จ่าย: ${name}`;
+        // Update advanced preview
+        let prev = document.getElementById('advCatPreview');
+        if(prev) prev.textContent = `· ${name}`;
+        // Auto-select tank
+        document.getElementById('exTank').value = tank || 'essential';
+        selectExpTank(tank || 'essential');
+        // Highlight selected chip
+        renderExpenseCatPicker(name);
+        // Update picked label
+        let lbl = document.getElementById('expCatPickedLabel');
+        if(lbl) lbl.textContent = `· ${name}`;
+        // Trigger logic (budget context etc.)
+        checkExpenseLogic();
+        // Focus amount for fast entry
+        setTimeout(() => { let el = document.getElementById('exAmount'); if(el) el.focus(); }, 80);
+    }
+
     function toggleInstallmentInput() {
         let payMethod = document.getElementById('exPayMethod').value;
         let isCC = payMethod === 'บัตรเครดิต';
@@ -2917,19 +3422,43 @@
     }
 
     function checkExpenseLogic() {
-        let amt = parseFloat(document.getElementById('exAmount').value) || 0; let pt = document.getElementById('exTank').value;
-        document.getElementById('joyTypeDiv').style.display = (pt === 'joy') ? 'block' : 'none'; document.getElementById('needDiv').style.display = (pt === 'essential') ? 'block' : 'none';
-        if(amt > currentBalances[pt]) { 
-            document.getElementById('crossTankBox').style.display = 'block'; document.getElementById('shortfallText').innerText = `฿${(amt-currentBalances[pt]).toLocaleString()}`;
+        let amt = parseFloat(document.getElementById('exAmount').value) || 0;
+        let pt = document.getElementById('exTank').value;
+        // Balance hint
+        let bal = currentBalances[pt] || 0;
+        let hint = document.getElementById('exBalanceHint');
+        if(hint) {
+            let remaining = bal - amt;
+            if(amt > 0) {
+                hint.style.color = remaining < 0 ? 'var(--danger)' : remaining < bal * 0.1 ? 'var(--terre-cuite)' : 'var(--gray-text)';
+                hint.textContent = remaining < 0
+                    ? `⚠️ เงินใน ${pt} ไม่พอ (มีแค่ ฿${bal.toLocaleString()})`
+                    : `เหลือ ฿${remaining.toLocaleString()} หลังจ่าย`;
+            } else {
+                hint.textContent = `คงเหลือใน ${pt}: ฿${bal.toLocaleString()}`;
+                hint.style.color = 'var(--gray-text)';
+            }
+        }
+        // Category spend context
+        updateCatSpendContext();
+        // Conditional advanced fields (only apply when advanced is open)
+        let _adv = document.getElementById('advancedExpenseSection');
+        if(_adv && _adv.style.display !== 'none') {
+            document.getElementById('joyTypeDiv').style.display = (pt === 'joy') ? 'block' : 'none';
+            document.getElementById('needDiv').style.display = (pt === 'essential') ? 'block' : 'none';
+        }
+        if(amt > bal) {
+            document.getElementById('crossTankBox').style.display = 'block';
+            document.getElementById('shortfallText').innerText = `฿${(amt-bal).toLocaleString()}`;
             let sel = document.getElementById('backupTank'); sel.innerHTML = '';
-            let shortfall = amt - currentBalances[pt];
+            let shortfall = amt - bal;
             ['growth', 'security', 'essential', 'joy'].forEach(k => {
                 if(k !== pt) {
-                    let bal = currentBalances[k];
-                    let canCover = bal >= shortfall;
+                    let kb = currentBalances[k];
+                    let canCover = kb >= shortfall;
                     let label = canCover
-                        ? `ดึงจาก ${k} (มี ฿${bal.toLocaleString()}) ✅`
-                        : `ดึงจาก ${k} (มี ฿${bal.toLocaleString()} — ขาดอีก ฿${(shortfall-bal).toLocaleString()})`;
+                        ? `ดึงจาก ${k} (มี ฿${kb.toLocaleString()}) ✅`
+                        : `ดึงจาก ${k} (มี ฿${kb.toLocaleString()} — ขาดอีก ฿${(shortfall-kb).toLocaleString()})`;
                     sel.innerHTML += `<option value="${k}">${label}</option>`;
                 }
             });
@@ -2987,10 +3516,12 @@
     }
 
     function submitExpense() {
-        let amt = parseFloat(document.getElementById('exAmount').value); 
-        let pt = document.getElementById('exTank').value; 
-        let note = document.getElementById('exNote').value; 
+        let amt = parseFloat(document.getElementById('exAmount').value);
+        let pt = document.getElementById('exTank').value;
+        let note = document.getElementById('exNote').value;
         if(!amt) return;
+        // Quick mode: ถ้าไม่ได้เลือก cat ให้ใช้ 'ทั่วไป'
+        if(!activeExpenseCat) activeExpenseCat = 'ทั่วไป';
         
         let payMethod = document.getElementById('exPayMethod').value; 
         let skipEmotionCb = document.getElementById('skipEmotion'); let skipNeedCb = document.getElementById('skipNeed');
@@ -3075,6 +3606,7 @@
             renderCreditBills();
         }
         if(document.getElementById('isReimbursable')) { document.getElementById('isReimbursable').checked = false; document.getElementById('reimbursableDiv').style.display = 'none'; let _epr2=document.getElementById('exPersonRows'); if(_epr2) _epr2.innerHTML=''; }
+        checkRecurringPattern(activeExpenseCat);
         closeModal('expenseModal');
     }
     
@@ -3168,9 +3700,10 @@
         let installments = null;
         if(isCredit) {
             let months = (parseInt(document.getElementById('exInstallmentMonths').value) || 1);
-            let instAmt = Math.round((amt / months) * 100) / 100;
+            let baseAmt = Math.round((amt / months) * 100) / 100;
+            let lastAmt = Math.round((amt - baseAmt * (months - 1)) * 100) / 100;
             installments = [];
-            for(let i=1; i<=months; i++) { installments.push({monthNo: i, amount: instAmt, paid: false}); }
+            for(let i=1; i<=months; i++) { installments.push({monthNo: i, amount: i===months ? lastAmt : baseAmt, paid: false}); }
         }
 
         let reimbursableAmt = exPeople.reduce((s,p)=>s+p.amt,0);
@@ -3211,8 +3744,7 @@
             let cap = budgetCaps.find(bc => cat && cat.toLowerCase().includes(bc.cat.toLowerCase()));
             if(cap) {
                 let pd = cfg.payday || 25; let now = new Date();
-                let cs = new Date(now.getFullYear(), now.getMonth(), pd);
-                if(now.getDate() < pd) cs.setMonth(cs.getMonth()-1);
+                let cs = getCycleStart(now, pd);
                 let totalCat = transactions.filter(t => t.type==='expense' && t.cat && t.cat.toLowerCase().includes(cap.cat.toLowerCase()) && new Date(t.dateObj) >= cs).reduce((s,t)=>s+t.amount,0);
                 let pct = cap.limit > 0 ? (totalCat / cap.limit) * 100 : 0;
                 if(pct >= 100) setTimeout(()=>showToast(`🚨 ${cap.cat} เกินเพดาน! ใช้ไปแล้ว ฿${Math.round(totalCat).toLocaleString()} / ฿${cap.limit.toLocaleString()}`), 1500);
@@ -3914,24 +4446,21 @@
         { id: 'beh_no_growth_touch', cat: 'behavior', icon: '🌱', title: 'ปกป้อง Growth ครบรอบบิล', pts: 200, desc: 'ผ่านรอบบิล ≥25 วัน โดยไม่มีรายจ่ายจาก Growth เลย',
           check: () => {
             let pd = cfg.payday||25; let now = new Date();
-            let cs = new Date(now.getFullYear(), now.getMonth(), pd);
-            if(now.getDate() < pd) cs.setMonth(cs.getMonth()-1);
+            let cs = getCycleStart(now, pd);
             if(Math.floor((now-cs)/(864e5)) < 25) return false;
             return !transactions.some(t => t.type==='expense' && t.tank==='growth' && new Date(t.dateObj) >= cs);
           } },
         { id: 'beh_no_cross',  cat: 'behavior', icon: '🛡️', title: 'ไม่ดึงเงินข้ามถังตลอดรอบ', pts: 100, desc: 'ผ่านรอบบิล ≥25 วัน โดยไม่แหกกฎข้ามถังเลย',
           check: () => {
             let pd = cfg.payday||25; let now = new Date();
-            let cs = new Date(now.getFullYear(), now.getMonth(), pd);
-            if(now.getDate() < pd) cs.setMonth(cs.getMonth()-1);
+            let cs = getCycleStart(now, pd);
             if(Math.floor((now-cs)/(864e5)) < 25) return false;
             return !transactions.some(t => t.isCross && new Date(t.dateObj) >= cs);
           } },
         { id: 'beh_joy_to_growth', cat: 'behavior', icon: '🚀', title: 'โอน Joy เหลือไปลงทุน ≥฿100', pts: 150, desc: 'โอนเงินจาก Joy ไปยัง Growth ≥฿100 ในรอบนี้ (ปัดเศษไม่นับ)',
           check: () => {
             let pd = cfg.payday||25; let now = new Date();
-            let cs = new Date(now.getFullYear(), now.getMonth(), pd);
-            if(now.getDate() < pd) cs.setMonth(cs.getMonth()-1);
+            let cs = getCycleStart(now, pd);
             return transactions.some(x => x.type==='transfer' && (x.tank==='joy'||x.fromTank==='joy') && x.toTank==='growth' && x.amount>=100 && new Date(x.dateObj)>=cs);
           } },
         { id: 'beh_credit_paid',  cat: 'behavior', icon: '💳', title: 'จ่ายบิลบัตรเครดิตครบ',   pts: 80,  desc: 'กดจ่ายบิลรอตัดบัญชีสำเร็จอย่างน้อย 1 รายการ', check: () => transactions.some(x => x.creditPaid === true) },
@@ -3947,8 +4476,7 @@
           check: () => {
             if(totalIncomeThisMonth<=0) return false;
             let pd=cfg.payday||25; let now=new Date();
-            let cs=new Date(now.getFullYear(),now.getMonth(),pd);
-            if(now.getDate()<pd) cs.setMonth(cs.getMonth()-1);
+            let cs=getCycleStart(now, pd);
             if(Math.floor((now-cs)/(864e5))<25) return false;
             let ex=transactions.filter(t=>t.type==='expense'&&new Date(t.dateObj)>=cs).reduce((s,t)=>s+t.amount,0);
             return (totalIncomeThisMonth-ex)/totalIncomeThisMonth>=0.20;
@@ -3958,8 +4486,7 @@
           check: () => {
             if(budgetCaps.length===0) return false;
             let pd=cfg.payday||25; let now=new Date();
-            let cs=new Date(now.getFullYear(),now.getMonth(),pd);
-            if(now.getDate()<pd) cs.setMonth(cs.getMonth()-1);
+            let cs=getCycleStart(now, pd);
             if(Math.floor((now-cs)/(864e5))<25) return false;
             return budgetCaps.every(cap=>{
               let spent=transactions.filter(t=>t.type==='expense'&&t.cat&&t.cat.toLowerCase().includes(cap.cat.toLowerCase())&&new Date(t.dateObj)>=cs).reduce((s,t)=>s+t.amount,0);
@@ -4009,8 +4536,7 @@
         // Behavior: reset ตาม payday cycle (ไม่ใช่ calendar month)
         let now = new Date();
         let pd2 = cfg.payday || 25;
-        let cycleStart2 = new Date(now.getFullYear(), now.getMonth(), pd2);
-        if(now.getDate() < pd2) cycleStart2.setMonth(cycleStart2.getMonth() - 1);
+        let cycleStart2 = getCycleStart(now, pd2);
         let cycleKey = cycleStart2.toLocaleDateString('en-CA', {timeZone:'Asia/Bangkok'});
         if(!stats.claimedQuests.behavior.cycleKey) stats.claimedQuests.behavior.cycleKey = cycleKey;
         if(stats.claimedQuests.behavior.cycleKey !== cycleKey) {
@@ -5085,9 +5611,8 @@
 
         if(period === 'month') {
             let pd = cfg.payday || 25;
-            let currentCycleStart = new Date(now.getFullYear(), now.getMonth(), pd);
-            if(now.getDate() < pd) currentCycleStart.setMonth(currentCycleStart.getMonth() - 1);
-            cycleStart = new Date(currentCycleStart); 
+            let currentCycleStart = getCycleStart(now, pd);
+            cycleStart = new Date(currentCycleStart);
             cycleStart.setMonth(cycleStart.getMonth() + viewingMonthOffset);
             cycleEnd = new Date(cycleStart); 
             cycleEnd.setMonth(cycleEnd.getMonth() + 1); 
@@ -5104,9 +5629,9 @@
             let currentQ = Math.floor(now.getMonth() / 3);
             cycleStart = new Date(now.getFullYear(), currentQ * 3, 1);
             cycleStart.setMonth(cycleStart.getMonth() + (viewingMonthOffset * 3));
-            cycleEnd = new Date(cycleStart); 
-            cycleEnd.setMonth(cycleEnd.getMonth() + 3); 
-            cycleEnd.setDate(0); 
+            cycleEnd = new Date(cycleStart);
+            cycleEnd.setMonth(cycleEnd.getMonth() + 3);
+            cycleEnd.setDate(cycleEnd.getDate() - 1);
             periodLabel = 'ต้นไตรมาส';
         } else if (period === 'year') {
             cycleStart = new Date(now.getFullYear() + viewingMonthOffset, 0, 1);
@@ -6089,61 +6614,212 @@
     };
 
     // ── TAX HELPER ─────────────────────────────────────────────────
+    let _taxMode = 'auto';
+
     function openTaxHelper() {
-        autoFillTaxIncome();
+        loadTaxSettings();
+        setTaxMode('auto');
         renderWHTSummary();
         openModal('taxHelperModal');
     }
 
+    function setTaxMode(mode) {
+        _taxMode = mode;
+        let autoBtn = document.getElementById('taxModeAutoBtn');
+        let manualBtn = document.getElementById('taxModeManualBtn');
+        let autoSec = document.getElementById('taxAutoSection');
+        let manualSec = document.getElementById('taxManualSection');
+        if(!autoBtn) return;
+        if(mode === 'auto') {
+            autoBtn.style.cssText = 'font-size:10px;padding:3px 10px;border-radius:20px;border:1.5px solid var(--bleu-porcelaine);background:var(--bleu-porcelaine);color:white;font-family:Kanit;cursor:pointer;';
+            manualBtn.style.cssText = 'font-size:10px;padding:3px 10px;border-radius:20px;border:1.5px solid #d1d5db;background:white;color:var(--gray-text);font-family:Kanit;cursor:pointer;';
+            autoSec.style.display = 'block';
+            manualSec.style.display = 'none';
+            autoFillTaxIncome();
+        } else {
+            manualBtn.style.cssText = 'font-size:10px;padding:3px 10px;border-radius:20px;border:1.5px solid #1e3a5f;background:#1e3a5f;color:white;font-family:Kanit;cursor:pointer;';
+            autoBtn.style.cssText = 'font-size:10px;padding:3px 10px;border-radius:20px;border:1.5px solid #d1d5db;background:white;color:var(--gray-text);font-family:Kanit;cursor:pointer;';
+            autoSec.style.display = 'none';
+            manualSec.style.display = 'block';
+            calcTax();
+        }
+    }
+
     function autoFillTaxIncome() {
         let now = new Date(); let yr = now.getFullYear();
-        let yearInc = transactions
-            .filter(t => t.type==='main_income' && new Date(t.dateObj).getFullYear()===yr)
-            .reduce((s,t)=>s+t.amount, 0);
+        let incTx = transactions.filter(t => t.type==='main_income' && new Date(t.dateObj).getFullYear()===yr);
+        let yearInc = incTx.reduce((s,t) => s+t.amount, 0);
+        let months = new Set(incTx.map(t => new Date(t.dateObj).getMonth())).size;
         let inp = document.getElementById('taxIncomeInput');
-        if(inp && yearInc > 0) { inp.value = yearInc; calcTax(); }
-        else if(inp) { inp.placeholder = 'ยังไม่มีข้อมูลรายรับปีนี้'; }
+        let info = document.getElementById('taxAutoInfo');
+        let proj = document.getElementById('taxProjection');
+        if(inp) { inp.value = yearInc > 0 ? yearInc : ''; inp.placeholder = yearInc > 0 ? '' : '0'; }
+        if(info) {
+            info.innerHTML = yearInc > 0
+                ? `พบรายรับ <strong>฿${yearInc.toLocaleString()}</strong> จาก ${incTx.length} รายการ (${months} เดือน)`
+                : `<span style="color:#ef4444;">ไม่พบรายรับปีนี้ — กรอก "รายรับที่ยังไม่ได้บันทึก" หรือเปลี่ยนเป็น ✍️ กรอกเอง</span>`;
+        }
+        if(proj) {
+            let curMonth = now.getMonth() + 1;
+            if(yearInc > 0 && months > 0 && curMonth < 12) {
+                let avg = yearInc / months;
+                let projected = Math.round(avg * 12);
+                proj.innerHTML = `📈 ประมาณการเต็มปี: <strong>฿${projected.toLocaleString()}</strong> (เฉลี่ย ฿${Math.round(avg).toLocaleString()}/เดือน × 12)`;
+            } else { proj.innerHTML = ''; }
+        }
+        calcTax();
+    }
+
+    function loadTaxSettings() {
+        let ts = cfg.taxSettings || {};
+        let f = (id, key, def) => { let el = document.getElementById(id); if(el && ts[key] !== undefined) el.value = ts[key]; else if(el && def !== undefined) el.value = def; };
+        f('taxSocialSecMonthly', 'socialSecMonthly', 750);
+        f('taxSocialSecMonths',  'socialSecMonths',  12);
+        f('taxDeductLife',       'life',     0);
+        f('taxDeductHealth',     'health',   0);
+        f('taxDeductRMF',        'rmf',      0);
+        f('taxDeductSSF',        'ssf',      0);
+        f('taxDeductHome',       'home',     0);
+        f('taxDeductEReceipt',   'eReceipt', 0);
+        f('taxDeductDonation',   'donation', 0);
+        f('taxDeductParentsCount','parentsCount', 0);
+        f('taxDeductChildrenCount','childrenCount', 0);
+        let sp = document.getElementById('taxDeductSpouse');
+        if(sp && ts.spouse !== undefined) sp.value = ts.spouse;
+    }
+
+    function saveSocialSec() {
+        if(!cfg.taxSettings) cfg.taxSettings = {};
+        let m = parseFloat(document.getElementById('taxSocialSecMonthly')?.value) || 0;
+        let mo = parseInt(document.getElementById('taxSocialSecMonths')?.value) || 12;
+        cfg.taxSettings.socialSecMonthly = m;
+        cfg.taxSettings.socialSecMonths = mo;
+        saveStorage();
+        showToast('💾 บันทึกข้อมูลประกันสังคมแล้ว');
+        calcTax();
+    }
+
+    function saveTaxDeductions() {
+        if(!cfg.taxSettings) cfg.taxSettings = {};
+        let ts = cfg.taxSettings;
+        ts.life          = parseFloat(document.getElementById('taxDeductLife')?.value) || 0;
+        ts.health        = parseFloat(document.getElementById('taxDeductHealth')?.value) || 0;
+        ts.rmf           = parseFloat(document.getElementById('taxDeductRMF')?.value) || 0;
+        ts.ssf           = parseFloat(document.getElementById('taxDeductSSF')?.value) || 0;
+        ts.home          = parseFloat(document.getElementById('taxDeductHome')?.value) || 0;
+        ts.eReceipt      = parseFloat(document.getElementById('taxDeductEReceipt')?.value) || 0;
+        ts.donation      = parseFloat(document.getElementById('taxDeductDonation')?.value) || 0;
+        ts.parentsCount  = parseInt(document.getElementById('taxDeductParentsCount')?.value) || 0;
+        ts.childrenCount = parseInt(document.getElementById('taxDeductChildrenCount')?.value) || 0;
+        ts.spouse        = document.getElementById('taxDeductSpouse')?.value || '0';
+        saveStorage();
+        showToast('💾 บันทึกค่าลดหย่อนแล้ว');
     }
 
     function calcTax() {
-        let inc = parseFloat(document.getElementById('taxIncomeInput')?.value) || 0;
-        if(inc <= 0) { document.getElementById('taxResultBox').innerHTML='<p style="margin:0;font-size:11px;opacity:0.75;">กรุณากรอกรายรับเพื่อคำนวณ</p>'; return; }
-        let dExp   = Math.min(parseFloat(document.getElementById('taxDeductExpense')?.value)||0, 100000);
-        let dPer   = parseFloat(document.getElementById('taxDeductPersonal')?.value)||0;
-        let dLife  = Math.min(parseFloat(document.getElementById('taxDeductLife')?.value)||0, 100000);
-        let dFund  = parseFloat(document.getElementById('taxDeductFund')?.value)||0;
-        let dHome  = Math.min(parseFloat(document.getElementById('taxDeductHome')?.value)||0, 100000);
-        let dOther = parseFloat(document.getElementById('taxDeductOther')?.value)||0;
-        let totalDeduct = dExp + dPer + dLife + dFund + dHome + dOther;
+        // ── รายรับ ──
+        let inc = 0;
+        if(_taxMode === 'auto') {
+            let fromSystem = parseFloat(document.getElementById('taxIncomeInput')?.value) || 0;
+            let extra = parseFloat(document.getElementById('taxIncomeExtra')?.value) || 0;
+            inc = fromSystem + extra;
+        } else {
+            inc = parseFloat(document.getElementById('taxIncomeManual')?.value) || 0;
+        }
+        if(inc <= 0) {
+            document.getElementById('taxResultBox').innerHTML = '<p style="margin:0;font-size:11px;opacity:0.75;">กรุณากรอกรายรับเพื่อคำนวณ</p>';
+            return;
+        }
+
+        // ── ค่าลดหย่อน ──
+        let dExp = Math.min(inc * 0.5, 100000);
+        let expEl = document.getElementById('taxDeductExpense');
+        if(expEl) expEl.value = Math.round(dExp);
+
+        let dPer = 60000;
+
+        // ประกันสังคม (max 9,000)
+        let ssmM  = parseFloat(document.getElementById('taxSocialSecMonthly')?.value) || 0;
+        let ssmMo = Math.min(parseInt(document.getElementById('taxSocialSecMonths')?.value) || 12, 12);
+        let dSSec = Math.min(ssmM * ssmMo, 9000);
+        let ssnEl = document.getElementById('taxSocialSecNote');
+        if(ssnEl) ssnEl.textContent = dSSec > 0 ? `ลดหย่อนได้ ฿${dSSec.toLocaleString()} (${ssmM}×${ssmMo}=${ssmM*ssmMo > 9000 ? '9,000 cap' : dSSec.toLocaleString()})` : '';
+
+        // ประกันชีวิต + สุขภาพ รวมกัน ≤ 100k; สุขภาพ ≤ 25k
+        let dLife   = parseFloat(document.getElementById('taxDeductLife')?.value) || 0;
+        let dHealth = Math.min(parseFloat(document.getElementById('taxDeductHealth')?.value) || 0, 25000);
+        let dInsure = Math.min(dLife + dHealth, 100000);
+
+        // กองทุน
+        let dRMF = Math.min(parseFloat(document.getElementById('taxDeductRMF')?.value) || 0, inc * 0.30, 500000);
+        let dSSF = Math.min(parseFloat(document.getElementById('taxDeductSSF')?.value) || 0, inc * 0.30, 200000);
+
+        // บ้าน
+        let dHome = Math.min(parseFloat(document.getElementById('taxDeductHome')?.value) || 0, 100000);
+
+        // ครอบครัว
+        let parents  = Math.min(parseInt(document.getElementById('taxDeductParentsCount')?.value) || 0, 4);
+        let dParents = parents * 30000;
+        let dSpouse  = parseFloat(document.getElementById('taxDeductSpouse')?.value) || 0;
+        let children = parseInt(document.getElementById('taxDeductChildrenCount')?.value) || 0;
+        let dChildren = children * 30000;
+
+        // E-receipt
+        let dEReceipt = Math.min(parseFloat(document.getElementById('taxDeductEReceipt')?.value) || 0, 50000);
+
+        // บริจาค ≤ 10% ของเงินได้สุทธิก่อนบริจาค
+        let preDonSub = dExp + dPer + dSSec + dInsure + dRMF + dSSF + dHome + dParents + dSpouse + dChildren + dEReceipt;
+        let preDonNet = Math.max(0, inc - preDonSub);
+        let dDonation = Math.min(parseFloat(document.getElementById('taxDeductDonation')?.value) || 0, preDonNet * 0.10);
+
+        let totalDeduct = preDonSub + dDonation;
         let netInc = Math.max(0, inc - totalDeduct);
-        // Thai progressive tax 2568 (อัตราเดียวกับ 2567)
+
+        // ── คำนวณภาษี (อัตรา 2568) ──
         let brackets = [{max:150000,rate:0},{max:300000,rate:.05},{max:500000,rate:.10},{max:750000,rate:.15},{max:1000000,rate:.20},{max:2000000,rate:.25},{max:5000000,rate:.30},{max:Infinity,rate:.35}];
-        let tax = 0; let prev = 0;
+        let tax = 0, prev = 0;
         for(let b of brackets) {
             if(netInc <= prev) break;
             tax += (Math.min(netInc, b.max) - prev) * b.rate;
             prev = b.max;
         }
+
         let wht = (stats.whtRecords||[]).reduce((s,r)=>s+r.amt, 0);
         let remaining = Math.max(0, tax - wht);
         let refund = wht > tax ? wht - tax : 0;
-        let effRate = inc > 0 ? (tax/inc*100).toFixed(1) : 0;
+        let effRate = (tax / inc * 100).toFixed(1);
+        let margRate = (brackets.find(b => netInc <= b.max) || {rate:0.35}).rate * 100;
+        let moLeft = Math.max(1, 12 - new Date().getMonth());
+        let monthlyProvision = remaining > 0 ? Math.ceil(remaining / moLeft) : 0;
+
+        let breakdownParts = [
+            `จ่าย ${Math.round(dExp).toLocaleString()}`, `ส่วนตัว 60k`,
+            dSSec>0 ? `ปกส ${Math.round(dSSec).toLocaleString()}` : null,
+            dInsure>0 ? `ประกัน ${Math.round(dInsure).toLocaleString()}` : null,
+            (dRMF+dSSF)>0 ? `กองทุน ${Math.round(dRMF+dSSF).toLocaleString()}` : null,
+            dHome>0 ? `บ้าน ${Math.round(dHome).toLocaleString()}` : null,
+            (dParents+dSpouse+dChildren)>0 ? `ครอบครัว ${Math.round(dParents+dSpouse+dChildren).toLocaleString()}` : null,
+            dEReceipt>0 ? `E-rcpt ${Math.round(dEReceipt).toLocaleString()}` : null,
+            dDonation>0 ? `บริจาค ${Math.round(dDonation).toLocaleString()}` : null,
+        ].filter(Boolean).join(' | ');
+
         let el = document.getElementById('taxResultBox'); if(!el) return;
         el.innerHTML = `
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
                 <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">รายรับทั้งปี</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${inc.toLocaleString()}</p></div>
-                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">ลดหย่อนรวม</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${totalDeduct.toLocaleString()}</p></div>
-                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">เงินได้สุทธิ</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${netInc.toLocaleString()}</p></div>
-                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">อัตราภาษีจริง</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">${effRate}%</p></div>
+                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">ลดหย่อนรวม</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${Math.round(totalDeduct).toLocaleString()}</p></div>
+                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">เงินได้สุทธิ</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${Math.round(netInc).toLocaleString()}</p></div>
+                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">Effective / Marginal rate</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">${effRate}% / ${margRate}%</p></div>
             </div>
             <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:10px;text-align:center;">
                 <p style="margin:0;font-size:11px;opacity:0.75;">ภาษีทั้งปี</p>
-                <p style="margin:4px 0;font-size:26px;font-weight:bold;">฿${Math.round(tax).toLocaleString()}</p>
-                ${wht>0?`<p style="margin:2px 0;font-size:11px;opacity:0.8;">WHT ถูกหักไปแล้ว -฿${Math.round(wht).toLocaleString()}</p>`:''}
-                ${remaining>0?`<p style="margin:4px 0;font-size:15px;font-weight:bold;color:#fca5a5;">🔴 ต้องจ่ายเพิ่ม ฿${Math.round(remaining).toLocaleString()}</p>`:''}
-                ${refund>0?`<p style="margin:4px 0;font-size:15px;font-weight:bold;color:#86efac;">🟢 ขอคืนได้ ฿${Math.round(refund).toLocaleString()}</p>`:''}
-                <p style="margin:6px 0 0;font-size:9px;opacity:0.55;">*คำนวณตามอัตราภาษีเงินได้บุคคลธรรมดา ปี 2568</p>
-            </div>`;
+                <p style="margin:4px 0;font-size:28px;font-weight:bold;">฿${Math.round(tax).toLocaleString()}</p>
+                ${wht>0?`<p style="margin:2px 0;font-size:11px;opacity:0.8;">WHT ถูกหักไปแล้ว −฿${Math.round(wht).toLocaleString()}</p>`:''}
+                ${remaining>0?`<p style="margin:4px 0;font-size:16px;font-weight:bold;color:#fca5a5;">🔴 ต้องจ่ายเพิ่ม ฿${Math.round(remaining).toLocaleString()}</p><p style="margin:2px 0;font-size:11px;opacity:0.85;">📅 สำรองเดือนละ ฿${monthlyProvision.toLocaleString()} จนสิ้นปี (เหลือ ${moLeft} เดือน)</p>`:''}
+                ${refund>0?`<p style="margin:4px 0;font-size:16px;font-weight:bold;color:#86efac;">🟢 ขอคืนได้ ฿${Math.round(refund).toLocaleString()}</p>`:''}
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.15);padding-top:6px;margin-top:6px;font-size:9px;opacity:0.5;text-align:center;">${breakdownParts}</div>
+            <p style="margin:4px 0 0;font-size:9px;opacity:0.45;text-align:center;">*คำนวณตามอัตราภาษีเงินได้บุคคลธรรมดา ปี 2568</p>`;
     }
 
     function renderWHTSummary() {
@@ -6175,8 +6851,255 @@
         showToast(`✅ บันทึก WHT ฿${amt.toLocaleString()} แล้ว`);
     }
     // ── END TAX HELPER ─────────────────────────────────────────────
+
+    // ── AUTOMATION & SMART ASSISTANT ───────────────────────────────
+
+    // Feature 1: Smart Insight Card (home screen)
+    function renderSmartInsight() {
+        let el = document.getElementById('smartInsightCard');
+        if(!el) return;
+        let now = new Date();
+        let pd = cfg.payday || 25;
+        let cs = getCycleStart(now, pd);
+        let daysPassed = Math.max(1, Math.floor((now - cs) / 864e5));
+        let spentSo = transactions.filter(t => t.type==='expense' && new Date(t.dateObj) >= cs).reduce((s,t)=>s+t.amount, 0);
+        let candidates = [];
+
+        // A. Budget cap warnings (highest priority)
+        budgetCaps.forEach(cap => {
+            let spent = transactions.filter(t => t.type==='expense' && t.cat && t.cat.toLowerCase().includes(cap.cat.toLowerCase()) && new Date(t.dateObj) >= cs).reduce((s,t)=>s+t.amount, 0);
+            let pct = Math.round(spent / cap.limit * 100);
+            if(pct >= 85) candidates.push({
+                priority: pct >= 100 ? 10 : 8,
+                bg: pct >= 100 ? '#fef2f2' : '#fff7ed',
+                border: pct >= 100 ? '#dc2626' : '#f97316',
+                html: `${pct>=100?'🚨':'⚠️'} หมวด <b>${cap.cat}</b>${pct>=100?' เกิน budget ไปแล้ว!':`ใช้ไป ${pct}% ของ budget`}`
+            });
+        });
+
+        // B. Burn rate alarm
+        let spendableIncome = totalIncomeThisMonth * (cfg.e + cfg.j) / 100;
+        let expectedDailyRate = spendableIncome > 0 ? spendableIncome / 30 : 0;
+        let dailyRate = spentSo / daysPassed;
+        if(expectedDailyRate > 0 && dailyRate > expectedDailyRate * 1.4) {
+            let ratio = Math.round(dailyRate / expectedDailyRate * 100 - 100);
+            candidates.push({priority: 7, bg:'#fff7ed', border:'#f97316', html:`🔥 ใช้เงินเร็วกว่าแผน <b>${ratio}%</b> — รอบนี้อาจขาดมือ`});
+        }
+
+        // C. Security runway
+        let secUsable = currentBalances.security - (creditLockedAmt||0);
+        let monthlyExp = spentSo / daysPassed * 30;
+        if(secUsable < 0) {
+            candidates.push({priority: 9, bg:'#fef2f2', border:'#dc2626', html:'🏦 Security ถูกกันจ่ายหมด — ไม่มีเงินสำรองฉุกเฉิน!'});
+        } else if(monthlyExp > 0 && secUsable / monthlyExp < 3) {
+            candidates.push({priority: 6, bg:'#fff7ed', border:'#f97316', html:`🏦 เงินสำรองเหลือ <b>${(secUsable/monthlyExp).toFixed(1)} เดือน</b> — เป้า 6 เดือน`});
+        }
+
+        // D. Near payday countdown
+        let nextPay = new Date(cs); nextPay.setMonth(nextPay.getMonth() + 1);
+        let daysToNext = Math.ceil((nextPay - now) / 864e5);
+        if(daysToNext >= 1 && daysToNext <= 4) {
+            let ejBal = currentBalances.essential + currentBalances.joy;
+            candidates.push({priority: 4, bg:'#f0f9ff', border:'#0ea5e9', html:`📅 อีก <b>${daysToNext} วัน</b> เงินเดือนมา — Essential+Joy เหลือ ฿${Math.round(ejBal).toLocaleString()}`});
+        }
+
+        // E. Positive feedback (when nothing urgent)
+        if(candidates.length === 0) {
+            if(streakCount >= 3) {
+                let savePct = totalIncomeThisMonth > 0 ? Math.round((1 - spentSo/totalIncomeThisMonth)*100) : 0;
+                let icon = savePct >= 20 ? '🌟' : '✅';
+                let txt = savePct >= 20
+                    ? `ออมไป <b>${savePct}%</b> รอบนี้แล้ว — เก่งมาก! 🔥 ${streakCount} วันติด`
+                    : `บันทึก <b>${streakCount} วัน</b>ติดต่อกัน — ทำต่อไปนะบอส!`;
+                candidates.push({priority: 1, bg:'#f0fdf4', border:'#16a34a', html:`${icon} ${txt}`});
+            }
+        }
+
+        if(candidates.length === 0) { el.style.display = 'none'; return; }
+        candidates.sort((a,b) => b.priority - a.priority);
+        let top = candidates[0];
+        el.style.display = 'block';
+        el.innerHTML = `<div style="background:${top.bg};border-left:3px solid ${top.border};border-radius:10px;padding:9px 12px;font-size:12px;color:#374151;margin-bottom:10px;">${top.html}</div>`;
+    }
+
+    // Feature 2: Income Allocation Summary
+    function showIncomeAllocSummary(inc, cat) {
+        let amtEl = document.getElementById('incomeAllocAmt');
+        let catEl = document.getElementById('incomeAllocCat');
+        if(amtEl) amtEl.textContent = '฿' + inc.toLocaleString();
+        if(catEl) catEl.textContent = '💰 จัดสรรเงิน — ' + (cat || 'รายรับ');
+
+        let g = Math.round(inc * cfg.g / 100);
+        let s = Math.round(inc * cfg.s / 100);
+        let e = Math.round(inc * cfg.e / 100);
+        let j = Math.round(inc * cfg.j / 100);
+        let savingsRate = Math.round((cfg.g + cfg.s));
+
+        let unpaid = fixedCosts.filter(f => !f.paidThisMonth && !f.archived);
+        let unpaidTotal = unpaid.reduce((t,f)=>t+f.amount, 0);
+
+        let secUsable = currentBalances.security - (creditLockedAmt||0);
+        let _ri = transactions.filter(t=>t.type==='main_income').slice(-3);
+        let avgInc = _ri.length > 0 ? _ri.reduce((s,t)=>s+t.amount,0)/_ri.length : inc;
+        let secMonths = avgInc > 0 ? (secUsable/avgInc).toFixed(1) : '?';
+
+        let el = document.getElementById('incomeAllocBody'); if(!el) return;
+        el.innerHTML = `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                <div style="background:#f0f9ff;border-radius:10px;padding:8px;text-align:center;">
+                    <p style="margin:0;font-size:9px;color:var(--gray-text);">Growth ${cfg.g}%</p>
+                    <p style="margin:2px 0;font-size:15px;font-weight:bold;color:var(--bleu-porcelaine);">฿${g.toLocaleString()}</p>
+                </div>
+                <div style="background:#fefce8;border-radius:10px;padding:8px;text-align:center;">
+                    <p style="margin:0;font-size:9px;color:var(--gray-text);">Security ${cfg.s}%</p>
+                    <p style="margin:2px 0;font-size:15px;font-weight:bold;color:#92400e;">฿${s.toLocaleString()}</p>
+                </div>
+                <div style="background:#faf5f0;border-radius:10px;padding:8px;text-align:center;">
+                    <p style="margin:0;font-size:9px;color:var(--gray-text);">Essential ${cfg.e}%</p>
+                    <p style="margin:2px 0;font-size:15px;font-weight:bold;color:var(--terre-cuite);">฿${e.toLocaleString()}</p>
+                </div>
+                <div style="background:#f0faf5;border-radius:10px;padding:8px;text-align:center;">
+                    <p style="margin:0;font-size:9px;color:var(--gray-text);">Joy ${cfg.j}%</p>
+                    <p style="margin:2px 0;font-size:15px;font-weight:bold;color:var(--eau-trouble);">฿${j.toLocaleString()}</p>
+                </div>
+            </div>
+            <div style="text-align:center;font-size:11px;color:#166534;background:#f0fdf4;border-radius:8px;padding:6px;margin-bottom:8px;">
+                💰 ออม ${savingsRate}% | 🏦 สำรอง ${secMonths} เดือน
+            </div>
+            ${unpaid.length > 0
+                ? `<div style="background:#fff7ed;border-radius:8px;padding:8px;border-left:3px solid #f97316;">
+                    <p style="margin:0;font-size:11px;color:#c2410c;font-weight:bold;">📋 บิลรอจ่าย ${unpaid.length} รายการ รวม ฿${unpaidTotal.toLocaleString()}</p>
+                    <p style="margin:3px 0 0;font-size:10px;color:#9a3412;">${unpaid.slice(0,3).map(f=>f.name).join(' · ')}${unpaid.length>3?` +${unpaid.length-3} อื่นๆ`:''}</p>
+                  </div>`
+                : `<p style="text-align:center;font-size:11px;color:#166534;margin:0;">✅ บิลทุกรายการชำระแล้วรอบนี้!</p>`
+            }`;
+        openModal('incomeAllocModal');
+    }
+
+    // Feature 3: Category Spending Context (in expense modal)
+    function updateCatSpendContext() {
+        let el = document.getElementById('catSpendContext'); if(!el) return;
+        let cat = activeExpenseCat;
+        if(!cat || cat === 'ทั่วไป') { el.textContent = ''; return; }
+        let now = new Date(); let pd = cfg.payday || 25;
+        let cs = getCycleStart(now, pd);
+        // This cycle
+        let thisCycle = transactions.filter(t => t.type==='expense' && t.cat===cat && new Date(t.dateObj) >= cs).reduce((s,t)=>s+t.amount, 0);
+        // Previous 3 cycles avg
+        let prevAmts = [1,2,3].map(i => {
+            let prevCs = getCycleStart(now, pd); prevCs.setMonth(prevCs.getMonth() - i);
+            let prevCe = new Date(prevCs); prevCe.setMonth(prevCe.getMonth() + 1);
+            return transactions.filter(t => t.type==='expense' && t.cat===cat && new Date(t.dateObj) >= prevCs && new Date(t.dateObj) < prevCe).reduce((s,t)=>s+t.amount, 0);
+        }).filter(v => v > 0);
+        let avg3 = prevAmts.length > 0 ? Math.round(prevAmts.reduce((a,b)=>a+b,0)/prevAmts.length) : 0;
+        if(thisCycle === 0 && avg3 === 0) { el.textContent = ''; return; }
+        let pct = avg3 > 0 ? Math.round(thisCycle/avg3*100) : null;
+        let warn = pct !== null && pct > 100 ? ` ⚠️ สูงกว่าเฉลี่ย ${pct-100}%` : '';
+        let color = pct !== null && pct > 100 ? 'var(--terre-cuite)' : 'var(--gray-text)';
+        el.style.color = color;
+        el.textContent = `หมวดนี้รอบนี้: ฿${Math.round(thisCycle).toLocaleString()}${avg3>0?` | เฉลี่ย 3 รอบ: ฿${avg3.toLocaleString()}${warn}`:''}`;
+    }
+
+    // Feature 4: Auto Recurring Pattern Detection
+    function checkRecurringPattern(cat) {
+        if(!cat || cat === 'ทั่วไป') return;
+        // Already in fixed costs?
+        let alreadyFixed = fixedCosts.some(f => !f.archived && (f.name.toLowerCase() === cat.toLowerCase() || cat.toLowerCase().includes(f.name.toLowerCase())));
+        if(alreadyFixed) return;
+        // Already suggested this category?
+        let key = 'recurSuggested_' + cat;
+        if(stats[key]) return;
+        // Check 3 consecutive cycles
+        let now = new Date(); let pd = cfg.payday || 25;
+        let hasIn3 = [1,2,3].every(i => {
+            let prevCs = getCycleStart(now, pd); prevCs.setMonth(prevCs.getMonth() - i);
+            let prevCe = new Date(prevCs); prevCe.setMonth(prevCe.getMonth() + 1);
+            return transactions.some(t => t.type==='expense' && t.cat===cat && new Date(t.dateObj) >= prevCs && new Date(t.dateObj) < prevCe);
+        });
+        if(!hasIn3) return;
+        stats[key] = true; saveStorage();
+        setTimeout(() => showToast(`🔄 "${cat}" จ่ายทุกรอบ 3 เดือนติด — ลองเพิ่มเป็น Fixed Cost นะบอส`, 5000), 800);
+    }
+
+    // Cycle Pulse Card
+    function renderCyclePulse() {
+        let now = new Date(); let pd = cfg.payday || 25;
+        let cs = getCycleStart(now, pd);
+        let daysPassed = Math.max(1, Math.floor((now - cs) / 864e5));
+        let nextPay = new Date(cs); nextPay.setMonth(nextPay.getMonth() + 1);
+        let daysLeft = Math.max(0, Math.ceil((nextPay - now) / 864e5));
+        let daysTotal = daysPassed + daysLeft;
+
+        let cycleTx = transactions.filter(t => new Date(t.dateObj) >= cs);
+        let spentTotal = cycleTx.filter(t => t.type==='expense').reduce((s,t)=>s+t.amount, 0);
+        let spentEss = cycleTx.filter(t => t.type==='expense' && t.tank==='essential').reduce((s,t)=>s+t.amount, 0);
+        let spentJoy = cycleTx.filter(t => t.type==='expense' && t.tank==='joy').reduce((s,t)=>s+t.amount, 0);
+        let spendable = totalIncomeThisMonth * (cfg.e + cfg.j) / 100 || 0;
+        let remaining = Math.max(0, spendable - spentTotal);
+        let pct = spendable > 0 ? Math.min(100, spentTotal / spendable * 100) : 0;
+        let savePct = totalIncomeThisMonth > 0 ? Math.round((1 - spentTotal/totalIncomeThisMonth)*100) : null;
+
+        let f = (id, val) => { let el = document.getElementById(id); if(el) el.textContent = val; };
+        f('pulseRoundLabel', `รอบบิลนี้ — วันที่ ${daysPassed} / ${daysTotal}`);
+        f('pulseSpentAmt', '฿' + Math.round(spentTotal).toLocaleString());
+        f('pulseDaysLeft', daysLeft > 0 ? `เหลืออีก ${daysLeft} วัน` : '📅 ถึงวันรับเงินแล้ว!');
+        f('pulseLeftAmt', spendable > 0 ? '฿' + Math.round(remaining).toLocaleString() : '฿--');
+        f('pulseEssential', `Essential ฿${Math.round(spentEss).toLocaleString()}`);
+        f('pulseJoy', `Joy ฿${Math.round(spentJoy).toLocaleString()}`);
+        f('pulseSaveRate', savePct !== null ? `ออม ${savePct}%` : `ออม --%`);
+
+        let bar = document.getElementById('pulseProgressBar');
+        if(bar) {
+            bar.style.width = pct + '%';
+            bar.style.background = pct > 90 ? '#dc2626' : pct > 70 ? '#f97316' : 'linear-gradient(90deg,var(--terre-cuite),var(--espresso))';
+        }
+        let saveEl = document.getElementById('pulseSaveRate');
+        if(saveEl && savePct !== null) {
+            saveEl.style.color = savePct >= 20 ? 'var(--eau-trouble)' : savePct >= 10 ? 'var(--miel-dore)' : 'var(--danger)';
+        }
+    }
+
+    // Gamification Strip → now updates the unified header bar
+    function renderGamificationStrip() {
+        // streak + points already updated by main _doUpdateUI (streakDisplay, userPointsDisplay)
+        // Update quest progress in unified bar
+        initQuestStats();
+        let dailyQuests = QUEST_DEFS.filter(q => q.cat === 'daily');
+        let total = dailyQuests.length;
+        let claimed = stats.claimedQuests && stats.claimedQuests.daily ? stats.claimedQuests.daily.ids.length : 0;
+        let pctEl = document.getElementById('barQuestPct');
+        if(pctEl) pctEl.textContent = claimed + '/' + total;
+        let barEl = document.getElementById('barQuestBar');
+        if(barEl) barEl.style.width = (total > 0 ? Math.round((claimed / total) * 100) : 0) + '%';
+    }
+
+    // Categories toggle
+    let _catsOpen = true;
+    function toggleCategoriesSection() {
+        _catsOpen = !_catsOpen;
+        let body = document.getElementById('categoriesSectionBody');
+        let icon = document.getElementById('catToggleIcon');
+        if(body) body.style.display = _catsOpen ? 'block' : 'none';
+        if(icon) icon.textContent = _catsOpen ? '▼' : '▶';
+    }
+
+    // ── END AUTOMATION ──────────────────────────────────────────────
 </script>
 
+
+<!-- 💰 Income Allocation Summary Modal -->
+<div class="modal-overlay center-popup" id="incomeAllocModal" onclick="if(event.target===this) closeModal('incomeAllocModal')">
+    <div class="modal-content center-popup" style="max-width:360px;padding:0;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#1d4ed8,var(--bleu-porcelaine));padding:14px 20px;color:white;text-align:center;">
+            <p style="margin:0;font-size:11px;opacity:0.8;" id="incomeAllocCat">💰 จัดสรรเงินเรียบร้อย</p>
+            <p id="incomeAllocAmt" style="margin:4px 0 0;font-size:26px;font-weight:bold;">฿0</p>
+        </div>
+        <div id="incomeAllocBody" style="padding:14px;"></div>
+        <div style="padding:0 14px 14px;">
+            <button onclick="closeModal('incomeAllocModal')" class="btn-main">รับทราบ ✓</button>
+        </div>
+    </div>
+</div>
 
 <!-- 📅 Payday Briefing Modal -->
 <div class="modal-overlay center-popup" id="paydayBriefingModal" onclick="if(event.target===this) closeModal('paydayBriefingModal')">
