@@ -3452,15 +3452,16 @@
             document.getElementById('shortfallText').innerText = `฿${(amt-bal).toLocaleString()}`;
             let sel = document.getElementById('backupTank'); sel.innerHTML = '';
             let shortfall = amt - bal;
-            ['growth', 'security', 'essential', 'joy'].forEach(k => {
-                if(k !== pt) {
-                    let kb = currentBalances[k];
-                    let canCover = kb >= shortfall;
-                    let label = canCover
-                        ? `ดึงจาก ${k} (มี ฿${kb.toLocaleString()}) ✅`
-                        : `ดึงจาก ${k} (มี ฿${kb.toLocaleString()} — ขาดอีก ฿${(shortfall-kb).toLocaleString()})`;
-                    sel.innerHTML += `<option value="${k}">${label}</option>`;
-                }
+            let _backupOpts = ['growth', 'security', 'essential', 'joy']
+                .filter(k => k !== pt)
+                .sort((a,b) => (currentBalances[b]||0) - (currentBalances[a]||0));
+            _backupOpts.forEach(k => {
+                let kb = currentBalances[k] || 0;
+                let canCover = kb >= shortfall;
+                let label = canCover
+                    ? `ดึงจาก ${k} (มี ฿${kb.toLocaleString()}) ✅`
+                    : `ดึงจาก ${k} (มี ฿${kb.toLocaleString()} — ขาดอีก ฿${(shortfall-kb).toLocaleString()})`;
+                sel.innerHTML += `<option value="${k}">${label}</option>`;
             });
         } else document.getElementById('crossTankBox').style.display = 'none';
     }
@@ -3652,11 +3653,18 @@
         if(!isCredit && amt > currentBalances[pt]) {
             // Cross-tank: primary ไม่พอ → ดึงจาก backup
             bt = document.getElementById('backupTank') ? document.getElementById('backupTank').value : null;
-            if(!bt) return showToast('⚠️ เลือกกระเป๋าสำรองก่อนนะบอส!');
-            crossReason = document.getElementById('crossReason').value;
+            // Auto-pick backup when bt is empty or selected tank has no money
+            // (handles: wishlist buy after page reload, or growth selected with 0 balance)
+            if(!bt || (currentBalances[bt]||0) <= 0) {
+                let _cands = ['essential','security','growth','joy']
+                    .filter(t => t !== pt && (currentBalances[t]||0) > 0)
+                    .sort((a,b) => (currentBalances[b]||0) - (currentBalances[a]||0));
+                if(!_cands.length) return showToast('⚠️ ไม่มีกระเป๋าสำรองที่มีเงินเลยบอส!');
+                bt = _cands[0];
+            }
+            crossReason = (document.getElementById('crossReason') ? document.getElementById('crossReason').value : null) || 'แพ้กิเลส';
             let shortfallAmt = amt - currentBalances[pt];
             let backupHas = currentBalances[bt] || 0;
-            if(backupHas <= 0) return showToast('⚠️ กระเป๋า ' + bt + ' ไม่มีเงินเลยบอส!');
 
             // 🔒 ถ้าดึงจาก Security ที่มี credit_reserve → เตือนก่อน
             if(bt === 'security' && creditLockedAmt > 0) {
