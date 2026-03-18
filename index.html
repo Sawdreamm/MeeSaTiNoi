@@ -1375,7 +1375,7 @@
                     </div>
                     <div style="flex:1;">
                         <label style="font-size:10px;color:var(--gray-text);">+ รายรับที่ยังไม่ได้บันทึก</label>
-                        <input type="number" id="taxIncomeExtra" placeholder="0" oninput="calcTax()"
+                        <input type="number" id="taxIncomeExtra" placeholder="0" oninput="calcTax(); saveTaxIncome()"
                             style="width:100%;padding:8px;border-radius:8px;border:1px solid #e5e7eb;font-family:'Kanit';font-size:14px;font-weight:bold;box-sizing:border-box;">
                     </div>
                 </div>
@@ -1383,8 +1383,8 @@
             </div>
             <!-- Manual mode -->
             <div id="taxManualSection" style="display:none;">
-                <label style="font-size:10px;color:var(--gray-text);">รายรับรวมทั้งปี (บาท) — ก่อนหักภาษีหรือค่าใช้จ่ายใดๆ</label>
-                <input type="number" id="taxIncomeManual" placeholder="เช่น 480000" oninput="calcTax()"
+                <label style="font-size:10px;color:var(--gray-text);">รายรับรวมทั้งปี (บาท) — กรอกยอด<strong>หลังหัก SSC แล้ว</strong> (เงินที่รับจริง) ระบบบวก SSC กลับให้เองเพื่อคำนวณภาษีที่ถูกต้อง</label>
+                <input type="number" id="taxIncomeManual" placeholder="เช่น 480000" oninput="calcTax(); saveTaxIncome()"
                     style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--bleu-porcelaine);font-family:'Kanit';font-size:16px;font-weight:bold;box-sizing:border-box;margin-top:4px;">
             </div>
         </div>
@@ -1398,18 +1398,19 @@
             <div style="display:flex;gap:8px;align-items:flex-end;">
                 <div style="flex:1;">
                     <label style="font-size:10px;color:var(--gray-text);">จ่าย/เดือน (บาท)</label>
-                    <input type="number" id="taxSocialSecMonthly" placeholder="750" oninput="calcTax()"
+                    <input type="number" id="taxSocialSecMonthly" placeholder="750" oninput="calcTax(); saveSocialSec(false)"
                         style="width:100%;padding:7px;border-radius:8px;border:1px solid #e9d5ff;font-family:'Kanit';font-size:13px;font-weight:bold;box-sizing:border-box;">
                 </div>
                 <div style="flex:1;">
                     <label style="font-size:10px;color:var(--gray-text);">จ่ายกี่เดือนปีนี้</label>
-                    <input type="number" id="taxSocialSecMonths" placeholder="12" min="1" max="12" oninput="calcTax()"
+                    <input type="number" id="taxSocialSecMonths" placeholder="12" min="1" max="12" oninput="calcTax(); saveSocialSec(false)"
                         style="width:100%;padding:7px;border-radius:8px;border:1px solid #e9d5ff;font-family:'Kanit';font-size:13px;font-weight:bold;box-sizing:border-box;">
                 </div>
                 <button onclick="saveSocialSec()"
                     style="font-size:10px;padding:7px 12px;border-radius:8px;background:#6d28d9;color:white;border:none;font-family:'Kanit';cursor:pointer;white-space:nowrap;font-weight:bold;">💾 จำ</button>
             </div>
             <div id="taxSocialSecNote" style="margin-top:5px;font-size:10px;color:#6d28d9;"></div>
+            <div style="margin-top:5px;font-size:9px;color:#9ca3af;">💡 ระบบจะบวก SSC กลับเข้าไปใน gross อัตโนมัติ แล้วหักเป็นค่าลดหย่อนภาษี — กรอกรายรับเป็นยอดที่รับเข้ามือได้เลย</div>
         </div>
 
         <!-- Section 3: Deductions -->
@@ -3667,9 +3668,10 @@
             let backupHas = currentBalances[bt] || 0;
 
             // 🔒 ถ้าดึงจาก Security ที่มี credit_reserve → เตือนก่อน
+            let drawFromLock = 0;
             if(bt === 'security' && creditLockedAmt > 0) {
                 let usable = Math.max(0, backupHas - creditLockedAmt);
-                let drawFromLock = Math.max(0, Math.min(shortfallAmt, backupHas) - usable);
+                drawFromLock = Math.max(0, Math.min(shortfallAmt, backupHas) - usable);
                 if(drawFromLock > 0) {
                     if(!confirm(`⚠️ เงินใน Security ฿${backupHas.toLocaleString()} มีส่วนที่กันไว้จ่ายบัตร ฿${creditLockedAmt.toLocaleString()}\n\nการดึงเงินนี้จะใช้เงินที่กันไว้ ฿${drawFromLock.toLocaleString()}\nยอดกันจ่ายบัตรจะลดลงตาม\n\nยืนยันจะใช้จริงไหม?`)) return;
                     _reduceCreditReserve(drawFromLock);
@@ -3761,6 +3763,7 @@
         }
 
         updateUI();
+        saveStorageDebounced(); // ✅ บันทึก transaction ลง storage ทุกครั้ง
         if(pt === 'joy' || (isCross && bt === 'joy')) updateGoalUI('joy');
         if(pt === 'security' || (isCross && bt === 'security')) updateGoalUI('security');
     }
@@ -4352,7 +4355,7 @@
         }
     }
 
-    function buyWishlist(id) { let w = wishlist.find(x=>x.id===id); if(!w) return; wishlist = wishlist.filter(x=>x.id!==id); stats.temptationYieldedCount++; executePayment(w.amount, w.tank, w.note, w.cat, w.payMethod, w.emotion, w.needRating); renderWishlist(); closeModal('wishlistModal'); }
+    function buyWishlist(id) { let w = wishlist.find(x=>x.id===id); if(!w) return; wishlist = wishlist.filter(x=>x.id!==id); stats.temptationYieldedCount++; executePayment(w.amount, w.tank, w.note, w.cat, w.payMethod, w.emotion, w.needRating); saveStorageDebounced(); renderWishlist(); closeModal('wishlistModal'); }
     function deleteWishlist(id, amt) { wishlist = wishlist.filter(x=>x.id!==id); stats.savedFromTemptation += amt; stats.temptationAbandonedCount++; if(!stats.wishlistDeletedThisCycle) stats.wishlistDeletedThisCycle = 0; stats.wishlistDeletedThisCycle += amt; userPoints += 50; updateUI(); showToast('🎉 ชนะกิเลสตัวเองได้แล้ว! รับโบนัส 50 แต้ม'); saveStorageDebounced(); showGifOverlay('wishlist_delete'); }
 
     // --- 7. AUTO QUEST SYSTEM ---
@@ -6626,13 +6629,16 @@
 
     function openTaxHelper() {
         loadTaxSettings();
-        setTaxMode('auto');
+        let savedMode = (cfg.taxSettings || {}).taxMode || 'auto';
+        setTaxMode(savedMode);
         renderWHTSummary();
         openModal('taxHelperModal');
     }
 
     function setTaxMode(mode) {
         _taxMode = mode;
+        if(!cfg.taxSettings) cfg.taxSettings = {};
+        cfg.taxSettings.taxMode = mode;
         let autoBtn = document.getElementById('taxModeAutoBtn');
         let manualBtn = document.getElementById('taxModeManualBtn');
         let autoSec = document.getElementById('taxAutoSection');
@@ -6694,16 +6700,19 @@
         f('taxDeductChildrenCount','childrenCount', 0);
         let sp = document.getElementById('taxDeductSpouse');
         if(sp && ts.spouse !== undefined) sp.value = ts.spouse;
+        // restore income fields
+        if(ts.incomeManual) { let el = document.getElementById('taxIncomeManual'); if(el) el.value = ts.incomeManual; }
+        if(ts.incomeExtra)  { let el = document.getElementById('taxIncomeExtra');  if(el) el.value = ts.incomeExtra; }
     }
 
-    function saveSocialSec() {
+    function saveSocialSec(showMsg = true) {
         if(!cfg.taxSettings) cfg.taxSettings = {};
         let m = parseFloat(document.getElementById('taxSocialSecMonthly')?.value) || 0;
         let mo = parseInt(document.getElementById('taxSocialSecMonths')?.value) || 12;
         cfg.taxSettings.socialSecMonthly = m;
         cfg.taxSettings.socialSecMonths = mo;
         saveStorage();
-        showToast('💾 บันทึกข้อมูลประกันสังคมแล้ว');
+        if(showMsg) showToast('💾 บันทึกข้อมูลประกันสังคมแล้ว');
         calcTax();
     }
 
@@ -6724,20 +6733,40 @@
         showToast('💾 บันทึกค่าลดหย่อนแล้ว');
     }
 
+    function saveTaxIncome() {
+        if(!cfg.taxSettings) cfg.taxSettings = {};
+        cfg.taxSettings.taxMode = _taxMode;
+        let mEl = document.getElementById('taxIncomeManual');
+        let eEl = document.getElementById('taxIncomeExtra');
+        if(mEl && mEl.value) cfg.taxSettings.incomeManual = parseFloat(mEl.value) || 0;
+        if(eEl && eEl.value) cfg.taxSettings.incomeExtra  = parseFloat(eEl.value) || 0;
+        saveStorage();
+    }
+
     function calcTax() {
-        // ── รายรับ ──
-        let inc = 0;
+        // ── รายรับ (net = ที่รับจริง หลังหัก SSC แล้ว) ──
+        let incNet = 0;
         if(_taxMode === 'auto') {
             let fromSystem = parseFloat(document.getElementById('taxIncomeInput')?.value) || 0;
             let extra = parseFloat(document.getElementById('taxIncomeExtra')?.value) || 0;
-            inc = fromSystem + extra;
+            incNet = fromSystem + extra;
         } else {
-            inc = parseFloat(document.getElementById('taxIncomeManual')?.value) || 0;
+            incNet = parseFloat(document.getElementById('taxIncomeManual')?.value) || 0;
         }
-        if(inc <= 0) {
+        if(incNet <= 0) {
             document.getElementById('taxResultBox').innerHTML = '<p style="margin:0;font-size:11px;opacity:0.75;">กรุณากรอกรายรับเพื่อคำนวณ</p>';
             return;
         }
+
+        // ── ประกันสังคม — คำนวณก่อนเพื่อ reconstruct gross ──
+        let ssmM  = parseFloat(document.getElementById('taxSocialSecMonthly')?.value) || 0;
+        let ssmMo = Math.min(parseInt(document.getElementById('taxSocialSecMonths')?.value) || 12, 12);
+        let dSSec = Math.min(ssmM * ssmMo, 9000);
+        let ssnEl = document.getElementById('taxSocialSecNote');
+        if(ssnEl) ssnEl.textContent = dSSec > 0 ? `ลดหย่อนได้ ฿${dSSec.toLocaleString()} (${ssmM}×${ssmMo}=${ssmM*ssmMo > 9000 ? '9,000 cap' : dSSec.toLocaleString()})` : '';
+
+        // ── Reconstruct gross: บวก SSC กลับ (รายรับที่แจ้งสรรพากร = net + SSC) ──
+        let inc = incNet + dSSec;
 
         // ── ค่าลดหย่อน ──
         let dExp = Math.min(inc * 0.5, 100000);
@@ -6745,13 +6774,6 @@
         if(expEl) expEl.value = Math.round(dExp);
 
         let dPer = 60000;
-
-        // ประกันสังคม (max 9,000)
-        let ssmM  = parseFloat(document.getElementById('taxSocialSecMonthly')?.value) || 0;
-        let ssmMo = Math.min(parseInt(document.getElementById('taxSocialSecMonths')?.value) || 12, 12);
-        let dSSec = Math.min(ssmM * ssmMo, 9000);
-        let ssnEl = document.getElementById('taxSocialSecNote');
-        if(ssnEl) ssnEl.textContent = dSSec > 0 ? `ลดหย่อนได้ ฿${dSSec.toLocaleString()} (${ssmM}×${ssmMo}=${ssmM*ssmMo > 9000 ? '9,000 cap' : dSSec.toLocaleString()})` : '';
 
         // ประกันชีวิต + สุขภาพ รวมกัน ≤ 100k; สุขภาพ ≤ 25k
         let dLife   = parseFloat(document.getElementById('taxDeductLife')?.value) || 0;
@@ -6795,7 +6817,7 @@
         let wht = (stats.whtRecords||[]).reduce((s,r)=>s+r.amt, 0);
         let remaining = Math.max(0, tax - wht);
         let refund = wht > tax ? wht - tax : 0;
-        let effRate = (tax / inc * 100).toFixed(1);
+        let effRate = (tax / inc * 100).toFixed(1); // inc = gross
         let margRate = (brackets.find(b => netInc <= b.max) || {rate:0.35}).rate * 100;
         let moLeft = Math.max(1, 12 - new Date().getMonth());
         let monthlyProvision = remaining > 0 ? Math.ceil(remaining / moLeft) : 0;
@@ -6814,11 +6836,12 @@
         let el = document.getElementById('taxResultBox'); if(!el) return;
         el.innerHTML = `
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">รายรับทั้งปี</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${inc.toLocaleString()}</p></div>
+                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">รายรับที่กรอก (net)</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${Math.round(incNet).toLocaleString()}</p></div>
+                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">รายรับรวมภาษี (gross+SSC)</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${Math.round(inc).toLocaleString()}</p></div>
                 <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">ลดหย่อนรวม</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${Math.round(totalDeduct).toLocaleString()}</p></div>
                 <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">เงินได้สุทธิ</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">฿${Math.round(netInc).toLocaleString()}</p></div>
-                <div style="text-align:center;"><p style="margin:0;font-size:9px;opacity:0.7;">Effective / Marginal rate</p><p style="margin:2px 0;font-size:13px;font-weight:bold;">${effRate}% / ${margRate}%</p></div>
             </div>
+            <div style="text-align:center;margin-bottom:6px;"><span style="font-size:9px;opacity:0.6;">Effective / Marginal rate: ${effRate}% / ${margRate}%</span></div>
             <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:10px;text-align:center;">
                 <p style="margin:0;font-size:11px;opacity:0.75;">ภาษีทั้งปี</p>
                 <p style="margin:4px 0;font-size:28px;font-weight:bold;">฿${Math.round(tax).toLocaleString()}</p>
