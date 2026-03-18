@@ -56,7 +56,7 @@
         .tank-chip[data-tank="joy"].active { border-color:var(--eau-trouble); background:var(--eau-trouble); color:white; }
         .tank-chip[data-tank="security"].active { border-color:var(--miel-dore); background:var(--miel-dore); color:var(--espresso); }
         .tank-chip[data-tank="growth"].active { border-color:var(--bleu-porcelaine); background:var(--bleu-porcelaine); color:white; }
-        .recent-chip { display:flex;flex-direction:column;align-items:center;background:white;border:1.5px solid #e5e7eb;border-radius:12px;padding:8px 10px;cursor:pointer;font-family:'Kanit';gap:2px;transition:border-color 0.15s;flex-shrink:0; }
+        .recent-chip { display:flex;flex-direction:column;align-items:center;background:white;border:1.5px solid #e5e7eb;border-radius:10px;padding:5px 8px;cursor:pointer;font-family:'Kanit';gap:1px;transition:border-color 0.15s;flex-shrink:0; }
         .recent-chip:active { border-color:var(--espresso); background:#faf5f0; }
         /* ── Compact Tanks 2x2 ── */
         .tank-compact-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:4px; }
@@ -86,8 +86,8 @@
         .tank-amount { font-size: 16px; color: var(--espresso); font-weight: 700; margin-top:3px; }
 
         /* Categories & Quests */
-        .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 12px; }
-        .cat-btn { background: var(--gray-light); border-radius: 12px; padding: 8px 4px; display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; border: 1px solid transparent; min-height: 64px; justify-content: center;}
+        .categories-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 8px; }
+        .cat-btn { background: var(--gray-light); border-radius: 10px; padding: 6px 3px; display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; border: 1px solid transparent; min-height: 52px; justify-content: center;}
         .cat-icon { font-size: 20px; margin-bottom: 3px; }
         .cat-name { font-size: 10px; color: var(--espresso); text-align: center; font-weight:500; line-height:1.2; word-break:break-word;}
         .quest-item { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; font-size: 13px; margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 10px; transition: 0.3s;}
@@ -230,28 +230,9 @@
         </div>
 
         <!-- ① Cycle Pulse Hero Card -->
-        <div class="pulse-card">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div>
-                    <p style="margin:0; font-size:10px; color:var(--gray-text);" id="pulseRoundLabel">รอบบิลนี้</p>
-                    <p style="margin:3px 0 0; font-size:26px; font-weight:bold; color:var(--espresso); line-height:1;" id="pulseSpentAmt">฿0</p>
-                    <p style="margin:2px 0 0; font-size:11px; color:var(--gray-text);">ใช้ไปแล้ว</p>
-                </div>
-                <div style="text-align:right;">
-                    <p style="margin:0; font-size:10px; color:var(--gray-text);">เหลือใช้ได้</p>
-                    <p style="margin:3px 0 0; font-size:26px; font-weight:bold; color:var(--eau-trouble); line-height:1;" id="pulseLeftAmt">฿0</p>
-                    <p style="margin:2px 0 0; font-size:11px; color:var(--gray-text);" id="pulseDaysLeft">เหลือ -- วัน</p>
-                </div>
-            </div>
-            <div class="pulse-spent-bar">
-                <div class="pulse-bar-fill" id="pulseProgressBar" style="width:0%;"></div>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--gray-text);">
-                <span id="pulseEssential">Essential ฿0</span>
-                <span id="pulseJoy">Joy ฿0</span>
-                <span id="pulseSaveRate" style="font-weight:bold; color:var(--eau-trouble);">ออม --%</span>
-            </div>
-        </div>
+        <!-- pulse-card removed (ดูได้ที่หน้าสรุปผล) -->
+        <!-- hidden refs for JS compat -->
+        <span id="pulseRoundLabel" style="display:none;"></span><span id="pulseSpentAmt" style="display:none;"></span><span id="pulseLeftAmt" style="display:none;"></span><span id="pulseDaysLeft" style="display:none;"></span><div id="pulseProgressBar" style="display:none;"></div><span id="pulseEssential" style="display:none;"></span><span id="pulseJoy" style="display:none;"></span><span id="pulseSaveRate" style="display:none;"></span>
 
         <!-- ② Smart Insight Card -->
         <div id="smartInsightCard" style="display:none; margin-bottom:10px;"></div>
@@ -334,10 +315,10 @@
                 <div style="display:flex; gap:6px; align-items:center;">
                     <button class="btn-outline" style="border-color:var(--terre-cuite); color:var(--terre-cuite); font-size:10px; padding:2px 7px;" onclick="event.stopPropagation(); openBulkEntry()">📝 รวบ</button>
                     <button class="btn-outline" style="font-size:10px; padding:2px 7px; color:var(--bleu-porcelaine); border-color:var(--bleu-porcelaine);" onclick="event.stopPropagation(); openManageCatsModal()">⚙️</button>
-                    <span id="catToggleIcon" style="font-size:12px; color:var(--gray-text);">▼</span>
+                    <span id="catToggleIcon" style="font-size:12px; color:var(--gray-text);">▶</span>
                 </div>
             </div>
-            <div id="categoriesSectionBody" style="margin-top:12px;">
+            <div id="categoriesSectionBody" style="display:none; margin-top:8px;">
                 <div class="categories-grid" id="homeCategories"></div>
             </div>
         </div>
@@ -491,7 +472,7 @@
     </div>
 
     <div id="view-analytics" class="view-section">
-        <div class="header"><h1>📊 สรุปผล & วิเคราะห์</h1><button class="btn-outline" style="background:var(--gray-light);" onclick="switchTab('view-cashflow', document.querySelectorAll('.nav-item')[2]); drawSankey();">🌊 Cashflow</button></div>
+        <div class="header"><h1>📊 สรุปผล & วิเคราะห์</h1></div>
 
         <div class="month-swiper" id="monthSwiperWrapper">
             <button class="swiper-btn" onclick="changeMonth(-1)">◀</button>
@@ -723,15 +704,8 @@
     </div>
 
 
-    <div id="view-cashflow" class="view-section">
-        <div class="header"><h1>🌊 กระแสเงินสด</h1><button class="btn-outline" style="background:var(--gray-light);" onclick="document.getElementById('view-cashflow').classList.remove('active'); document.getElementById('view-analytics').classList.add('active');">ย้อนกลับ ↩️</button></div>
-        <div class="card" style="background: white; border: 1px solid var(--bleu-porcelaine);">
-            <p style="font-size:11px; color:var(--gray-text); margin-top:0;">กราฟแสดงสายน้ำของรอบบิลนี้</p>
-            <div id="sankey_basic" style="width: 100%; height: 450px; display: flex; justify-content: flex-start; align-items: center; overflow-x: auto;">
-                <p style="color:#888;">กำลังโหลดกราฟ...</p>
-            </div>
-        </div>
-    </div>
+    <!-- cashflow view removed (ไม่เหมาะ mobile) -->
+    <div id="view-cashflow" class="view-section" style="display:none;"><div id="sankey_basic" style="display:none;"></div></div>
 
     <div id="view-quest" class="view-section" style="display:none; background: var(--nuage-de-lait);">
         <div class="header" style="position:sticky; top:0; background:var(--nuage-de-lait); z-index:10; padding-bottom:8px;">
@@ -880,20 +854,8 @@
         <div class="drag-handle"></div>
         <div class="modal-header"><h2 id="expenseTitle">🧾 จดรายจ่าย</h2><button class="close-btn" onclick="closeModal('expenseModal')">✕</button></div>
 
-        <!-- Recent / Quick-fill chips -->
-        <div id="recentExpensesSection" style="margin-bottom:14px; display:none;">
-            <div style="font-size:11px; color:var(--gray-text); margin-bottom:8px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">จ่ายซ้ำ ⚡</div>
-            <div id="recentExpenseChips" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;"></div>
-        </div>
-
-        <!-- Category Picker — แสดงเฉพาะตอนเปิดแบบ Quick (ไม่มี preset cat) -->
-        <div id="expenseCatPickerRow" style="display:none; margin-bottom:14px;">
-            <div style="font-size:11px; color:var(--gray-text); margin-bottom:8px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">เลือกหมวดหมู่ <span id="expCatPickedLabel" style="font-size:12px; color:var(--terre-cuite); font-weight:bold; text-transform:none; letter-spacing:0;"></span></div>
-            <div id="expenseCatChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-        </div>
-
-        <!-- Amount — ใหญ่ชัด -->
-        <div style="text-align:center; padding:4px 0 18px;">
+        <!-- 1. จำนวนเงิน — top, big, clear -->
+        <div style="text-align:center; padding:4px 0 14px;">
             <div style="font-size:12px; color:var(--gray-text); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px;">จำนวนเงิน</div>
             <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
                 <span style="font-size:24px; font-weight:bold; color:var(--danger);">฿</span>
@@ -905,8 +867,14 @@
             <div id="catSpendContext" style="font-size:11px; color:var(--gray-text); min-height:15px; margin-top:2px;"></div>
         </div>
 
-        <!-- Tank Chips — visual selection -->
-        <div style="margin-bottom:16px;">
+        <!-- 2. จ่ายซ้ำ chips -->
+        <div id="recentExpensesSection" style="margin-bottom:10px; display:none;">
+            <div style="font-size:11px; color:var(--gray-text); margin-bottom:6px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">จ่ายซ้ำ ⚡</div>
+            <div id="recentExpenseChips" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;"></div>
+        </div>
+
+        <!-- 3. กระเป๋า -->
+        <div style="margin-bottom:14px;">
             <div style="font-size:11px; color:var(--gray-text); margin-bottom:8px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">จ่ายจากกระเป๋า</div>
             <div id="tankChips" style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button type="button" class="tank-chip" data-tank="essential" onclick="selectExpTank('essential')">🛒 Essential</button>
@@ -929,7 +897,13 @@
             <div class="form-group" style="margin-bottom:0;"><label style="color:var(--espresso);">เหตุผลที่แหกกฎ?</label><select id="crossReason"><option value="ฉุกเฉินจริงๆ">🚨 ฉุกเฉิน</option><option value="แพ้กิเลส">😈 แพ้กิเลส</option><option value="ลืมวางแผน">😅 ลืมคิด</option></select></div>
         </div>
 
-        <!-- ช่องทางจ่ายเงิน — เสมอ -->
+        <!-- 4. หมวดหมู่ (เฉพาะตอนไม่มี preset) -->
+        <div id="expenseCatPickerRow" style="display:none; margin-bottom:14px;">
+            <div style="font-size:11px; color:var(--gray-text); margin-bottom:8px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">หมวดหมู่ <span id="expCatPickedLabel" style="font-size:12px; color:var(--terre-cuite); font-weight:bold; text-transform:none; letter-spacing:0;"></span></div>
+            <div id="expenseCatChips" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- 5. ช่องทางการจ่ายเงิน -->
         <div class="form-group" style="margin-bottom:10px;"><label>💳 ช่องทางจ่ายเงิน</label>
             <select id="exPayMethod" onchange="toggleInstallmentInput()">
                 <option value="สแกนจ่าย/โอน">📱 สแกนจ่าย / โอน</option>
@@ -938,7 +912,7 @@
                 <option value="ผ่อน (BNPL)">🛍️ ผ่อนชำระ/Spaylater</option>
             </select>
         </div>
-        <div class="form-group" id="installmentDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px; border: 1px dashed var(--bleu-porcelaine); margin-bottom:10px;">
+        <div class="form-group" id="installmentDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px; border:1px dashed var(--bleu-porcelaine); margin-bottom:10px;">
             <label style="color:var(--bleu-porcelaine);">จำนวนเดือนที่ผ่อน</label><input type="number" id="exInstallmentMonths" placeholder="เช่น 3">
         </div>
         <div class="form-group" id="creditCardSelectDiv" style="display:none; background:#eff6ff; padding:10px; border-radius:10px; border:1px dashed var(--bleu-porcelaine); margin-bottom:10px;">
@@ -951,7 +925,7 @@
             </select>
         </div>
 
-        <!-- จ่ายแทนคนอื่น — เสมอ -->
+        <!-- 6. จ่ายแทนคนอื่น -->
         <div style="background:var(--nuage-de-lait); padding:10px; border-radius:10px; border:1px dashed var(--miel-dore); margin-bottom:12px;">
             <label style="color:var(--espresso); display:flex; align-items:center; gap:5px; margin-bottom:0; cursor:pointer; font-size:13px;">
                 <input type="checkbox" id="isReimbursable" onchange="toggleReimbursable(this.checked)" style="width:auto; accent-color:var(--miel-dore);"> จ่ายแทนคนอื่น (รอหาร/รอเคลียร์)
@@ -970,35 +944,19 @@
             </div>
         </div>
 
-        <!-- Advanced Toggle (เหลือแค่ joy/need/note) -->
-        <button type="button" id="advancedToggleBtn" onclick="toggleAdvancedExpense()"
-            style="width:100%; background:transparent; border:1px dashed #d1d5db; border-radius:10px; padding:9px; font-size:12px; color:var(--gray-text); cursor:pointer; font-family:'Kanit'; margin-bottom:12px; text-align:left;">
-            ➕ รายละเอียดเพิ่มเติม <span id="advCatPreview" style="color:var(--espresso); font-weight:bold;"></span>
-        </button>
+        <!-- 7. รายละเอียด -->
+        <div class="form-group" style="margin-bottom:14px;"><label>📝 รายละเอียด</label><input type="text" id="exNote" placeholder="บันทึกช่วยจำ..."></div>
 
-        <!-- Advanced Section — joy/need/note -->
-        <div id="advancedExpenseSection" style="display:none;">
-            <div class="form-group" id="joyTypeDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px;">
-                <label style="color:var(--eau-trouble);">รูปแบบของรางวัล</label>
-                <select id="exJoyType" style="margin-bottom:10px;"><option value="small">✨ Small Win (กินเที่ยว)</option><option value="big">🎯 Big Win (ของชิ้นใหญ่)</option></select>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <label style="color:var(--espresso); margin-bottom:0;">🎭 อารมณ์ตอนซื้อ</label>
-                    <label style="font-size:10px; color:var(--gray-text); cursor:pointer; display:flex; align-items:center; gap:4px;">
-                        <input type="checkbox" id="skipEmotion" style="width:auto;" onchange="document.getElementById('exEmotion').disabled=this.checked; document.getElementById('exEmotion').style.opacity=this.checked?'0.4':'1'"> ข้าม
-                    </label>
-                </div>
-                <select id="exEmotion"><option value="🤩 อยากให้รางวัลตัวเอง">🤩 ให้รางวัลตัวเอง</option><option value="😩 เครียดเลยช้อป">😩 เครียดเลยช้อป</option><option value="🧟‍♂️ โดนป้ายยา">🧟‍♂️ โดนป้ายยา</option><option value="🍻 เข้าสังคม">🍻 เข้าสังคม (เปย์เพื่อน)</option></select>
-            </div>
-            <div class="form-group" id="needDiv" style="display:none; background:var(--nuage-de-lait); padding:10px; border-radius:10px; border: 1px dashed var(--terre-cuite);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <label style="color:var(--terre-cuite); margin-bottom:0;">⚖️ ความจำเป็น</label>
-                    <label style="font-size:10px; color:var(--gray-text); cursor:pointer; display:flex; align-items:center; gap:4px;">
-                        <input type="checkbox" id="skipNeed" style="width:auto;" onchange="document.getElementById('exNeedRating').disabled=this.checked; document.getElementById('exNeedRating').style.opacity=this.checked?'0.4':'1'"> ข้าม
-                    </label>
-                </div>
-                <select id="exNeedRating"><option value="5">⭐⭐⭐⭐⭐ (ขาดไม่ได้)</option><option value="4">⭐⭐⭐⭐ (จำเป็นมาก)</option><option value="3">⭐⭐⭐ (กึ่งจำเป็น กึ่งอยากได้)</option><option value="2">⭐⭐ (ซื้อความสะดวก)</option><option value="1">⭐ (รู้อยู่แก่ใจว่าแค่อยากได้ 🤣)</option></select>
-            </div>
-            <div class="form-group"><label>📝 บันทึกช่วยจำ</label><input type="text" id="exNote" placeholder="รายละเอียด..."></div>
+        <!-- Hidden elements for JS compatibility -->
+        <div style="display:none;">
+            <button type="button" id="advancedToggleBtn"></button>
+            <div id="advancedExpenseSection"></div>
+            <span id="advCatPreview"></span>
+            <select id="exJoyType"><option value="small">small</option><option value="big">big</option></select>
+            <input type="checkbox" id="skipEmotion"><input type="checkbox" id="skipNeed">
+            <select id="exEmotion"><option value="">-</option></select>
+            <select id="exNeedRating"><option value="3">3</option></select>
+            <div id="joyTypeDiv"></div><div id="needDiv"></div>
         </div>
 
         <button class="btn-main" onclick="submitExpense()" style="margin-top:4px; font-size:15px; padding:14px;">✅ บันทึก</button>
@@ -3182,9 +3140,9 @@
             let icon = getCatIcon(t.cat);
             let dot = `<span style="width:6px;height:6px;border-radius:50%;background:${tankColor[t.tank]||'#ccc'};display:inline-block;flex-shrink:0;"></span>`;
             return `<button type="button" class="recent-chip" onclick="fillFromRecent('${t.cat.replace(/'/g,"\\'")}','${t.tank}',${t.amount})" title="${t.cat} — ฿${t.amount.toLocaleString()}">
-                <span style="font-size:20px;">${icon}</span>
-                <span style="font-size:10px;color:var(--espresso);font-weight:bold;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.cat}</span>
-                <span style="display:flex;align-items:center;gap:3px;font-size:11px;color:var(--danger);">${dot}฿${t.amount.toLocaleString()}</span>
+                <span style="font-size:16px;">${icon}</span>
+                <span style="font-size:9px;color:var(--espresso);font-weight:bold;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.cat}</span>
+                <span style="display:flex;align-items:center;gap:2px;font-size:10px;color:var(--danger);">${dot}฿${t.amount.toLocaleString()}</span>
             </button>`;
         }).join('');
     }
@@ -7121,7 +7079,7 @@
     }
 
     // Categories toggle
-    let _catsOpen = true;
+    let _catsOpen = false;
     function toggleCategoriesSection() {
         _catsOpen = !_catsOpen;
         let body = document.getElementById('categoriesSectionBody');
