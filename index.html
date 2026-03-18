@@ -3995,6 +3995,8 @@
             if(t.type==='transfer' && (t.tank===tankId||t.toTank===tankId)) return true;
             if(t.type==='debt_in' && tankId==='essential') return true;
             if(t.type==='debt_out' && tankId==='security') return true;
+            // cross-tank: แสดงรายการในกระเป๋า backup ด้วย
+            if(t.type==='expense' && t.isCross && t.backupTank===tankId && (t.bDeduct||0) > 0) return true;
             return false;
         });
 
@@ -4009,7 +4011,13 @@
                 if(t.type==='main_income' && t.splitType==='auto') return s + t.amount*(cfg[tankId.charAt(0)]/100);
                 return s + t.amount;
             },0);
-            let totalOut = filteredTx.filter(t=>t.type==='expense'||t.type==='transfer').reduce((s,t)=>s+t.amount,0);
+            let totalOut = filteredTx.filter(t=>t.type==='expense'||t.type==='transfer').reduce((s,t)=>{
+                if(t.type==='expense' && t.isCross) {
+                    if(t.backupTank===tankId) return s + (t.bDeduct||0);
+                    if(t.tank===tankId)       return s + (t.pDeduct||t.amount);
+                }
+                return s + t.amount;
+            },0);
             list.innerHTML = `<li style="background:#f8fafc;border-radius:10px;padding:8px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;list-style:none;">
                 <span style="font-size:11px;color:var(--gray-text);">รวมเดือนนี้</span>
                 <span style="font-size:12px;">
@@ -4024,13 +4032,18 @@
         [...filteredTx].reverse().forEach(t => {
             let d = new Date(t.dateObj).toLocaleDateString('th-TH');
             let n = t.note ? ` | ${t.note}` : '';
-            let isExp = t.type==='expense' || (t.type==='transfer' && t.tank===tankId) || t.type==='debt_out';
+            let isCrossBackup  = t.type==='expense' && t.isCross && t.backupTank===tankId;
+            let isCrossPrimary = t.type==='expense' && t.isCross && t.tank===tankId;
+            let isExp = t.type==='expense' || (t.type==='transfer' && t.tank===tankId) || t.type==='debt_out' || isCrossBackup;
             let isIn  = t.type==='debt_in' || t.type==='income' || t.type==='main_income' ||
                         (t.type==='transfer' && t.toTank===tankId);
             let displayAmt = t.amount;
             if(t.type==='main_income' && t.splitType==='auto') displayAmt = t.amount*(cfg[tankId.charAt(0)]/100);
             // ถ้าเป็น expense ที่ออกแทนคนอื่น แสดงยอดจ่ายจริงทั้งหมด
             if(t.type==='expense' && t.totalAmt && t.totalAmt > t.amount) displayAmt = t.totalAmt;
+            // cross-tank: แสดงเฉพาะยอดที่ตัดจาก tank นี้จริงๆ
+            if(isCrossBackup)  displayAmt = t.bDeduct || 0;
+            else if(isCrossPrimary && t.pDeduct !== undefined) displayAmt = t.pDeduct;
             let amtColor = isExp ? 'var(--danger)' : 'var(--success)';
             let sign = isExp ? '-' : '+';
             // Special label for debt transactions
@@ -4040,6 +4053,9 @@
             if(t.type==='debt_out') typeBadge = `<span style="font-size:9px;background:#d1fae5;color:#065f46;padding:1px 5px;border-radius:4px;margin-left:4px;">✅ คืนแล้ว</span>`;
             if(t.type==='transfer' && t.toTank===tankId) typeBadge = `<span style="font-size:9px;background:#eff6ff;color:#1e40af;padding:1px 5px;border-radius:4px;margin-left:4px;">↔️ โอนเข้า</span>`;
             if(t.type==='transfer' && t.tank===tankId)   typeBadge = `<span style="font-size:9px;background:#fff1f2;color:#be123c;padding:1px 5px;border-radius:4px;margin-left:4px;">↔️ โอนออก</span>`;
+            // cross-tank badges
+            if(isCrossBackup) typeBadge += `<span style="font-size:9px;background:#fef9c3;color:#854d0e;padding:1px 5px;border-radius:4px;margin-left:4px;">↩️ โปะให้ ${t.tank}</span>`;
+            else if(isCrossPrimary && (t.bDeduct||0) > 0) typeBadge += `<span style="font-size:9px;background:#fef9c3;color:#854d0e;padding:1px 5px;border-radius:4px;margin-left:4px;">↪️ โปะจาก ${t.backupTank} ฿${(t.bDeduct||0).toLocaleString()}</span>`;
             // หา receivable ที่ link กับ expense นี้ (จ่ายแทนคนอื่น)
             let linkedRx = [];
             if (t.type === 'expense') {
