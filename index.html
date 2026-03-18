@@ -867,11 +867,8 @@
             <div id="catSpendContext" style="font-size:11px; color:var(--gray-text); min-height:15px; margin-top:2px;"></div>
         </div>
 
-        <!-- 2. จ่ายซ้ำ chips -->
-        <div id="recentExpensesSection" style="margin-bottom:10px; display:none;">
-            <div style="font-size:11px; color:var(--gray-text); margin-bottom:6px; font-weight:bold; text-transform:uppercase; letter-spacing:.5px;">จ่ายซ้ำ ⚡</div>
-            <div id="recentExpenseChips" style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;"></div>
-        </div>
+        <!-- จ่ายซ้ำ chips removed — hidden stubs for JS compat -->
+        <div id="recentExpensesSection" style="display:none;"><div id="recentExpenseChips"></div></div>
 
         <!-- 3. กระเป๋า -->
         <div style="margin-bottom:14px;">
@@ -3111,8 +3108,8 @@
         return c ? c.icon : '💸';
     }
 
-    // Render recent expense chips ใน modal
-    function renderRecentExpenseChips() {
+    // Render recent expense chips — removed (ตัดออกแล้ว)
+    function renderRecentExpenseChips() { return; // disabled
         let sec = document.getElementById('recentExpensesSection');
         let el = document.getElementById('recentExpenseChips');
         if(!sec || !el) return;
@@ -3220,9 +3217,7 @@
             let d = new Date(t.dateObj);
             let timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
             let dateStr = d.toLocaleDateString('th-TH',{month:'short',day:'numeric'});
-            let dupBtn = t.type === 'expense'
-                ? `<button onclick="openQuickExpenseModal(); fillFromRecent('${(t.cat||'').replace(/'/g,"\\'")}','${t.tank}',${t.amount});" style="font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid #d1d5db;background:white;color:var(--espresso);cursor:pointer;font-family:'Kanit';">↩ ซ้ำ</button>`
-                : '';
+            let dupBtn = '';
             return `<div class="last-tx-row">
                 <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
                     <span style="font-size:18px;">${icon}</span>
